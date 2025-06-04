@@ -2,13 +2,20 @@
 
 > **Note**: This repository is synchronised with Overleaf. The main branch reflects the current state of the manuscript.
 
-![Team Photo](figures/team-photo.jpg)
-
 ## Overview
 
-@manuscript-abstract
+Infectious disease modelling increasingly relies on integrating multiple data sources to improve parameter estimation and reduce uncertainty.
+However, practitioners face complex choices about how to combine diverse data streams, from full joint modelling to modular approaches that fit sub-models separately before integration.
+This paper provides a comprehensive framework for integrating multiple data sources in infectious disease modelling, with transmission intensity estimation as a key exemplar.
+We review data source characteristics, present a structured workflow for model development, and compare integration approaches including joint modelling, evidence synthesis methods, and ensemble techniques.
+Through worked case studies progressing from single data sources to multi-stream integration, we demonstrate how different data types provide complementary information for estimating parameters such as time-varying reproduction numbers and overdispersion.
+We discuss computational considerations, model validation strategies, and practical implementation challenges.
+Our modular framework emphasises parsimony, interpretability, and systematic assessment of conflict between data sources.
+This work addresses a critical gap in the literature by providing practical guidance for infectious disease modellers on data integration choices, supported by reproducible examples and decision-making frameworks.
 
 ## Authors
+
+![Team Photo](figures/team-photo.jpg)
 
 - Sam Abbott (London School of Hygiene & Tropical Medicine)
 - Punya Alahakoon (University of Oxford)
