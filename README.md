@@ -1,6 +1,8 @@
-# @manuscript-title
+# Integrating Multiple Data Sources in Infectious Disease Modelling
 
 > **Note**: This repository is synchronised with Overleaf. The main branch reflects the current state of the manuscript.
+
+![Team Photo](figures/team-photo.jpg)
 
 ## Overview
 
@@ -9,10 +11,12 @@
 ## Authors
 
 - Sam Abbott (London School of Hygiene & Tropical Medicine)
-- Punya Alahakoon (@affiliation)
-- Michael Plank (@affiliation)
-- Xiahui Li (@affiliation)
-- Dhorasso Junior Temfack Nguefack (@affiliation)
+- Punya Alahakoon (University of Oxford)
+- Xiahui Li (University of St Andrews)
+- Dhorasso Junior Temfack Nguefack (Trinity College Dublin)
+- working group members...
+- workshop participants who contributed to the manuscript...
+- Michael Plank (University of Canterbury, New Zealand)
 - Anne Presanis (MRC Biostatistics Unit, University of Cambridge)†
 - Anne Cori (Imperial College London)†
 

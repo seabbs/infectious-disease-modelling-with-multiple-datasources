@@ -1,14 +1,227 @@
 \documentclass{article}
 \usepackage{graphicx} % Required for inserting images
+\usepackage{authblk} % For author affiliations
+\usepackage{hyperref} % For hyperlinks
+\usepackage[margin=1in]{geometry} % Standard margins
 
-\title{Rt from multiple data sources paper}
-\author{}
-\date{May 2025}
+\title{Integrating Multiple Data Sources in Infectious Disease Modelling: Best Practices and Implementation}
+
+\author[1]{Sam Abbott}
+\author[2]{Punya Alahakoon}
+\author[3]{Xiahui Li}
+\author[4]{Dhorasso Junior Temfack Nguefack}
+\author[5]{Michael Plank}
+\author[6]{@working-group-members}
+\author[7]{@workshop-participants}
+\author[8]{Anne Presanis\thanks{Joint last authors}}
+\author[9]{Anne Cori\footnotemark[1]}
+
+\affil[1]{London School of Hygiene \& Tropical Medicine}
+\affil[2]{University of Oxford}
+\affil[3]{University of St Andrews}
+\affil[4]{Trinity College Dublin}
+\affil[5]{University of Canterbury, New Zealand}
+\affil[6]{@working-group-affiliations}
+\affil[7]{@workshop-participant-affiliations}
+\affil[8]{MRC Biostatistics Unit, University of Cambridge}
+\affil[9]{Imperial College London}
+
+% Note: Authors 8 and 9 are joint last authors
+
+\date{\today}
 
 \begin{document}
 
 \maketitle
 
+\begin{abstract}
+Infectious disease modelling increasingly relies on integrating multiple data sources to improve parameter estimation and reduce uncertainty.
+However, practitioners face complex choices about how to combine diverse data streams, from full joint modelling to modular approaches that fit sub-models separately before integration.
+This paper provides a comprehensive framework for integrating multiple data sources in infectious disease modelling, with transmission intensity estimation as a key exemplar.
+We review data source characteristics, present a structured workflow for model development, and compare integration approaches including joint modelling, evidence synthesis methods, and ensemble techniques.
+Through worked case studies progressing from single data sources to multi-stream integration, we demonstrate how different data types provide complementary information for estimating parameters such as time-varying reproduction numbers and overdispersion.
+We discuss computational considerations, model validation strategies, and practical implementation challenges.
+Our modular framework emphasises parsimony, interpretability, and systematic assessment of conflict between data sources.
+This work addresses a critical gap in the literature by providing practical guidance for infectious disease modellers on data integration choices, supported by reproducible examples and decision-making frameworks.
+\end{abstract}
+
 \section{Introduction}
+% Lead: Sam Abbott
+
+% Paragraph 1: Motivation and Context
+% TODO: Value of multiple data sources in epidemic modelling
+% TODO: Recent examples from COVID-19, mpox, Ebola
+% TODO: Challenges of single data source limitations
+
+% Paragraph 2: Current Approaches
+% TODO: Pipeline vs joint modelling approaches
+% TODO: Trade-offs between computational complexity and information gain
+% TODO: Existing frameworks and their limitations
+
+% Paragraph 3: Paper Scope and Contribution
+% TODO: Focus on practical implementation of data integration
+% TODO: Transmission estimation as exemplar application
+% TODO: Modular approach to building complex models
+
+% Paragraph 4: Paper Structure
+% TODO: Overview of sections and their interconnections
+% TODO: How to use this guide for different applications
+% TODO: Code and resource availability
+
+\section{Data Sources and Characteristics}
+% Lead: Punya Alahakoon
+
+% TODO: Taxonomy of data sources in infectious disease surveillance
+% TODO: Information content and complementarity
+% TODO: Quality, timeliness, and bias considerations
+% TODO: Preprocessing and standardisation requirements
+% TODO: Complete data source rating survey processing
+% TODO: Create comprehensive table of data characteristics
+
+\section{Workflow Overview}
+% Lead: Sam Abbott
+
+% TODO: Iterative modelling cycle
+% TODO: Model specification and validation steps
+% TODO: Computational workflow considerations
+% TODO: Integration with existing tools and pipelines
+% TODO: Create detailed workflow diagram
+% TODO: Problem statement → Output estimands
+% TODO: DAGs → candidate data selection
+% TODO: Model criticism throughout all steps
+
+\section{Data Integration Choices}
+% Lead: Sam Abbott
+
+\begin{itemize}
+    \item Different possible choices for integrating/ensembling inference from multiple data sources
+    \begin{itemize}
+        \item Full joint model fitted, regardless of whether you have already fitted separate sub-models
+        \item Conditionally independent sub-models each fitted separately, then integrated
+        \begin{itemize}
+            \item Meta-analysis of separate estimates
+            \item Weighted averaging / ensembling
+            \item Markov melding
+        \end{itemize}
+    \end{itemize}
+    \item Depends on whether you are starting from scratch, from an existing model for one data source to which you want to add others, or whether you have multiple alternative sets of existing inferences from different data sources that you want to combine
+    \item General principle that modular model building (De Angelis et al, 2015; Birrell et al, 2018; Goudie et al, 2019; De Angelis \& Presanis, 2019; Nicholson et al, 2022, Liu \& Goudie, 2025) is preferable, since:
+    \begin{itemize}
+        \item Easier to understand lack of fit, model misspecification or convergence issues from simpler sub-models individually
+        \item Occam's razor - principle of parsimony, start from simplest model and build complexity up only as far as needed
+        \item Adding sub-models in one at a time allows for assessment of consistency/conflict between sub-models sequentially
+        \item Computational efficiency - rather than fitting full joint models after fitting the sub-models, use the posterior samples from the sub-models to obtain your full joint model (melding or ?)
+    \end{itemize}
+    \item Choice of likelihood function (or other objective function) therefore depends on options above on where you are starting from (existing models/sub-models or from scratch)
+    \item And model development is a cycle of model building and model criticism
+\end{itemize}
+
+% TODO: Add practical examples of each approach
+% TODO: Include decision framework for choosing integration method
+
+\section{Fitting Choices}
+% Lead: Anne Presanis, with Dhorasso and Xiahui
+
+% Paragraph 1: Define the Task
+% TODO: Summarise common features of epidemiological models
+% TODO: Time-varying processes, underreporting, measurement errors
+% TODO: Heterogeneity in spatial dynamics and population structure
+% Transition: These challenges drive development of statistical methodologies based around likelihood functions
+
+% Paragraph 2: Tools for Tractable Likelihood Functions
+% TODO: MCMC and its variants for joint models
+% TODO: Particle MCMC (pMCMC) for state-space formulations
+% TODO: Sequential Monte Carlo (SMC) approaches
+% TODO: Variational inference (VI) and INLA for specific model classes
+
+% Paragraph 3: Tools for Intractable Likelihood Functions
+% TODO: Approximate Bayesian Computation (ABC-MCMC, ABC-SMC)
+% TODO: ABC with history matching
+% TODO: Bayesian Synthetic Likelihood (BSL)
+% TODO: Simulation-based inference approaches
+
+% Paragraph 4: Selecting the Right Tool
+% TODO: Trade-offs between computational complexity, accuracy, bias
+% TODO: Interpretability and implementation ease considerations
+% TODO: Decision-making frameworks for method selection
+
+% Paragraph 5: Practical Implementation
+% TODO: Software implementations and availability
+% TODO: Diagnostic tools and convergence assessment
+% TODO: Computational resource requirements
+% TODO: Reference to inference subpanel workflow figure
+
+\section{Case Studies}
+% Lead: Anne Cori
+% Case Study 0: Base Model - Cases Only
+\subsection{Case Study 0: Base Model - Cases Only}
+% TODO: Establish baseline single-source model
+% TODO: Parameter estimation and uncertainty quantification
+% TODO: Comparison framework for multi-source improvements
+
+
+% Case Study 1: Two Data Sources
+\subsection{Case Study 1: Cases and Deaths}
+% TODO: Basic joint model formulation
+% TODO: Parameter identifiability improvements
+% TODO: Complete implementation with real data
+
+% Case Study 2: Three Data Sources
+\subsection{Case Study 2: Cases, Deaths, and Wastewater}
+% TODO: Handling different observation processes
+% TODO: Conflict resolution strategies
+% TODO: Add sensitivity analyses
+
+% Case Study 3: Incorporating Individual-Level Data
+\subsection{Case Study 3: Cases and Transmission Pairs}
+% TODO: Estimating overdispersion parameters
+% TODO: Computational challenges and solutions
+% TODO: Link to existing software tools
+
+\section{Practical Considerations}
+% Lead: Sam Abbott
+
+% TODO: Real-time implementation challenges
+% TODO: Data quality and missingness
+% TODO: Model validation strategies
+% TODO: Communication of integrated results
+% TODO: Add checklist for practitioners
+
+\section{Discussion}
+
+\subsection{Comparison with Existing Literature}
+% TODO: Compare with existing frameworks and approaches
+% TODO: Position relative to pipeline vs joint modelling literature
+% TODO: Relationship to evidence synthesis and meta-analysis methods
+% TODO: Comparison with ensemble forecasting approaches
+% TODO: Distinguish from existing reviews and methodological papers
+
+\subsection{Strengths and Limitations of Our Approach}
+% TODO: Strengths: Modular framework, practical focus, worked examples
+% TODO: Strengths: Integration of diverse methodological approaches
+% TODO: Limitations: Computational considerations and scalability
+% TODO: Limitations: Model selection and validation challenges
+% TODO: Limitations: Dependence on data quality and availability
+
+\section{Outstanding Challenges and Future Directions}
+
+% TODO: Methodological gaps in current approaches
+% TODO: Emerging data sources and integration needs
+% TODO: Computational scalability and real-time implementation
+% TODO: Community standards and best practices
+% TODO: Research priorities and next steps
+
+\section{Conclusion}
+
+% TODO: Summary of key contributions and recommendations
+% TODO: Practical impact for infectious disease modelling community
+% TODO: How this framework advances the field
+% TODO: Call to action for standardisation and best practices
+
+\section{Acknowledgements}
+@placeholder
+
+\section{References}
+@placeholder
 
 \end{document}
