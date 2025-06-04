@@ -20,13 +20,11 @@
 \affil[2]{University of Oxford}
 \affil[3]{University of St Andrews}
 \affil[4]{Trinity College Dublin}
-\affil[5]{University of Canterbury, New Zealand}
-\affil[6]{@working-group-affiliations}
-\affil[7]{@workshop-participant-affiliations}
+\affil[5]{@working-group-affiliations}
+\affil[6]{@workshop-participant-affiliations}
+\affil[7]{University of Canterbury, New Zealand}
 \affil[8]{MRC Biostatistics Unit, University of Cambridge}
 \affil[9]{Imperial College London}
-
-% Note: Authors 8 and 9 are joint last authors
 
 \date{\today}
 
@@ -59,39 +57,99 @@ This work addresses a critical gap in the literature by providing practical guid
 % TODO: Existing frameworks and their limitations
 
 % Paragraph 3: Paper Scope and Contribution
-% TODO: Focus on practical implementation of data integration
-% TODO: Transmission estimation as exemplar application
-% TODO: Modular approach to building complex models
+This paper provides a comprehensive framework for integrating multiple data sources in infectious disease modelling, with practical implementation as the primary focus.
+We use transmission intensity estimation—specifically time-varying reproduction numbers and overdispersion parameters—as a case study to demonstrate broader principles applicable across infectious disease modelling contexts.
+Our approach encourages iterative model building, allowing practitioners to systematically assess the value of additional data sources while maintaining interpretability and computational tractability.
+The framework addresses critical gaps in existing literature by providing domain-specific guidance and signposting to more generic resources for integration choices, validation strategies, and conflict resolution between data sources.
 
 % Paragraph 4: Paper Structure
-% TODO: Overview of sections and their interconnections
-% TODO: How to use this guide for different applications
-% TODO: Code and resource availability
+We first review data source characteristics and present a structured iterative workflow for model development that progresses from research question definition through process and observation DAG development to integration method selection.
+We then compare integration approaches from full joint modelling to modular ensemble methods.
+Three worked case studies demonstrate progressive complexity: single-source baselines, two-source integration, and multi-stream applications incorporating individual-level data.
+Each case study follows our iterative workflow, demonstrating how DAG-based model development guides data integration decisions.
 
 \section{Data Sources and Characteristics}
 % Lead: Punya Alahakoon
 
-% TODO: Taxonomy of data sources in infectious disease surveillance
-% TODO: Information content and complementarity
-% TODO: Quality, timeliness, and bias considerations
-% TODO: Preprocessing and standardisation requirements
-% TODO: Complete data source rating survey processing
-% TODO: Create comprehensive table of data characteristics
+We conducted a survey of workshop participants to systematically evaluate different data sources for infectious disease modelling.
+This tool helps practitioners rate different data sources on quality, timeliness, and usefulness for modelling SARS-CoV-2.
+By pooling expert opinions, we have created visual comparisons showing trade-offs between different data types, making it easier to decide which data to use when estimating transmissibility and identifying when different sources might conflict.
 
-\section{Workflow Overview}
+Participants evaluated candidate datasets across six main categories: basic metadata, scope, resolution, data quality, data utility, and practical considerations.
+For each subcategory, experts assigned values between 0 and 5, selected appropriate categories, or provided free text responses.
+We harmonised and ensembled these expert assessments to create overview tables and data analysis.
+
+% TODO: Present survey results and expert consensus
+% TODO: Create comprehensive table of data characteristics  
+% TODO: Discuss taxonomy of data sources in infectious disease surveillance
+% TODO: Analyse information content and complementarity
+% TODO: Address preprocessing and standardisation requirements
+
+\section{Workflow}
 % Lead: Sam Abbott
 
-% TODO: Iterative modelling cycle
-% TODO: Model specification and validation steps
-% TODO: Computational workflow considerations
-% TODO: Integration with existing tools and pipelines
-% TODO: Create detailed workflow diagram
-% TODO: Problem statement → Output estimands
-% TODO: DAGs → candidate data selection
-% TODO: Model criticism throughout all steps
+\subsection{Overview}
 
-\section{Data Integration Choices}
-% Lead: Sam Abbott
+We recommend following a structured, iterative workflow for multi-data source modelling (Figure~\ref{fig:workflow}).
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figures/workflow-schematic.png}
+    \caption{Recommended workflow for integrating multiple data sources in infectious disease modelling. Begin by defining research questions and target estimands, proceed through iterative development of process and observation DAGs, and follow critical decisions about data integration and inference methods.}
+    \label{fig:workflow}
+\end{figure}
+Start with a clear research question—such as estimating transmission intensity—and use systematic model development through directed acyclic graphs (DAGs) with iterative refinement.
+We advocate this approach because it makes modelling choices transparent, assumptions explicit, and allows systematic assessment of additional data sources.
+
+We recommend beginning with **decision making**: clearly define your research question and target estimands (e.g., time-varying reproduction number, overdispersion parameters).
+Next, develop a **process DAG** representing the underlying epidemiological process, iterating on this representation as understanding develops.
+Map available **data sources** to your process model, such as incidence time series, genomic data, contact tracing, viral load measurements, and serological surveys.
+For each data source, develop an **observation DAG** linking the underlying process to observed data through measurement models and reporting mechanisms.
+Different data sources may also impact your **process DAG** assumptions, such as if you can collapse your approach from individual-level to population-level.
+
+Once you have developed your process and observation DAGs, proceed to **model specification and validation**, including prior specification, parameter identifiability assessment, and diagnostic approaches.
+You then face the key decisions: **"What to combine?"** and **"How to combine?"**
+If combining multiple sources is not beneficial or feasible, you can proceed to single-source modelling and combination of estimates.
+If integration is warranted, select among data integration methods including full joint modelling, modular techniques, Markov melding, or approximate weighting approaches.
+Finally, fit your model and evaluate its performance through posterior predictive validation and sensitivity analysis.
+
+In the following sections, we will discuss each of these steps in more detail.
+
+\subsection{Research Question and Target Estimands}
+% TODO: Defining clear research objectives
+% TODO: Specifying target parameters and estimands
+% TODO: Connecting questions to policy needs
+% TODO: Setting scope and boundaries
+
+\subsection{Process DAG Development}
+% TODO: Representing epidemiological processes
+% TODO: Causal relationships and assumptions
+% TODO: Iterative refinement based on understanding
+% TODO: Incorporating biological mechanisms
+
+\subsection{Data Source Mapping}
+% TODO: Cataloguing available data streams
+% TODO: Assessing data characteristics and biases
+% TODO: Linking data to process components
+% TODO: Evaluating complementarity and redundancy
+
+\subsection{Observation DAG Construction}
+% TODO: Measurement models and reporting processes
+% TODO: Delays and missing data mechanisms
+% TODO: Linking latent processes to observations
+% TODO: Accounting for data collection protocols
+
+\subsection{Model Specification and Validation}
+% TODO: Bayesian workflow principles
+% TODO: Prior specification and prior predictive checks
+% TODO: Parameter identifiability assessment
+% TODO: Model criticism and diagnostic approaches
+% TODO: Posterior predictive validation
+% TODO: Cross-validation strategies
+% TODO: Sensitivity analysis frameworks
+
+\subsection{Data Integration Choices}
+% Lead: Anne Presanis
 
 \begin{itemize}
     \item Different possible choices for integrating/ensembling inference from multiple data sources
@@ -119,7 +177,7 @@ This work addresses a critical gap in the literature by providing practical guid
 % TODO: Add practical examples of each approach
 % TODO: Include decision framework for choosing integration method
 
-\section{Fitting Choices}
+\subsection{Fitting Choices}
 % Lead: Anne Presanis, with Dhorasso and Xiahui
 
 % Paragraph 1: Define the Task
@@ -151,9 +209,23 @@ This work addresses a critical gap in the literature by providing practical guid
 % TODO: Computational resource requirements
 % TODO: Reference to inference subpanel workflow figure
 
+\section{Practical Considerations}
+% Lead: Sam Abbott
+
+\subsection{Communication and Interpretation}
+% TODO: Visualisation strategies for multi-source results
+% TODO: Conveying uncertainty and methodological choices
+% TODO: Transparent communication of limitations and assumptions
+% TODO: Audience-specific communication approaches
+% TODO: Highlighting individual data source contributions
+% TODO: Standardised reporting templates and best practices
+% TODO: Communicating integration method choices and rationale
+
 \section{Case Studies}
 % Lead: Anne Cori
 % Case Study 0: Base Model - Cases Only
+\subsection{Overview}
+
 \subsection{Case Study 0: Base Model - Cases Only}
 % TODO: Establish baseline single-source model
 % TODO: Parameter estimation and uncertainty quantification
@@ -189,33 +261,40 @@ This work addresses a critical gap in the literature by providing practical guid
 
 \section{Discussion}
 
+\subsection{Summary of Our Approach}
+% TODO: Recap key elements of the framework
+% TODO: Highlight novel contributions (workflow, survey, case studies)
+% TODO: Emphasise practical focus and modular philosophy
+% TODO: Summarise main recommendations and best practices
+
 \subsection{Comparison with Existing Literature}
-% TODO: Compare with existing frameworks and approaches
 % TODO: Position relative to pipeline vs joint modelling literature
 % TODO: Relationship to evidence synthesis and meta-analysis methods
 % TODO: Comparison with ensemble forecasting approaches
 % TODO: Distinguish from existing reviews and methodological papers
+% TODO: Compare with other multi-source integration frameworks
 
-\subsection{Strengths and Limitations of Our Approach}
+\subsection{Strengths and Limitations}
 % TODO: Strengths: Modular framework, practical focus, worked examples
 % TODO: Strengths: Integration of diverse methodological approaches
-% TODO: Limitations: Computational considerations and scalability
+% TODO: Strengths: Expert survey and empirical evidence base
 % TODO: Limitations: Model selection and validation challenges
 % TODO: Limitations: Dependence on data quality and availability
+% TODO: Limitations: Computational considerations and scalability
 
-\section{Outstanding Challenges and Future Directions}
-
+\subsection{Outstanding Challenges and Future Directions}
+% TODO: Real-time implementation constraints and solutions
+% TODO: Computational scalability for large-scale integration
 % TODO: Methodological gaps in current approaches
 % TODO: Emerging data sources and integration needs
-% TODO: Computational scalability and real-time implementation
 % TODO: Community standards and best practices
 % TODO: Research priorities and next steps
 
-\section{Conclusion}
-
+\section{Conclusions}
 % TODO: Summary of key contributions and recommendations
 % TODO: Practical impact for infectious disease modelling community
 % TODO: How this framework advances the field
+% TODO: Main takeaways for practitioners
 % TODO: Call to action for standardisation and best practices
 
 \section{Acknowledgements}
