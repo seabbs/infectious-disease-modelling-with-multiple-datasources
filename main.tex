@@ -11,4 +11,32 @@
 
 \section{Introduction}
 
+
+
+\section{Bullet points for data integration choices section}
+
+\begin{itemize}
+    \item Different possible choices for integrating/ensembling inference from multiple data sources
+    \begin{itemize}
+        \item Full joint model fitted, regardless of whether you have already fitted separate sub-models
+        \item Conditionally independent sub-models each fitted separately, then integrated
+        \begin{itemize}
+            \item Meta-analysis of separate estimates
+            \item Weighted averaging / ensembling
+            \item Markov melding
+        \end{itemize}
+    \end{itemize}
+    \item Depends on whether you are starting from scratch, from an existing model for one data source to which you want to add others, or whether you have multiple alternative sets of existing inferences from different data sources that you want to combine
+    \item General principle that modular model building (De Angelis et al, 2015; Birrell et al, 2018; Goudie et al, 2019; De Angelis \& Presanis, 2019; Nicholson et al, 2022, Liu \& Goudie, 2025) is preferable, since:
+    \begin{itemize}
+        \item Easier to understand lack of fit, model misspecification or convergence issues from simpler sub-models individually
+        \item Occam’s razor - principle of parsimony, start from simplest model and build complexity up only as far as needed
+        \item Adding sub-models in one at a time allows for assessment of consistency/conflict between sub-models sequentially
+        \item Computational efficiency - rather than fitting full joint models after fitting the sub-models, use the posterior samples from the sub-models to obtain your full joint model (melding or ?)
+    \end{itemize}
+    \item Choice of likelihood function (or other objective function) therefore depends on options above on where you are starting from (existing models/sub-models or from scratch)
+    \item And model development is a cycle of model building and model criticism
+\end{itemize}
+
+
 \end{document}
