@@ -208,32 +208,79 @@ In the following sections, we will discuss each of these steps in more detail.
 
 \section{Case Studies}
 % Lead: Anne Cori
-% Case Study 0: Base Model - Cases Only
+
 \subsection{Overview}
 
-\subsection{Case Study 0: Base Model - Cases Only}
-% TODO: Establish baseline single-source model
-% TODO: Parameter estimation and uncertainty quantification
-% TODO: Comparison framework for multi-source improvements
+We demonstrate our iterative workflow through four progressive case studies, each building complexity whilst showing different integration choices and methodological considerations.
+All case studies share common estimands—time-varying reproduction number (Rt) and overdispersion parameter (k)—using SARS-CoV-2 outbreak data to leverage expert survey evidence on data source characteristics.
+Each case study follows our complete workflow framework, demonstrating how different data sources enable answering questions that would require strong assumptions with other sources alone.
 
+The progression illustrates key principles: deaths eliminate reporting fraction assumptions that plague case-only analyses; wastewater eliminates testing bias inherent in symptomatic surveillance; individual-level data enables direct overdispersion estimation without distributional assumptions.
+Implementation choices reflect practical considerations including available expertise, computational resources, and model complexity trade-offs, whilst generally favouring efficient methods like NUTS where applicable.
 
-% Case Study 1: Two Data Sources
-\subsection{Case Study 1: Cases and Deaths}
-% TODO: Basic joint model formulation
-% TODO: Parameter identifiability improvements
-% TODO: Complete implementation with real data
+\subsection{Case Study 0: Single-Source Baseline (Cases Only)}
 
-% Case Study 2: Three Data Sources
-\subsection{Case Study 2: Cases, Deaths, and Wastewater}
-% TODO: Handling different observation processes
-% TODO: Conflict resolution strategies
-% TODO: Add sensitivity analyses
+\textbf{Research Question:} What is Rt during this outbreak period using case incidence alone?
 
-% Case Study 3: Incorporating Individual-Level Data
-\subsection{Case Study 3: Cases and Transmission Pairs}
-% TODO: Estimating overdispersion parameters
-% TODO: Computational challenges and solutions
-% TODO: Link to existing software tools
+\textbf{Workflow Demonstration:}
+\begin{enumerate}
+    \item \textbf{Process DAG:} Simple renewal equation linking Rt to case incidence through generation time distribution, incorporating overdispersion via negative binomial model
+    \item \textbf{Data Source Mapping:} Case incidence time series selected based on expert survey ratings showing high timeliness but moderate precision due to testing policy effects
+    \item \textbf{Observation DAG:} Reporting delays, underascertainment fraction, weekend reporting effects
+    \item \textbf{Integration Choice:} Single source (no integration required)
+    \item \textbf{Implementation:} NUTS sampling of renewal equation with negative binomial observation model, chosen for computational efficiency and robust performance
+\end{enumerate}
+
+\textbf{Key Limitation:} Establishes baseline uncertainty but requires strong assumptions about generation time distribution and reporting fraction, highlighting assumption-dependent limitations that motivate multi-source approaches.
+
+\subsection{Case Study 1: Two-Source Integration (Cases + Deaths)}
+
+\textbf{Research Question:} How does adding death data improve Rt estimation and reduce assumption dependence?
+
+\textbf{Workflow Demonstration:}
+\begin{enumerate}
+    \item \textbf{Process DAG Iteration:} Extend transmission process to include infection-to-death pathway with delay distribution
+    \item \textbf{Data Source Mapping:} Expert survey shows deaths have higher reporting delays but lower noise and less policy dependence than cases
+    \item \textbf{Observation DAG:} Different reporting mechanisms for cases and deaths, with longer delays for death registration
+    \item \textbf{Integration Choice Comparison:} 
+        \begin{itemize}
+            \item \textbf{Approach A:} Joint model with shared Rt parameter
+            \item \textbf{Approach B:} Separate estimates combined via weighted ensemble
+        \end{itemize}
+    \item \textbf{Implementation:} Particle MCMC for joint model due to state-space formulation complexity; NUTS for separate models followed by Markov melding
+\end{enumerate}
+
+\textbf{Key Insight:} Deaths enable estimation without assuming reporting fraction but require death delay distribution assumptions, demonstrating how additional data sources shift rather than eliminate modelling assumptions.
+
+\subsection{Case Study 2: Three-Source Integration (Cases + Deaths + Wastewater)}
+
+\textbf{Research Question:} How do we handle conflicting signals between data sources and incorporate complex observation processes?
+
+\textbf{Workflow Demonstration:}
+\begin{enumerate}
+    \item \textbf{Process DAG Iteration:} Add viral shedding pathway from infections to wastewater concentration
+    \item \textbf{Data Source Mapping:} Wastewater offers population-level signal independent of testing bias, with moderate timeliness but requiring environmental expertise
+    \item \textbf{Observation DAG:} Complex shedding model incorporating individual-level variation, catchment population dynamics, environmental degradation
+    \item \textbf{Integration Choice:} Modular approach with sequential consistency assessment to detect and resolve data source conflicts
+    \item \textbf{Implementation:} ABC-SMC for wastewater sub-model due to likelihood intractability, reflecting available environmental modelling expertise; NUTS for case/death models
+\end{enumerate}
+
+\textbf{Key Insight:} Wastewater enables trend detection independent of testing policy but requires environmental and shedding assumptions, whilst modular approach facilitates conflict detection between data sources.
+
+\subsection{Case Study 3: Individual-Level Data (Cases + Transmission Pairs)}
+
+\textbf{Research Question:} How does individual-level data improve overdispersion estimation and change modelling assumptions?
+
+\textbf{Workflow Demonstration:}
+\begin{enumerate}
+    \item \textbf{Process DAG Transformation:} Shift from population-level renewal equation to individual-level transmission process with explicit contact structure
+    \item \textbf{Data Source Mapping:} Contact tracing provides transmission pairs with direct overdispersion information, contingent on tracing system quality
+    \item \textbf{Observation DAG:} Observation probability for transmission pairs, contact tracing coverage and delay effects
+    \item \textbf{Integration Choice:} Hierarchical model linking individual transmission events to population-level reproduction number
+    \item \textbf{Implementation:} NUTS with data augmentation for unobserved transmissions, chosen for efficient handling of discrete latent variables
+\end{enumerate}
+
+\textbf{Key Insight:} Individual-level data enables direct overdispersion estimation without distributional assumptions but requires contact tracing completeness assumptions, demonstrating how data granularity can fundamentally change model structure and inference requirements.
 
 \section{Discussion}
 
