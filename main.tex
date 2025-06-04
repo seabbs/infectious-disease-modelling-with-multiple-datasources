@@ -180,46 +180,29 @@ In the following sections, we will discuss each of these steps in more detail.
 \subsection{Fitting Choices}
 % Lead: Anne Presanis, with Dhorasso and Xiahui
 
-% Paragraph 1: Define the Task
-% TODO: Summarise common features of epidemiological models
-% TODO: Time-varying processes, underreporting, measurement errors
-% TODO: Heterogeneity in spatial dynamics and population structure
-% Transition: These challenges drive development of statistical methodologies based around likelihood functions
-
-% Paragraph 2: Tools for Tractable Likelihood Functions
+\subsubsection{Tools for Tractable Likelihood Functions}
 % TODO: MCMC and its variants for joint models
 % TODO: Particle MCMC (pMCMC) for state-space formulations
 % TODO: Sequential Monte Carlo (SMC) approaches
 % TODO: Variational inference (VI) and INLA for specific model classes
 
-% Paragraph 3: Tools for Intractable Likelihood Functions
+\subsubsection{Tools for Intractable Likelihood Functions}
 % TODO: Approximate Bayesian Computation (ABC-MCMC, ABC-SMC)
 % TODO: ABC with history matching
 % TODO: Bayesian Synthetic Likelihood (BSL)
 % TODO: Simulation-based inference approaches
 
-% Paragraph 4: Selecting the Right Tool
+\subsubsection{Selecting the Right Tool}
 % TODO: Trade-offs between computational complexity, accuracy, bias
 % TODO: Interpretability and implementation ease considerations
 % TODO: Decision-making frameworks for method selection
 
-% Paragraph 5: Practical Implementation
+\subsubsection{Practical Implementation}
+% Lead: Sam Abbott
 % TODO: Software implementations and availability
 % TODO: Diagnostic tools and convergence assessment
 % TODO: Computational resource requirements
 % TODO: Reference to inference subpanel workflow figure
-
-\section{Practical Considerations}
-% Lead: Sam Abbott
-
-\subsection{Communication and Interpretation}
-% TODO: Visualisation strategies for multi-source results
-% TODO: Conveying uncertainty and methodological choices
-% TODO: Transparent communication of limitations and assumptions
-% TODO: Audience-specific communication approaches
-% TODO: Highlighting individual data source contributions
-% TODO: Standardised reporting templates and best practices
-% TODO: Communicating integration method choices and rationale
 
 \section{Case Studies}
 % Lead: Anne Cori
@@ -262,10 +245,12 @@ In the following sections, we will discuss each of these steps in more detail.
 \section{Discussion}
 
 \subsection{Summary of Our Approach}
-% TODO: Recap key elements of the framework
-% TODO: Highlight novel contributions (workflow, survey, case studies)
-% TODO: Emphasise practical focus and modular philosophy
-% TODO: Summarise main recommendations and best practices
+
+We have presented a framework for integrating multiple data sources in infectious disease modelling that emphasises practical implementation through a structured, iterative workflow.
+Our approach combines systematic model development using directed acyclic graphs with modular integration strategies that prioritise parsimony, interpretability, and explicit assessment of data source conflict.
+The framework progresses from clear research question definition through process and observation DAG development to informed choices about integration methods, supported by expert survey evidence on data source characteristics and worked case studies demonstrating progressive complexity.
+Key contributions include the structured workflow that makes modelling assumptions transparent, the expert consensus on data source trade-offs that guides selection decisions, and practical guidance that bridges the gap between methodological advances and real-world implementation challenges.
+Our modular approach incentives building complexity incrementally, allowing practitioners to assess the value of additional data sources systematically whilst maintaining computational tractability and model interpretability.
 
 \subsection{Comparison with Existing Literature}
 % TODO: Position relative to pipeline vs joint modelling literature
@@ -291,16 +276,15 @@ In the following sections, we will discuss each of these steps in more detail.
 % TODO: Research priorities and next steps
 
 \section{Conclusions}
-% TODO: Summary of key contributions and recommendations
-% TODO: Practical impact for infectious disease modelling community
-% TODO: How this framework advances the field
-% TODO: Main takeaways for practitioners
-% TODO: Call to action for standardisation and best practices
+
+Integrating multiple data sources offers substantial benefits for infectious disease modelling, but requires careful consideration of trade-offs between information gain, computational complexity, and interpretability.
+Our framework provides infectious disease modellers with practical tools for navigating these choices through structured workflows, expert consensus on data characteristics, and demonstrated case studies that progress from single-source baselines to complex multi-stream integration.
+The modular approach we advocate offers a pragmatic path forward that balances methodological rigor with practical considerations.
+By making modelling assumptions explicit through DAG-based development and providing clear guidance on integration method selection, this framework enables more transparent, reproducible, and effective multi-source modelling.
+We recommend that the infectious disease modelling community adopt these structured approaches and work towards establishing community standards for data integration that prioritise both methodological best practices and practical implementation needs.
 
 \section{Acknowledgements}
-@placeholder
 
 \section{References}
-@placeholder
 
 \end{document}
