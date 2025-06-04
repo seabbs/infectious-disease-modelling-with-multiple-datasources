@@ -47,17 +47,19 @@ This work addresses a critical gap in the literature by providing practical guid
 % Lead: Sam Abbott
 
 % Paragraph 1: Motivation and Context
-% TODO: Value of multiple data sources in epidemic modelling
-% TODO: Recent examples from COVID-19, mpox, Ebola
-% TODO: Challenges of single data source limitations
+Infectious disease modelling increasingly relies on integrating multiple data sources to improve parameter estimation, reduce uncertainty, and provide more robust evidence for public health decision making [@placeholder].
+Recent outbreaks including COVID-19, mpox, and Ebola have highlighted both the potential value and practical challenges of combining diverse data streams such as case reports, deaths, hospitalisations, genomic sequences, wastewater surveillance, and serological surveys [@placeholder].
+Single data sources often provide limited or biased information about key epidemiological parameters, whilst multiple sources can offer complementary perspectives that improve model accuracy and reliability [@placeholder].
+However, practitioners face complex methodological choices about how to combine these data streams effectively.
 
 % Paragraph 2: Current Approaches
-% TODO: Pipeline vs joint modelling approaches
-% TODO: Trade-offs between computational complexity and information gain
-% TODO: Existing frameworks and their limitations
+Current approaches to multi-source integration broadly fall into two categories: pipeline methods that fit separate models to individual data sources before combining estimates, and joint modelling approaches that simultaneously fit all data sources within a unified statistical framework [@placeholder].
+Pipeline approaches offer computational efficiency and modular development but may propagate errors and fail to capture dependencies between data sources [@placeholder].
+Joint modelling can provide more principled uncertainty quantification and better parameter identifiability, but often requires substantial computational resources and model complexity [@placeholder].
+Existing guidance for practitioners is fragmented across methodological literature, with limited practical frameworks for navigating integration choices systematically [@placeholder].
 
 % Paragraph 3: Paper Scope and Contribution
-This paper provides a comprehensive framework for integrating multiple data sources in infectious disease modelling, with practical implementation as the primary focus.
+This paper provides a framework for integrating multiple data sources in infectious disease modelling, with practical implementation as the primary focus.
 We use transmission intensity estimation—specifically time-varying reproduction numbers and overdispersion parameters—as a case study to demonstrate broader principles applicable across infectious disease modelling contexts.
 Our approach encourages iterative model building, allowing practitioners to systematically assess the value of additional data sources while maintaining interpretability and computational tractability.
 The framework addresses critical gaps in existing literature by providing domain-specific guidance and signposting to more generic resources for integration choices, validation strategies, and conflict resolution between data sources.
@@ -232,15 +234,6 @@ In the following sections, we will discuss each of these steps in more detail.
 % TODO: Estimating overdispersion parameters
 % TODO: Computational challenges and solutions
 % TODO: Link to existing software tools
-
-\section{Practical Considerations}
-% Lead: Sam Abbott
-
-% TODO: Real-time implementation challenges
-% TODO: Data quality and missingness
-% TODO: Model validation strategies
-% TODO: Communication of integrated results
-% TODO: Add checklist for practitioners
 
 \section{Discussion}
 
