@@ -189,10 +189,7 @@ Attempt at tree of choices:
                 \begin{tree}
                     \item Do you trust the alternatives equally?
                     \begin{tree}
-                        \item Yes
-                        \begin{tree}
-                            \item $\Rightarrow$ standard meta-analysis
-                        \end{tree}
+                        \item Yes $\Rightarrow$ standard meta-analysis
                         \item No
                         \begin{tree}
                             \item $\Rightarrow$ weighted meta-analysis, weighted by precision
@@ -216,7 +213,18 @@ Attempt at tree of choices:
         \begin{tree}
             \item Yes
             \begin{tree}
-                \item 
+                \item Do you already have posterior samples from all sub-models?
+                \begin{tree}
+                    \item Yes
+                    \begin{tree}
+                        \item Are you already convinced that all sub-models give consistent results?
+                        \begin{tree}
+                            \item Yes $\Rightarrow$ join all sub-models simultaneously using Markov melding
+                            \item No $\Rightarrow$ join the models sequentially using Markov melding, to test for conflict between each sub-model
+                        \end{tree}
+                    \end{tree}
+                    \item No $\Rightarrow$ decide order in which to fit/add each sub-model, e.g. start from the one you trust most, and add sequentially using Markov melding, testing for conflict between each sub-model
+                \end{tree}
             \end{tree}
             \item No
         \end{tree}
