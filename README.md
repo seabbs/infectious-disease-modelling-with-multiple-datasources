@@ -32,6 +32,8 @@ This work addresses a critical gap in the literature by providing practical guid
 
 † Joint last authors
 
+**Note:** Author order is provisional and subject to change.
+
 ## Repository Structure
 
 ```
