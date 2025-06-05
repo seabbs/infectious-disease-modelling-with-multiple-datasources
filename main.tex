@@ -49,6 +49,7 @@
 
 \begin{abstract}
 The increase in available data sources during recent infectious disease outbreaks has created both opportunities and challenges for modellers seeking to integrate diverse data streams.
+Whilst rigorous Bayesian workflow practices have been established in other fields, the infectious disease modelling community has been slow to adopt these approaches, despite working in rapidly evolving settings where novel data sources emerge and surveillance systems adapt in real-time.
 This paper provides a methodological framework for integrating multiple data sources in infectious disease modelling, with transmission intensity estimation as a key exemplar.
 We characterise data source properties through a structured survey of workshop participants and present an iterative workflow that extends established Bayesian model development appraoches to the infectious disease domain.
 Our workflow progresses from research question definition through process and observation DAG development to integration method selection, with explicit consideration of data conflicts and uncertainty quantification.
@@ -64,6 +65,7 @@ Our framework emphasises parsimony, interpretability, and data conflict assessme
 % Paragraph 1: Motivation and Context
 Infectious disease modelling increasingly relies on integrating multiple data sources to improve parameter estimation, reduce uncertainty, and provide more robust evidence for public health decision making [@placeholder].
 Recent outbreaks including COVID-19, mpox, and Ebola have highlighted both the potential value and practical challenges of combining diverse data streams such as case reports, deaths, hospitalisations, genomic sequences, wastewater surveillance, and serological surveys [@placeholder].
+These outbreak settings create unique pressures where novel data streams emerge rapidly, surveillance systems evolve to meet changing needs, and models must be developed under severe time constraints with limited understanding of new data sources [@placeholder].
 Single data sources often provide limited or biased information about key epidemiological parameters, whilst multiple sources can offer complementary perspectives that improve model accuracy and reliability [@placeholder].
 However, practitioners face complex methodological choices about how to combine these data streams effectively.
 
@@ -74,11 +76,13 @@ Joint modelling can provide more principled uncertainty quantification and bette
 Beyond these choices, practitioners face numerous challenges including detecting and resolving conflicts between data sources, validating models when different data streams suggest different dynamics, and navigating branching decision paths where integration choices imposed model structure constraints [@placeholder].
 Fitting challenges, such as computational intractability, parameter non-identifiability, and the need to approximate ideal model structures for practical inference—further complicate and implementation [@placeholder].
 These integration and fitting considerations can impact model design, yet their implications are rarely made explicit in published analyses [@placeholder].
+The infectious disease modelling community has not widely adopted rigorous Bayesian workflow practices that emphasise iterative model development, systematic model criticism, and principled uncertainty quantification [@placeholder].
 Existing guidance for practitioners is fragmented across methodological literature, with limited practical frameworks for navigating these interconnected choices systematically [@placeholder].
 
 % Paragraph 3: Paper Scope and Contribution
 This paper provides a framework for integrating multiple data sources in infectious disease modelling, with practical implementation as the primary focus.
 We use transmission intensity estimation—specifically time-varying reproduction numbers and overdispersion parameters—as a case study to demonstrate broader principles applicable across infectious disease modelling contexts.
+By focusing on this fundamental and widely-used estimation task, we provide practitioners with a concrete foundation for adopting rigorous workflow practices that can then be extended to more complex modelling challenges.
 Our approach, building on established Bayesian workflows [@placeholder], encourages iterative model building with principled uncertainty quantification, allowing practitioners to systematically assess the value of additional data sources while maintaining interpretability and computational tractability.
 We advocate for Bayesian thinking throughout the model development process—including prior specification, model criticism, and posterior predictive checks—regardless of whether the final implementation uses Bayesian or frequentist fitting methods.
 The framework addresses critical gaps in existing literature by providing domain-specific guidance and signposting to more generic resources for integration choices, validation strategies, and conflict resolution between data sources.
@@ -119,7 +123,8 @@ We recommend following a structured, iterative workflow for multi-data source mo
     \caption{Recommended workflow for integrating multiple data sources in infectious disease modelling. Begin by defining research questions and target estimands, proceed through iterative development of process and observation DAGs, and follow critical decisions about data integration and inference methods. Note the feedback loops where downstream choices constrain upstream model development.}
     \label{fig:workflow}
 \end{figure}
-Our workflow extends the Bayesian workflow—with its emphasis on iterative model building, prior predictive checks, computational diagnostics, and posterior predictive assessment—to the specific challenges of multi-source infectious disease modelling.
+Our workflow extends established Bayesian workflow principles—with their emphasis on iterative model building, prior predictive checks, computational diagnostics, and posterior predictive assessment—to the specific challenges of multi-source infectious disease modelling.
+A key distinguishing feature is the explicit separation of epidemiological process DAGs from observation DAGs, recognising that whilst these components interact through feedback mechanisms, they draw from different domains: epidemiological processes are informed by infectious disease theory whilst observation models are motivated by data source characteristics and collection mechanisms.
 Start with a clear research question—such as estimating transmission intensity—and use systematic model development through directed acyclic graphs (DAGs) with iterative refinement.
 We advocate this approach because it makes modelling choices transparent, assumptions explicit, and provides principled tools for assessing model adequacy regardless of whether final inference is Bayesian or frequentist.
 
