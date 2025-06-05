@@ -1,0 +1,99 @@
+
+@article{judge_epifusion_2024,
+	title = {{EpiFusion}: {Joint} inference of the effective reproduction number by integrating phylodynamic and epidemiological modelling with particle filtering},
+	volume = {20},
+	issn = {1553-7358},
+	shorttitle = {{EpiFusion}},
+	url = {https://dx.plos.org/10.1371/journal.pcbi.1012528},
+	doi = {10.1371/journal.pcbi.1012528},
+	abstract = {Accurately estimating the effective reproduction number (R 
+              t 
+              ) of a circulating pathogen is a fundamental challenge in the study of infectious disease. The fields of epidemiology and pathogen phylodynamics both share this goal, but to date, methodologies and data employed by each remain largely distinct. Here we present EpiFusion: a joint approach that can be used to harness the complementary strengths of each field to improve estimation of outbreak dynamics for large and poorly sampled epidemics, such as arboviral or respiratory virus outbreaks, and validate it for retrospective analysis. We propose a model of R 
+              t 
+              that estimates outbreak trajectories conditional upon both phylodynamic (time-scaled trees estimated from genetic sequences) and epidemiological (case incidence) data. We simulate stochastic outbreak trajectories that are weighted according to epidemiological and phylodynamic observation models and fit using particle Markov Chain Monte Carlo. To assess performance, we test EpiFusion on simulated outbreaks in which transmission and/or surveillance rapidly changes and find that using EpiFusion to combine epidemiological and phylodynamic data maintains accuracy and increases certainty in trajectory and R 
+              t 
+              estimates, compared to when each data type is used alone. We benchmark EpiFusion’s performance against existing methods to estimate R 
+              t 
+              and demonstrate advances in speed and accuracy. Importantly, our approach scales efficiently with dataset size. Finally, we apply our model to estimate R 
+              t 
+              during the 2014 Ebola outbreak in Sierra Leone. EpiFusion is designed to accommodate future extensions that will improve its utility, such as explicitly modelling population structure, accommodations for phylogenetic uncertainty, and the ability to weight the contributions of genomic or case incidence to the inference.},
+	language = {en},
+	number = {11},
+	urldate = {2025-06-05},
+	journal = {PLOS Computational Biology},
+	author = {Judge, Ciara and Vaughan, Timothy and Russell, Timothy and Abbott, Sam and Du Plessis, Louis and Stadler, Tanja and Brady, Oliver and Hill, Sarah},
+	editor = {Barido-Sottani, Joëlle},
+	month = nov,
+	year = {2024},
+	pages = {e1012528},
+}
+
+@article{cazelles_mechanistic_2021,
+	title = {A mechanistic and data-driven reconstruction of the time-varying reproduction number: {Application} to the {COVID}-19 epidemic},
+	volume = {17},
+	issn = {1553-7358},
+	shorttitle = {A mechanistic and data-driven reconstruction of the time-varying reproduction number},
+	url = {https://dx.plos.org/10.1371/journal.pcbi.1009211},
+	doi = {10.1371/journal.pcbi.1009211},
+	abstract = {The effective reproduction number 
+              R 
+               
+                eff 
+               
+              is a critical epidemiological parameter that characterizes the transmissibility of a pathogen. However, this parameter is difficult to estimate in the presence of silent transmission and/or significant temporal variation in case reporting. This variation can occur due to the lack of timely or appropriate testing, public health interventions and/or changes in human behavior during an epidemic. This is exactly the situation we are confronted with during this COVID-19 pandemic. In this work, we propose to estimate 
+              R 
+               
+                eff 
+               
+              for the SARS-CoV-2 (the etiological agent of the COVID-19), based on a model of its propagation considering a time-varying transmission rate. This rate is modeled by a Brownian diffusion process embedded in a stochastic model. The model is then fitted by Bayesian inference (particle Markov Chain Monte Carlo method) using multiple well-documented hospital datasets from several regions in France and in Ireland. This mechanistic modeling framework enables us to reconstruct the temporal evolution of the transmission rate of the COVID-19 based only on the available data. Except for the specific model structure, it is non-specifically assumed that the transmission rate follows a basic stochastic process constrained by the observations. This approach allows us to follow both the course of the COVID-19 epidemic and the temporal evolution of its 
+              R 
+               
+                eff 
+               
+              (t) 
+              . Besides, it allows to assess and to interpret the evolution of transmission with respect to the mitigation strategies implemented to control the epidemic waves in France and in Ireland. We can thus estimate a reduction of more than 80\% for the first wave in all the studied regions but a smaller reduction for the second wave when the epidemic was less active, around 45\% in France but just 20\% in Ireland. For the third wave in Ireland the reduction was again significant ({\textgreater}70\%).},
+	language = {en},
+	number = {7},
+	urldate = {2025-06-05},
+	journal = {PLOS Computational Biology},
+	author = {Cazelles, Bernard and Champagne, Clara and Nguyen-Van-Yen, Benjamin and Comiskey, Catherine and Vergu, Elisabeta and Roche, Benjamin},
+	editor = {Kouyos, Roger Dimitri},
+	month = jul,
+	year = {2021},
+	pages = {e1009211},
+}
+
+@article{birrell_real-time_2025,
+	title = {Real-time modelling of the {SARS}-{CoV}-2 pandemic in {England} 2020–2023: a challenging data integration},
+	issn = {0964-1998, 1467-985X},
+	shorttitle = {Real-time modelling of the {SARS}-{CoV}-2 pandemic in {England} 2020–2023},
+	url = {https://academic.oup.com/jrsssa/advance-article/doi/10.1093/jrsssa/qnaf030/8116757},
+	doi = {10.1093/jrsssa/qnaf030},
+	abstract = {Abstract 
+            A central pillar of the UK’s response to the SARS-CoV-2 pandemic was the provision of up-to-the moment nowcasts and short-term projections to monitor current trends in transmission and associated healthcare burden. Here, we present a detailed deconstruction of one of the ‘real-time’ models that was a key contributor to this response, focussing on the model adaptations required over 3 pandemic years characterized by the imposition of lockdowns, mass vaccination campaigns, and the emergence of new pandemic strains. The Bayesian model integrates an array of surveillance and other data sources including a novel approach to incorporate prevalence estimates from an unprecedented large-scale household survey. We present a full range of estimates of the epidemic history and the changing severity of the infection, quantify the impact of the vaccination programme, and deconstruct contributing factors to the reproduction number. We further investigate the sensitivity of model-derived insights to the availability and timeliness of prevalence data, identifying its importance to the production of robust estimates.},
+	language = {en},
+	urldate = {2025-06-05},
+	journal = {Journal of the Royal Statistical Society Series A: Statistics in Society},
+	author = {Birrell, Paul J and Blake, Joshua and Kandiah, Joel and Alexopoulos, Angelos and Van Leeuwen, Edwin and Pouwels, Koen B and Ghosh, Sanmitra and Starr, Colin and Walker, Ann Sarah and House, Thomas A and Gay, Nigel and Finnie, Thomas and Gent, Nick and Charlett, André and De Angelis, Daniela},
+	month = apr,
+	year = {2025},
+	pages = {qnaf030},
+}
+
+@article{toni_approximate_2009,
+	title = {Approximate {Bayesian} computation scheme for parameter inference and model selection in dynamical systems},
+	volume = {6},
+	issn = {1742-5689},
+	doi = {10.1098/rsif.2008.0172},
+	abstract = {Approximate Bayesian computation (ABC) methods can be used to evaluate posterior distributions without having to calculate likelihoods. In this paper, we discuss and apply an ABC method based on sequential Monte Carlo (SMC) to estimate parameters of dynamical models. We show that ABC SMC provides information about the inferability of parameters and model sensitivity to changes in parameters, and tends to perform better than other ABC approaches. The algorithm is applied to several well-known biological systems, for which parameters and their credible intervals are inferred. Moreover, we develop ABC SMC as a tool for model selection; given a range of different mathematical descriptions, ABC SMC is able to choose the best model using the standard Bayesian model selection apparatus.},
+	language = {eng},
+	number = {31},
+	journal = {Journal of the Royal Society, Interface},
+	author = {Toni, Tina and Welch, David and Strelkowa, Natalja and Ipsen, Andreas and Stumpf, Michael P. H.},
+	month = feb,
+	year = {2009},
+	pmid = {19205079},
+	pmcid = {PMC2658655},
+	keywords = {Algorithms, Bayes Theorem, Common Cold, Communicable Diseases, Computer Simulation, Models, Biological, Models, Statistical, Monte Carlo Method},
+	pages = {187--202},
+}
