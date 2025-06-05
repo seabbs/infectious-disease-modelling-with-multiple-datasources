@@ -4,6 +4,12 @@
 \usepackage{hyperref} % For hyperlinks
 \usepackage[margin=1in]{geometry} % Standard margins
 \usepackage{natbib} % For bibliography management
+\usepackage{enumitem} % For customising lists
+
+\newlist{tree}{itemize}{10}
+\setlist[tree]{label=-}
+\setlistdepth{10} 
+
 
 \title{Integrating Multiple Data Sources in Infectious Disease Modelling: Best Practices and Implementation}
 
@@ -144,13 +150,18 @@ In the following sections, we will discuss each of these steps in more detail.
 % TODO: Linking data to process components
 % TODO: Evaluating complementarity and redundancy
 
+\subsection{Iterate on the Process DAG}
+
+%TODO: based on available data sources and the original process DAG may need to iterate
+%TODO: An example is the need for individual level modelling for certain data sources which might impact the construction of the process DAG.
+
 \subsection{Observation DAG Construction}
 % TODO: Measurement models and reporting processes
 % TODO: Delays and missing data mechanisms
 % TODO: Linking latent processes to observations
 % TODO: Accounting for data collection protocols
 
-\subsection{Model Specification and Validation}
+\subsection{Model Specification and Validation}\label{sec:spec-validate}
 % TODO: Bayesian workflow principles
 % TODO: Prior specification and prior predictive checks
 % TODO: Parameter identifiability assessment
@@ -162,6 +173,59 @@ In the following sections, we will discuss each of these steps in more detail.
 \subsection{Data Integration Choices}
 % Lead: Anne Presanis
 
+%Consideration: How do we clearly split here between combined and individual approaches? What does that structure look like? How do we connect this question to fitting choices which in practice are important?
+%Consideration: What parts of this (sub models etc etc are part of specification and validation. How does that interaction work?
+%Consideration: There might be an ideal DAG structure but in practice need to approximate for fitting. I.E want to use NUTs so can't have latent discrete parameters etc...
+
+Attempt at tree of choices:
+\begin{tree}
+    \item Are you combining alternative/competing models from different groups?
+    \begin{tree}
+        \item Yes
+        \begin{tree}
+            \item How are the results from each available?
+            \begin{tree}
+                \item As point estimate and confidence/credible interval
+                \begin{tree}
+                    \item Do you trust the alternatives equally?
+                    \begin{tree}
+                        \item Yes
+                        \begin{tree}
+                            \item $\Rightarrow$ standard meta-analysis
+                        \end{tree}
+                        \item No
+                        \begin{tree}
+                            \item $\Rightarrow$ weighted meta-analysis, weighted by precision
+                            \item $\Rightarrow$ or weighted by other criteria, e.g. prediction accuracy (ensembling)
+                        \end{tree}
+                    \end{tree}
+                \end{tree}
+                \item As posterior samples or analytic posterior distribution
+                \begin{tree}
+                    \item Do you trust the alternatives equally?
+                    \begin{tree}
+                        \item Yes
+                        \item No
+                    \end{tree}
+                \end{tree}
+            \end{tree}
+        \end{tree}
+        \item No
+        \begin{tree}
+        \item Are your sub-models independent conditional on their common parameters?
+        \begin{tree}
+            \item Yes
+            \begin{tree}
+                \item Do 
+            \end{tree}
+            \item No
+        \end{tree}
+        \end{tree}
+    \end{tree}
+\end{tree}
+
+
+First stab outline 27/05
 \begin{itemize}
     \item Different possible choices for integrating/ensembling inference from multiple data sources
     \begin{itemize}
@@ -174,21 +238,26 @@ In the following sections, we will discuss each of these steps in more detail.
         \end{itemize}
     \end{itemize}
     \item Depends on whether you are starting from scratch, from an existing model for one data source to which you want to add others, or whether you have multiple alternative sets of existing inferences from different data sources that you want to combine
-    \item General principle that modular model building (De Angelis et al, 2015; Birrell et al, 2018; Goudie et al, 2019; De Angelis \& Presanis, 2019; Nicholson et al, 2022, Liu \& Goudie, 2025) is preferable, since:
+    \item General principle that modular model building (De Angelis et al, 2015; Birrell et al, 2018; Goudie et al, 2019; De Angelis \& Presanis, 2019; Gelman et al, 2020; Nicholson et al, 2022, Liu \& Goudie, 2025) is preferable, since:
     \begin{itemize}
         \item Easier to understand lack of fit, model misspecification or convergence issues from simpler sub-models individually
         \item Occam's razor - principle of parsimony, start from simplest model and build complexity up only as far as needed
         \item Adding sub-models in one at a time allows for assessment of consistency/conflict between sub-models sequentially
         \item Computational efficiency - rather than fitting full joint models after fitting the sub-models, use the posterior samples from the sub-models to obtain your full joint model (melding or ?)
     \end{itemize}
-    \item Choice of likelihood function (or other objective function) therefore depends on options above on where you are starting from (existing models/sub-models or from scratch)
+    \item Choice of likelihood function (or other objective function) and fitting choices (\ref{sec:fitting}) therefore depends on options above on where you are starting from (existing models/sub-models or from scratch)
     \item And model development is a cycle of model building and model criticism
+    \begin{itemize}
+        \item extension of model validation in \ref{sec:spec-validate} to multiple data sources setting
+        \item detection/measurement of conflict not only between prior and data, but between data and data, or partitions of the DAG (modules) comprising different combinations of prior and data, i.e. posterior-posterior comparisons
+        %\item TODO: conflict references from Fuming's literature review
+    \end{itemize}
 \end{itemize}
 
 % TODO: Add practical examples of each approach
 % TODO: Include decision framework for choosing integration method
 
-\subsection{Fitting Choices}
+\subsection{Fitting Choices}\label{sec:fitting}
 % Lead: Anne Presanis, with Dhorasso and Xiahui
 
 \subsubsection{Tools for Tractable Likelihood Functions}
@@ -293,7 +362,7 @@ Implementation choices reflect practical considerations including available expe
 
 \section{Discussion}
 
-\subsection{Summary of Our Approach}
+\subsection{Summary}
 
 We have presented a framework for integrating multiple data sources in infectious disease modelling that emphasises practical implementation through a structured, iterative workflow.
 Our approach combines systematic model development using directed acyclic graphs with modular integration strategies that prioritise parsimony, interpretability, and explicit assessment of data source conflict.
@@ -333,7 +402,8 @@ By making modelling assumptions explicit through DAG-based development and provi
 We recommend that the infectious disease modelling community adopt these structured approaches and work towards establishing community standards for data integration that prioritise both methodological best practices and practical implementation needs.
 
 \section{Acknowledgements}
-@placeholder
+
+All <placeholder> workshop participants for useful discussion and feedback. Poppy the dog for making sure to ask the important questions.
 
 \bibliographystyle{plainnat}
 \bibliography{references}
