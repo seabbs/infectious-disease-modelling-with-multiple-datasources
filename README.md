@@ -18,16 +18,21 @@ This work addresses a critical gap in the literature by providing practical guid
 ![Team Photo](figures/team-photo.jpg)
 
 - Sam Abbott (London School of Hygiene & Tropical Medicine)
-- Punya Alahakoon (University of Oxford)
 - Xiahui Li (University of St Andrews)
+- Punya Alahakoon (University of Oxford)
 - Dhorasso Junior Temfack Nguefack (Trinity College Dublin)
+- Johannes Bracher (Karlsruhe Institute of Technology)
+- Felix Günther (Robert Koch Institute)
 - working group members...
 - workshop participants who contributed to the manuscript...
+- Mircea T. Sofonea (University of Montpellier, France)
 - Michael Plank (University of Canterbury, New Zealand)
 - Anne Presanis (MRC Biostatistics Unit, University of Cambridge)†
 - Anne Cori (Imperial College London)†
 
 † Joint last authors
+
+**Note:** Author order is provisional and subject to change.
 
 ## Repository Structure
 
