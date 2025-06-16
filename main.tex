@@ -51,11 +51,11 @@
 The increase in available data sources during recent infectious disease outbreaks has created both opportunities and challenges for modellers seeking to integrate diverse data streams.
 Whilst rigorous Bayesian workflow practices have been established in other fields, the infectious disease modelling community has been slow to adopt these approaches, despite working in rapidly evolving settings where novel data sources emerge and surveillance systems adapt in real-time.
 This paper provides a methodological framework for integrating multiple data sources in infectious disease modelling, with transmission intensity estimation as a key exemplar.
-We characterise data source properties through a structured survey of workshop participants and present an iterative workflow that extends established Bayesian model development appraoches to the infectious disease domain.
-Our workflow progresses from research question definition through process and observation DAG development to integration method selection, with explicit consideration of data conflicts and uncertainty quantification.
+We characterise data source properties through a structured survey of workshop participants and present an iterative workflow that extends established Bayesian model development approaches to the infectious disease domain.
+Our workflow progresses from research question definition through development of directed acyclic graph (DAG) representations of process and observation, to integration method selection, with explicit consideration of data conflicts and uncertainty quantification.
 We compare integration approaches, from full joint modelling to modular ensemble methods, and demonstrate through schematic case studies how practitioners can navigate real-world tradeoffs between model complexity, computational feasibility, and inferential goals.
-The case studies show how different data types, including individual-level observations, provide complementary information for estimating parameters such as time-varying reproduction numbers and overdispersion.
-Throughout, we advocate Bayesian thinking for principled model development regardless of the ultimate fitting approach.
+The case studies show how different data types, including individual-level observations, provide complementary information for estimating parameters such as time-varying reproduction numbers and overdispersion of transmission dynamics.
+Throughout, we advocate Bayesian thinking for principled model development, regardless of the ultimate fitting approach.
 Our framework emphasises parsimony, interpretability, and data conflict assessment, addressing a critical gap by providing practical guidance supported by schematic worked examples.
 \end{abstract}
 
@@ -71,10 +71,10 @@ However, practitioners face complex methodological choices about how to combine 
 
 % Paragraph 2: Current Approaches
 Current approaches to multi-source integration broadly fall into two categories: pipeline methods that fit separate models to individual data sources before combining estimates, and joint modelling approaches that simultaneously fit all data sources within a unified statistical framework [@placeholder].
-Pipeline approaches offer computational efficiency and modular development but may propagate errors and fail to capture dependencies between data sources [@placeholder].
+Pipeline approaches offer computational efficiency and modular development, but may propagate errors and fail to capture dependencies between data sources [@placeholder].
 Joint modelling can provide more principled uncertainty quantification and better parameter identifiability, but often requires substantial computational resources and model complexity [@placeholder].
-Beyond these choices, practitioners face numerous challenges including detecting and resolving conflicts between data sources, validating models when different data streams suggest different dynamics, and navigating branching decision paths where integration choices imposed model structure constraints [@placeholder].
-Fitting challenges, such as computational intractability, parameter non-identifiability, and the need to approximate ideal model structures for practical inference—further complicate and implementation [@placeholder].
+Beyond these choices, practitioners face numerous challenges including: detecting and resolving conflicts between data sources; combining data sources with different spatial or temporal resolutions; validating models when different data streams suggest different dynamics; and navigating branching decision paths where integration choices impose model structure constraints [@placeholder].
+Fitting challenges, such as computational intractability, parameter non-identifiability, and the need to approximate ideal model structures for practical inference, further complicate implementation [@placeholder].
 These integration and fitting considerations can impact model design, yet their implications are rarely made explicit in published analyses [@placeholder].
 The infectious disease modelling community has not widely adopted rigorous Bayesian workflow practices that emphasise iterative model development, systematic model criticism, and principled uncertainty quantification [@placeholder].
 Existing guidance for practitioners is fragmented across methodological literature, with limited practical frameworks for navigating these interconnected choices systematically [@placeholder].
@@ -88,7 +88,7 @@ We advocate for Bayesian thinking throughout the model development process—inc
 The framework addresses critical gaps in existing literature by providing domain-specific guidance and signposting to more generic resources for integration choices, validation strategies, and conflict resolution between data sources.
 
 % Paragraph 4: Paper Structure
-We first review data source characteristics and present a structured iterative workflow for model development that progresses from research question definition through process and observation DAG development to integration method selection.
+We first review data source characteristics and present a structured iterative workflow for model development that progresses from research question definition through development of directed acyclic graphs (DAGs) representing process and observation, to integration method selection.
 We then compare integration approaches from full joint modelling to modular ensemble methods.
 Three worked case studies demonstrate progressive complexity: single-source baselines, two-source integration, and multi-stream applications incorporating individual-level data.
 Each case study follows our iterative workflow, demonstrating how DAG-based model development guides data integration decisions and integration and fitting requirements can feedback into model design.
@@ -120,9 +120,17 @@ We recommend following a structured, iterative workflow for multi-data source mo
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{figures/workflow-schematic.png}
-    \caption{Recommended workflow for integrating multiple data sources in infectious disease modelling. Begin by defining research questions and target estimands, proceed through iterative development of process and observation DAGs, and follow critical decisions about data integration and inference methods. Note the feedback loops where downstream choices constrain upstream model development.}
+    \caption{Recommended workflow for integrating multiple data sources in infectious disease modelling. Begin by defining research questions and target estimands, proceed through iterative development of process and observation DAGs, and follow critical decisions about data integration and inference methods. Note the feedback loops where downstream choices constrain or inform upstream model development.}
     \label{fig:workflow}
 \end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figures/schematic workflow_cirm output.drawio.png}
+    \caption{Recommended workflow for integrating multiple data sources in infectious disease modelling. (Final version reported by the end of the workshop)}
+    \label{fig:workflow}
+\end{figure}
+
 Our workflow extends established Bayesian workflow principles—with their emphasis on iterative model building, prior predictive checks, computational diagnostics, and posterior predictive assessment—to the specific challenges of multi-source infectious disease modelling.
 A key distinguishing feature is the explicit separation of epidemiological process DAGs from observation DAGs, recognising that whilst these components interact through feedback mechanisms, they draw from different domains: epidemiological processes are informed by infectious disease theory whilst observation models are motivated by data source characteristics and collection mechanisms.
 Start with a clear research question—such as estimating transmission intensity—and use systematic model development through directed acyclic graphs (DAGs) with iterative refinement.
@@ -132,7 +140,7 @@ We recommend beginning with \textbf{decision making}: clearly define your resear
 Next, develop a \textbf{process DAG} representing the underlying epidemiological process, iterating on this representation as understanding develops.
 Map available \textbf{data sources} to your process model, such as incidence time series, genomic data, contact tracing, viral load measurements, and serological surveys.
 For each data source, develop an \textbf{observation DAG} linking the underlying process to observed data through measurement models and reporting mechanisms.
-Different data sources may also impact your \textbf{process DAG} assumptions, such as if you can collapse your approach from individual-level to population-level.
+Different data sources may also impact your \textbf{process DAG} assumptions, such as if you can collapse your representation of the process from individual-level to population-level.
 
 Once you have developed your process and observation DAGs, proceed to \textbf{model specification and validation}, including prior specification, parameter identifiability assessment, and diagnostic approaches.
 You then face the key decisions: \textbf{"What to combine?"} and \textbf{"How to combine?"}
@@ -164,9 +172,15 @@ The workflow can be summarised as follows:
     \item Components 7→6: Computational constraints or available expertise may favour modular over joint integration
 \end{itemize}
 
-These feedback loops mean that model development is rarely a single forward pass through the workflow.
-For example, if you initially design a joint model but find it computationally intractable with available methods, you might iterate back to choose a modular integration approach, which in turn might influence how you structure your observation DAGs.
+These feedback loops mean that model development is rarely a single forward pass through the workflow. For example, if you initially design a joint model but find it computationally intractable with available methods, you might iterate back to choose a modular integration approach, which in turn might influence how you structure your observation DAGs.
 Similarly, if MCMC convergence fails due to discrete latent parameters, you might need to marginalise them out or adopt a different process representation.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figures/visualization of core steps.drawio.png}
+    \caption{Recommended workflow for integrating multiple data sources in infectious disease modelling.}
+    \label{fig:workflow}
+\end{figure}
 
 In the following sections, we will discuss each of these steps in more detail.
 
@@ -332,8 +346,10 @@ First stab outline 27/05
 
 \subsubsection{Tools for Tractable Likelihood Functions}
 % TODO: MCMC and its variants for joint models
-% TODO: Particle MCMC (pMCMC) for state-space formulations
 % TODO: Sequential Monte Carlo (SMC) approaches
+
+\subsubsection{Tools for Partially Tractable Likelihood Functions}
+% TODO: Particle MCMC (pMCMC) for state-space formulations
 % TODO: Variational inference (VI) and INLA for specific model classes
 
 \subsubsection{Tools for Intractable Likelihood Functions}
@@ -361,9 +377,9 @@ First stab outline 27/05
 
 We demonstrate our iterative workflow through four progressive case studies, each building complexity whilst showing different integration choices and methodological considerations.
 All case studies share common estimands—time-varying reproduction number (Rt) and overdispersion parameter (k)—using SARS-CoV-2 outbreak data to leverage expert survey evidence on data source characteristics.
-Each case study follows our complete workflow framework, demonstrating how different data sources enable answering questions that would require strong assumptions with other sources alone.
+Each case study follows our complete workflow framework, demonstrating how different data sources enable analyses to answer questions that would require strong assumptions with other sources alone.
 
-The progression illustrates key principles: deaths eliminate reporting fraction assumptions that plague case-only analyses; wastewater eliminates testing bias inherent in symptomatic surveillance; individual-level data enables direct overdispersion estimation without distributional assumptions.
+The progression illustrates key principles: data on deaths eliminate reporting fraction assumptions that plague case-only analyses; wastewater eliminates testing bias inherent in symptomatic surveillance; individual-level data enables direct overdispersion estimation without distributional assumptions.
 Implementation choices reflect practical considerations including available expertise, computational resources, and model complexity trade-offs, whilst generally favouring efficient methods like NUTS where applicable.
 
 TODO: need to add something on data source mapping which all the case studies will draw from: what data are available that may inform Rt and superspreading estimates? (Can draw from the survey and Anne C's slides at CIRM). What are their pluses and minuses (if we cannot do the full mapping from survey we can still discuss - otherwise refer to that section).
@@ -418,47 +434,57 @@ Typically in this case study assumptions need to be made about
 \end{itemize}   
 
 Versions of the observation model can be created which either ignore or model each of those 3 items --> this generates 8 (2x2x2) observation models here. Each has an associated DAG (but again some DAGs may be the same)
-We refer to these as $O_{000}$ (for the simplest observatiob model not modelling any of the above) to $O_{111}$ (for the most comprehensive accounting for all three observation features).
- 
-Choo the 3 process models and the  above that gives 24 possible models. We can give 3 examples out of those:
- 
-EpiEstim – Poisson and none of the observation model assumptions – hidden assumptions are: no underreporting, no delays in reporting, no noise. So that P2-O000
-EpiNow2 (may need to specify a version) – Deterministic with ii) delays and iii) random noise but no underreporting so P1-O110
-Epidemia or EpiMap for NB process – TODO: check what they do!
- 
-Integration choice:
+We refer to these as $O_{000}$ (for the simplest observation model not modelling any of the above) to $O_{111}$ (for the most comprehensive accounting for all three observation features).
+
+\textbf{Fitting and integration approach}:
+
 Here only one data source so univariable fitting.
  
-Fitting choice discussion:
-Analytically tractable or not. Depends on the specific choices of PRIOR, P and O, the resulting model has an analytic formulation or not which guides choice here
-Identifiability issues
-Computational complexity / speed of computation
-Examples from the literature (refer to the three examples above)
-Other possible choices of fitting methods that could be considered / why not (refer to relevant section in the overall framework description)
- 
+\begin{itemize}
+    \item Fitting choice discussion points to add:
+    \item Analytically tractable or not. Depends on the specific choices of PRIOR, P and O, the resulting model has an analytic formulation or not which guides choice here
+    \item Identifiability issues
+    \item Computational complexity / speed of computation
+\end{itemize}
+
 However one may want to consider model ensembling, e.g. as was done in SPI-M, to synthesise Rt estimates obtained by different groups/methods (even if based on a single data stream as here i.e. case incidence over time).
 Link to SPI-M paper from Oxford
 Nuance this to highlight in this particular context one may want to align assumptions about GT for example, and perhaps temporal smoothness in R, so that Rt estimates are indeed comparable (Johannes’ paper)
+
+\textbf{Full approach}:
+
+This is obtained by choosing one process model, one observation model and one fitting and integration method (the latter is of course dependant on the choice of process and obseravation model and their properties but also guided by logistical constraints etc). 
+
+For this case study, combinations of the 3 process models and 8 ($2\times 2 \times 2)$ observation models give 24 possible models, on top of which fitting methods can be chosen for each. We can give 2 or 3 examples out of those from the literature:
+
+\begin{itemize}
+    \item EpiEstim – Poisson and none of the observation model assumptions – hidden assumptions are: no underreporting, no delays in reporting, no noise. So that is $P_2-O_{000}$. This is fitted using analytic posterior (conjugate prior)
+    \item EpiNow2 (may need to specify a version) – Deterministic with no underreporting but with delays and random noise so $P_1-O_{011}$. This is fitted using XXX
+    \item Epidemia or EpiMap for NB process – TODO: check what they do!
+\end{itemize}
+
+Other possible choices of fitting methods that could be considered / why not (refer to relevant section in the overall framework description)
  
-Figure
-A visual of jigsaw puzzle presenting a library of P (process models), O (observation models) and F (fitting methods). In multi-data ones we will need to add an I (integration method) too.
-Example choices of EpiEstim and EpiNow2 for example (as above but with also the fitting component)
- 
-Key strengths/limitations
+TODO: add a Figure. This will be A visual of jigsaw puzzle presenting a library of P (process models), O (observation models) and F (fitting methods). In multi-data ones we will need to add an I (integration method) too.
+Example choices of EpiEstim and EpiNow2 for example (as above). Prototype figure below
+
+\includegraphics[width=0.75\textwidth]{figures/cs0_diagram1.jpg}
+
+\includegraphics[width=0.75\textwidth]{figures/cs0_diagram2.jpg}
+
+\textbf{Question to Anne P} – can we write the model (e.g. assuming Poisson likelihood) as part of the DAG or is that something separate? If separate then we should make it clear throughout that the DAG isn’t the full model spec.
+
+\textbf{Key strengths/limitations}:
 Inherent to each choice of both Process and Observation model
-E.g. EpiEstim’s main strength is computational speed, weakness is unrealistic assumptions about no delays, 100% reporting etc. à discuss which of these matters most, depends on context perhaps, and balance between need for speed and realism of these assumptions
-Common weakness of all these is they assume GT is constant and perfectly known. Mention that some versions e.g. of EpiEstim extend the approach to relax this assumption à and refer to case study 4 which relaxes this too
+E.g. EpiEstim’s main strength is computational speed, weakness is unrealistic assumptions about no delays, $100\%$ reporting etc. Discuss which of these matters most, depends on context perhaps, and balance between need for speed and realism of these assumptions
+Common weakness of all these is they assume GT is constant and perfectly known. Mention that some versions e.g. of EpiEstim extend the approach to relax this assumption, and refer to case study 4 which relaxes this too.
  
- 
- 
---> Make a figure based on my handwritten notes
-Make it clear a model is not just a DAG the model is a diagram and a mathematical representation of the diagram (multiple mathematical representation may exist for the same DAG). Question to Anne Presanis – can we write the model (e.g. assuming Poisson likelihood) as part of the DAG or is that something separate? If separate then we should make it clear throughout that the DAG isn’t the full model spec.
- 
- 
-Next steps
-feedback from others on case study 0
-Anne to draft similar case study 1 (cases + deaths)
-Someone with skills to make nice picture of my horrific handwritten plots
+\textbf{Next steps}:
+\begin{itemize}
+    \item feedback from others on case study 0
+    \item Anne C to draft similar case study 1 (cases + deaths)
+    \item Someone with skills to make nice picture of my horrific handwritten plots
+\end{itemize}
 
 \subsection{Case Study 1: Two-Source Integration (Cases + Deaths)}
 
