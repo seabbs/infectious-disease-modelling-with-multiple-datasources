@@ -86,7 +86,7 @@ This paper provides a framework for integrating multiple data sources in infecti
 We use transmission intensity estimation—specifically time-varying reproduction numbers and overdispersion parameters—as a case study to demonstrate broader principles applicable across infectious disease modelling contexts.
 By focusing on this fundamental and widely-used estimation task, we provide practitioners with a concrete foundation for adopting rigorous workflow practices that can then be extended to more complex modelling challenges.
 Our approach, building on established Bayesian workflows [@placeholder], encourages iterative model building with principled uncertainty quantification, allowing practitioners to systematically assess the value of additional data sources while maintaining interpretability and computational tractability.
-We advocate for Bayesian thinking throughout the model development process—including prior specification, model criticism, and posterior predictive checks—regardless of whether the final implementation uses Bayesian or frequentist fitting methods.
+We advocate for Bayesian thinking throughout the model development process—including careful prior specification, model criticism, and posterior predictive checks—regardless of whether the final implementation uses Bayesian or frequentist fitting methods.
 The framework addresses critical gaps in existing literature by providing domain-specific guidance and signposting to more generic resources for integration choices, validation strategies, and conflict resolution between data sources.
 
 % Paragraph 4: Paper Structure
@@ -152,7 +152,7 @@ For each data source, develop an \textbf{observation DAG} linking the underlying
 Different data sources may also impact your \textbf{process DAG} assumptions, such as if you can collapse your representation of the process from individual-level to population-level.
 
 Once you have developed your process and observation DAGs, proceed to \textbf{model specification and validation}, including prior specification, parameter identifiability assessment, and diagnostic approaches.
-You then face the key decisions: \textbf{"What to combine?"} and \textbf{"How to combine?"}
+You then face the key decisions: \textbf{``What to combine?''} and \textbf{``How to combine?''}
 If combining multiple sources is not beneficial or feasible, you can proceed to single-source modelling and combination of estimates.
 If integration is warranted, select among data integration methods including full joint modelling, modular techniques, Markov melding, or approximate weighting approaches.
 Finally, fit your model and evaluate its performance through posterior predictive validation and sensitivity analysis.
@@ -279,8 +279,12 @@ Attempt at tree of choices:
                 \begin{tree}
                     \item Do you trust the alternatives equally?
                     \begin{tree}
-                        \item Yes
+                        \item Yes $\Rightarrow$ stack posterior samples and summarise
                         \item No
+                        \begin{tree}
+                            \item $\Rightarrow$ weighted meta-analysis, weighted by precision
+                            \item $\Rightarrow$ or weighted by other criteria, e.g. prediction accuracy (ensembling)
+                        \end{tree}
                     \end{tree}
                 \end{tree}
             \end{tree}
@@ -298,13 +302,16 @@ Attempt at tree of choices:
                         \item Are you already convinced that all sub-models give consistent results?
                         \begin{tree}
                             \item Yes $\Rightarrow$ join all sub-models simultaneously using Markov melding
-                            \item No $\Rightarrow$ join the models sequentially using Markov melding, to test for conflict between each sub-model
+                            \item No $\Rightarrow$ join the models sequentially using Markov melding, to test for conflict between each sub-model and iterate development of sub-models to resolve any conflicts
                         \end{tree}
                     \end{tree}
-                    \item No $\Rightarrow$ decide order in which to fit/add each sub-model, e.g. start from the one you trust most, and add sequentially using Markov melding, testing for conflict between each sub-model
+                    \item No $\Rightarrow$ decide order in which to fit/add each sub-model, e.g. start from the one you trust most, and add sequentially using Markov melding, testing for conflict between each sub-model, iterating development of sub-models to resolve any conflicts
                 \end{tree}
             \end{tree}
             \item No
+            \begin{tree}
+                \item Specify and fit full joint model accounting for dependency between sub-models
+            \end{tree}
         \end{tree}
         \end{tree}
     \end{tree}
@@ -314,7 +321,7 @@ Attempt at tree of choices:
     \centering
     \includegraphics[width=\textwidth]{figures/integration choices decision tree.drawio.png}
     \caption{Decision tree of integration choices for integrating multiple data sources in infectious disease modelling.}
-    \label{fig:fitting}
+    \label{fig:integration}
 \end{figure}
 
 First stab outline 27/05
@@ -378,19 +385,17 @@ Inference for infectious disease models typically involves estimating a set of p
 
 
 \subsubsection{Likelihood-based methods}
-Likelihood-based inference broadly includes both frequentist and Bayesian frameworks. Although classical frequentist methods like maximum likelihood estimation \citep{myung2003tutorial, baltazar2024maximum} and profile likelihood \citep{tonsing2018profile, plank2024structured} provide well-established tools for inferring parameters, we emphasize the Bayesian methods because of their capacity for dealing with uncertainty and flexibility in accommodating various sources of information.
+Likelihood-based inference broadly includes both frequentist and Bayesian frameworks. Although classical frequentist methods like maximum likelihood estimation (MLE)\citep{myung2003tutorial, baltazar2024maximum} and profile likelihood \citep{tonsing2018profile, plank2024structured} provide well-established tools for inferring parameters, we emphasize the Bayesian methods because of their capacity for dealing with uncertainty and flexibility in accommodating various sources of information.
 
-Bayesian inference provides a framework to update prior beliefs $ p(\theta)$ on a parameter upon observing data to obtain a posterior distribution, $p(\theta | Y) \propto p(Y|\theta) \,p(\theta)$. For simple models with the likelihood belonging to theIn models with complex latent state structures, the likelihood function is often computationally intractable. exponential family, there exist conjugate priors that allow for closed-form derivation of posterior distributions and exact Bayesian updates \citep{gelman1995bayesian, lawson2018bayesian, cori2013new}. However, many infectious disease models typically involve complexities that make exact inference infeasible.
+Bayesian inference provides a framework to update prior beliefs $ p(\theta)$ on a parameter upon observing data to obtain a posterior distribution, $p(\theta | Y) \propto p(Y|\theta) \,p(\theta)$. For simple models with the likelihood belonging to the exponential family, there exist conjugate priors that allow for closed-form derivation of posterior distributions and exact Bayesian updates \citep{gelman1995bayesian, lawson2018bayesian, cori2013new}. However, many infectious disease models typically involve complexities that make exact inference infeasible.
 
+When the likelihood can be evaluated (up to a constant) but closed-form posteriors are unavailable, sampling-based Bayesian methods, especially Markov Chain Monte Carlo (MCMC) remain the golden standard approach \citep{gilks1995markov, lekone2006statistical}. Common MCMC methods like Metropolis–Hastings \citep{hastings1970monte} and Gibbs sampling \citep{geman1984stochastic}, require evaluating the posterior up to a constant. For latent variable models, data-augmented MCMC can be used to include auxiliary states and infer parameters as well as the hidden variables \citep{o1999bayesian}. Improved techniques such as Hamiltonian Monte Carlo (HMC) for differentiable likelihoods \citep{duane1987hybrid} and their adaptive variant No-U-Turn Sampler (NUTS) \citep{hoffman2014no, andrade2020evaluation}, achieve more efficient sampling by using gradient information and automatic hyperparameter tuning. Other approaches such as Variational Inference (VI) provide a scalable, faster alternative to MCMC by maximizing a tractable approximation of the posterior distribution at the cost of some bias \citep{blei2017variational, chatzilena2019contemporary}. Similarly, the Integrated Nested Laplace Approximation (INLA) offers a computationally efficient method for approximating posterior marginals in latent Gaussian models, without relying on sampling-based methods \citep{rue2017bayesian}.
 
-When the likelihood can be evaluated (up to a constant) but closed-form posteriors are unavailable, sampling-based Bayesian methods, especially Markov Chain Monte Carlo (MCMC) remain the golden standard approach \citep{gilks1995markov, lekone2006statistical}. Common MCMC methods like Metropolis–Hastings \citep{hastings1970monte} and Gibbs sampling \citep{geman1984stochastic}, require evaluating the posterior up to a constant. For latent variable models, data-augmented MCMC can be used to include auxiliary states and infer parameters as well as the hidden variables \citep{o1999bayesian}. Improved techniques such as Hamiltonian Monte Carlo (HMC) for differentiable likelihoods \citep{duane1987hybrid} and their adaptive variant No-U-Turn Sampler (NUTS) \citep{hoffman2014no, andrade2020evaluation}, achieve more efficient sampling by using gradient information and automatic hyperparameter tuning.  Other approaches such as Variational Inference (VI) provide a scalable, faster alternative to MCMC by maximizing a tractable approximation of the posterior distribution at the cost of some bias \citep{blei2017variational, chatzilena2019contemporary}.
-
-
-In state-space models with high-dimensional latent state structures, the likelihood function is often computationally intractable due to the need to marginalise over the latent states. Sequential Monte Carlo (SMC) or particle filter overcomes this by approximating the posterior distribution of latent states as a set of weighted particles and producing an unbiased estimate of likelihood \citep{doucet2001introduction, arulampalam2002tutorial}. This approximation can be integrated into an MCMC framework process to form the particle MCMC (PMCMC) \citep{andrieu2010particle, endo2019introduction} to facilitate joint parameter and latent state inference. Sequential Monte Carlo Squared (SMC$^2$) \citep{chopin2013smc2} takes it one step further in performing fully sequential Bayesian updating as observations are accumulated.
+In state-space models with high-dimensional latent state structures, the likelihood function is often computationally intractable due to the need to marginalise over the latent states. Sequential Monte Carlo (SMC) or a particle filter overcomes this by approximating the posterior distribution of latent states as a set of weighted particles and producing an unbiased estimate of likelihood \citep{doucet2001introduction, arulampalam2002tutorial}. This approximation can be integrated into an MCMC framework process to form particle MCMC (PMCMC) \citep{andrieu2010particle, endo2019introduction} to facilitate joint parameter and latent state inference. Sequential Monte Carlo Squared (SMC$^2$) \citep{chopin2013smc2} takes it one step further in performing fully sequential Bayesian updating as observations are accumulated.
 
 \subsubsection{Likelihood-Free Methods}
 
-While likelihood-based methods are powerful for parameter inference, they rely on the ability to evaluate the likelihood function, which can be computationally intractale or analytically unavailable for complex infectious disease models. Likelihood-free methods tackle this challenge by simulating from the model rather than directly evaluating likelihood.
+While likelihood-based methods are powerful for parameter inference, they rely on the ability to evaluate the likelihood function, which can be computationally intractable or analytically unavailable for complex infectious disease models. Likelihood-free methods tackle this challenge by simulating from the model rather than directly evaluating the likelihood.
 
 Approximate Bayesian Computation is a widely used likelihood-free method that approximates the posterior distribution by accepting parameter values that produce simulated data close to the observed data under a predefined distance metric \citep{rubin1984bayesianly, tavare1997inferring, beaumont2002approximate}. While conceptually simple, the classical ABC rejection sampling suffers from inefficiency in high-dimensional parameter or data spaces. To address this limitation, advanced ABC variants have been developed. 
 
@@ -405,13 +410,14 @@ When exact likelihoods are unavailable but the model can be simulated repeatedly
 % TODO: Interpretability and implementation ease considerations
 % TODO: Decision-making frameworks for method selection
 
-Choosing the most appropriate inference method requires balancing the trade-offs between computational constraints, statistical rigor, data availability, interpretability and model complexity  \citep{funk2020choices}. Rather than adopting a one-size-fits-all approach, the choice should be tailored to the modeling context and inferential goals. 
+Choosing the most appropriate inference method requires balancing the trade-offs between computational constraints, statistical rigor, data availability, interpretability, and model complexity \citep{funk2020choices}. Rather than adopting a one-size-fits-all approach, the choice should be tailored to the modeling context and inferential goals. 
 
-MCMC-based methods naturally incorporate prior knowledge and generate samples that, under suitable conditions, approximate the exact posterior distribution. This is critical for interpreting epidemiological parameters and accurately propagating uncertainty. However, Bayesian inference with such methods can be computationally intensive in highly complex or high-dimensional mechanistic models. When computational resources are limited, for instance for the monitoring of an outbreak in real-time or when analyzing very large data sets, approximate inference methods like VI or ABC-SMC might offer scalable alternatives \citep{chatzilena2019contemporary, engebretsen2023real}.
+MCMC-based methods naturally incorporate prior knowledge and generate samples that, under suitable conditions, approximate the exact posterior distribution. This is critical for interpreting epidemiological parameters and accurately propagating uncertainty. However, Bayesian inference with such methods can be computationally intensive in highly complex or high-dimensional mechanistic models, and this approach depends on the the ability to compute the model's likelihood. When computational resources are limited, for instance for the monitoring of an outbreak in real-time or when analyzing very large data sets, approximate inference methods like VI or ABC-SMC might offer scalable alternatives \citep{chatzilena2019contemporary, engebretsen2023real}.
 
 Aside from computational efficiency, statistical accuracy is also a concern. Regardless of method, the accuracy of parameter estimates is largely a function of algorithmic setup such as prior distributions, tuning parameters, tolerance threshold, and the number of particles or iterations used. Methods based on full likelihoods generally offer higher accuracy subject to likelihood tractability and proper specification, whereas likelihood-free approaches may often prioritise flexibility and scalability over precision. 
 
-Interpretability and ease of implementation is also to be taken into account while making the choice. Certain methods,  can be easier to implement and debug within default probabilistic programming environments, but others, may require further tuning and computational expertise. Ultimately, selecting the right tool is guided by a systematic decision process considering the purpose for the modeling, the urgency or latency constraints, the system complexity, and available computational capabilities. Model checking, sensitivity analysis, and validation continue to be required regardless of the approach taken. These steps are aimed at ensuring that the inferences drawn are not only statistically valid but are also scientifically plausible and decision-useful.
+Interpretability and ease of implementation is also to be taken into account while making the choice. Certain methods, can be easier to implement and debug within default probabilistic programming environments, but others, may require further tuning and computational expertise. Ultimately, selecting the right tool is guided by a systematic decision process considering the purpose for the modeling, the urgency or latency constraints, the system complexity, and available computational capabilities. Model checking, sensitivity analysis, and validation continue to be required regardless of the approach taken. These steps are aimed at ensuring that the inferences drawn are not only statistically valid but are also scientifically plausible and decision-useful.
+
 
 
 \subsubsection{Practical Implementation}
@@ -459,15 +465,15 @@ This case study showcases the workflow and explores some of the assumptions and 
 We consider three variants of the renewal process model for the number of new infections $I_t$ on day $t$, which is influenced by the instantaneous reproduction number $R_t$ on day $t$, and the generation time (GT) distribution, which we assume to be fixed. The three model variants are:
 \begin{itemize}
     \item[P1.] No variance in daily infection incidence (deterministic)
-    \begin{equation}
+    \begin{equation} \label{eq:infections_P1}
         I_t = R_t \sum_{s=1}^\infty I_{t-s}w_s 
     \end{equation}
     \item[P2.] Poisson-distributed daily infection incidence.
-        \begin{equation}
+        \begin{equation} \label{eq:infections_P2}
         I_t \sim \mathrm{Poiss}\left( R_t \sum_{s=1}^\infty I_{t-s}w_s  \right)
     \end{equation}
     \item[P3.] Negative binomially distributed daily infection incidence. 
-            \begin{equation}
+            \begin{equation} \label{eq:infections_P3}
         I_t \sim \mathrm{NegBin}\left( R_t \sum_{s=1}^\infty I_{t-s}w_s, k  \right)
     \end{equation}
 \end{itemize}
@@ -475,11 +481,9 @@ where $w_s$ is the probability mass function for the GT distribution and $k$ is 
 The process DAGs for these three models are shown in Figure \ref{fig:CS0_DAGs}.
 
  
-\textbf{Data source mapping}: Case incidence {\color{red} I think we might have agreed to move this to a separate section earlier on rather than covering it within each case study?}
-\begin{itemize}
-    \item pros: often available easily (cheap, scales well) with very frequent (often daily) updating and high timeliness
-    \item cons: imperfect proxy for infection incidence which highly depends on testing policies
-\end{itemize}
+% **********MJP: I think we (SA+AC+MP) agreed this is now covered already in the "Data sources and characteristics" section. But having read ahead to CS1 and 2, maybe it is useful to provide a brief remark here to illustrate the owrkflow? 
+\textbf{Data source mapping}: Case incidence data is typically readily available with very frequent (often daily) updates and high timeliness. However, it is an imperfect and potentially biased proxy for infection incidence, and is dependent on testing policies and lab processing and reporting timeliness. 
+
 
 \textbf{Observation model}:
 
@@ -549,17 +553,17 @@ A common weakness of all the models outlined above is that they assume the GT di
 
 \textbf{Workflow Demonstration:}
 \begin{enumerate}
-    \item \textbf{Process DAG Iteration:} The number of deaths $D_t$ on day $t$ depends on the time series of infections up to day $t$, the infection-fatality ratio $p_d$, and the distribution $v_s$ of time from infection to death. This can be represented in the process DAG (Figure X) and by the following convolution equation:
-    \begin{equation} \label{eq:Dt}
+    \item \textbf{Process DAG iteration:} The number of deaths $D_t$ on day $t$ depends on the time series of infections up to day $t$, the infection-fatality ratio $p_d$, and the distribution $v_s$ of time from infection to death. This can be represented in the process DAG (Figure X) and by the following convolution equation:
+    \begin{equation} \label{eq:deaths}
         D_t \sim \mathrm{Poiss}\left(p_d \sum_{s=1}^\infty I_{t-s}v_s \right)
     \end{equation}
     Other process models for deaths are possible, for example using a multinomial model for the number of deaths occurring on day $s+k$ due to infections on day $s$ ($k=1,2,\ldots$). However, the Poisson model is a good approximation provided $p_d\ll 1$.
-    Eq. \eqref{eq:Dt} assumes that the probability $p_d$ of an infection resulting in death and the distribution of time from infection to death are fixed and known.
+    Eq. \eqref{eq:deaths} assumes that the probability $p_d$ of an infection resulting in death and the distribution of time from infection to death $v_s$ are fixed and known.
     
-    Eq. \eqref{eq:Dt} describe the probability of deaths conditional on infections $P(D | I)$ and would typically be used in combination with one of eq. P1-P3 \textcolor{red}{[NEED TO HARMONISE NOTATIONS FOR EQUATIONS]} that describe the dynamics of infections $P(I)$, to produce a joint model $P(D, I)$. 
-    \item \textbf{Data Source Mapping:} Expert survey shows deaths have higher reporting delays but lower noise (e.g. due to "day-of-the-week" reporting effects) and less policy dependence than cases (e.g. due to changing testing patterns)
-    \item \textbf{Observation DAG:} Similar to the different choices of observation model for cases described in case study 0 (and still relevant to this case study), the observation model for deaths could include underreporting, reporting delays, and random noise. In jurisdictions with comprehensive death records, it may be reasonable to assume all deaths are reported and there is no additional noise, but it may still be important to account for delays, for example delay from date of occurrence to date of registration. This would corresponds to observation model $O_{010}$.
-    \item \textbf{Integration Choice Comparison:} 
+    Eq. \eqref{eq:deaths} provides a model for the time series of daily deaths $D_t$ conditional on the time series of daily infections $I_t$ and would typically be used in combination with one of Eqs. \eqref{eq:infections_P1}--\eqref{eq:infections_P3} \textcolor{red}{[NEED TO HARMONISE NOTATIONS FOR EQUATIONS]} that describe the dynamics of infections to produce a joint model for infections and deaths. 
+    \item \textbf{Data source mapping:} Expert survey shows deaths have higher reporting delays but lower noise (e.g. due to "day-of-the-week" reporting effects), higher ascertainment, and less policy dependence than cases (e.g. due to changing testing patterns).
+    \item \textbf{Observation DAG:} Similar to the different choices of observation model for cases described in case study 0 (and still relevant to this case study), the observation model for deaths could include underreporting, reporting delays, and random noise. In jurisdictions with comprehensive death records, it may be reasonable to assume all deaths are reported and there is no additional observation noise, but it may still be important to account for observation delays, for example delay from date of occurrence to date of registration. This would corresponds to observation model $O_{010}$.
+    \item \textbf{Integration choice:} 
        Two different approaches are possible for integration: (1) a joint model including both cases and deaths with a shared latent state $R_t$; (2) separate models for cases and deaths, resulting in two estimates for $R_t$ to be combined via a weighted ensemble. 
        
        As outlined above, we recommend fitting separate models to the two time series initially, to understand their behaviour and reveal whether they lead to consistent or conflicting estimates of $R_t$. Where inconsistent results emerge, these could lead to refinement of the model (i.e. going back to step 1); for example should $R_t$ estimates show similar trends but shifted in time, assumptions about delays may be revisited. Once this has been done, it may be desirable to combine the results into a single estimate by ensembling, or to fit a joint model that produces a single estimate from both data sources.  
@@ -581,14 +585,28 @@ A common weakness of all the models outlined above is that they assume the GT di
 
 \textbf{Workflow Demonstration:}
 \begin{enumerate}
-    \item \textbf{Process DAG Iteration:} Add viral shedding pathway from infections to wastewater concentration
-    \item \textbf{Data Source Mapping:} Wastewater offers population-level signal independent of testing bias, with moderate timeliness but requiring environmental expertise
-    \item \textbf{Observation DAG:} Complex shedding model incorporating individual-level variation, catchment population dynamics, environmental degradation
-    \item \textbf{Integration Choice:} Modular approach with sequential consistency assessment to detect and resolve data source conflicts. Or joint model with shared Rt parameter. 
+    \item \textbf{Process DAG iteration:} 
+    Suppose that the concentration $W_t$ of viral RNA in wastewater on day $t$ depends on the time series of infections up to day $t$ and the average amount of viral RNA that an individual sheds into wastewater $s$ days after being infected. This can be represented in the process DAG (Figure X) and by the following equation for $W_t$:
+    \begin{equation} \label{eq:wastewater}
+        W_t \sim \Gamma\left( \frac{\alpha}{N}\sum_{s=1}^\infty I_{t-s}u_s, b   \right)
+    \end{equation}
+    where $\alpha>0$ is a constant representing the average total amount of RNA that an infected individual sheds over the course of their infection, $N$ is the population size, $u_s$ is the average shedding rate $s$ days after infection, normalised such that $\sum_{s=1}^\infty u_s=1$, and $\Gamma(\mu,a)$ denotes a gamma distribution with mean $\mu$ and shape $a$. This was similar to the wastewater model used by REF; other choices of continuous non-negative-valued distributions are possible for $W_t$ such as a log-normal distribution.
+
+    Eq. \eqref{eq:wastewater} would be combined with one of Eqs. \eqref{eq:infections_P1}--\eqref{eq:infections_P3} for infections and with Eq. \eqref{eq:deaths} for deaths.
+    \item \textbf{Data Source Mapping:} Wastewater offers population-level signal independent of testing biases, with moderate timeliness but requiring environmental expertise. It could also be affected by unknown changes in the average shedding rate $\alpha$ over time. 
+    \item \textbf{Observation DAG:} 
+   Wastewater samples are typically collected at some cadence from one or more sampling sites, and the concentration of genetic material from the pathogen quantified via PCR testing. 
+   The existence of multiple sites and non-contemporaneous sampling frequencies complicates the interpretation of quantitative wastewater data, which can be modelled at varying levels of complexity.  
+   
+    Here, we will assume that a quantitative wastewater measurement $W_t$ drawn according to Eq. \eqref{eq:wastewater}, either from a single representative site or a suitable average of multiple sites, is available on some subset of days $t$. 
+    More complex models could incorporate other factors such as individual-level and site-level variation, catchment population dynamics, and environmental degradation.
+    \item \textbf{Integration choice:} As in case study 1, we recommend that a modular approach with sequential consistency assessment is initially taken to detect and resolve data source conflicts. Independent estimates of $R_t$ from these models could then be combined by ensembling, or a joint model could be fitted with a shared $R_t$ state. 
     \item \textbf{Implementation:} ABC-SMC for wastewater sub-model due to likelihood intractability, reflecting available environmental modelling expertise; NUTS for case/death models. Or particle MCMC for joint model.
 \end{enumerate}
 
-\textbf{Key Insight:} Wastewater enables trend detection independent of testing policy but requires environmental and shedding assumptions, whilst modular approach facilitates conflict detection between data sources.
+\textbf{Key insight:} Wastewater data enables trend estimation independent of shifts in testing policy but requires environmental and shedding assumptions. A modular approach facilitates conflict detection between data sources. The average shedding rate $\alpha$ is typically unknown and non-identifiable from available data. Similar to the unknown case ascertainment rate in case study 0, estimates of $R_t$ will be insensitive to the value of $\alpha$ provided it does not change over time. However, changes in the average shedding rate due to, for example, pathogenic evolution or changes in population immunity, would invalidate this simple model and require a more nuanced approach.  
+
+
 
 \subsection{Case Study 3: Individual-Level Data (Cases and Transmission Pairs)}
 
@@ -655,3 +673,4 @@ All <placeholder> workshop participants for useful discussion and feedback. Popp
 
 
 \end{document}
+ 
