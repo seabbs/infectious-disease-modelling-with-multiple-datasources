@@ -4,82 +4,170 @@
 % in infectious disease modelling. References are organized by topic for easier management.
 
 % Core methodological references for multi-source integration
-@article{placeholder_lison2024,
-  title={Joint modelling advantages over separate models},
-  author={Placeholder Author},
-  journal={Placeholder Journal},
-  year={2024},
-  note={Placeholder reference - to be replaced}
+
+% Bayesian workflow methodology
+@article{gelman2020bayesian,
+  title={Bayesian workflow},
+  author={Gelman, Andrew and Vehtari, Aki and Simpson, Daniel and Margossian, Charles C and Carpenter, Bob and Yao, Yuling and Kennedy, Lauren and Gabry, Jonah and B{\"u}rkner, Paul-Christian and Modr{\'a}k, Martin},
+  journal={arXiv preprint arXiv:2011.01808},
+  year={2020},
+  url={https://arxiv.org/abs/2011.01808},
+  note={Comprehensive framework for Bayesian model development, checking, and validation. Highly relevant for multi-source infectious disease modelling workflows.}
 }
 
-@article{placeholder_huisman2022,
-  title={Pipeline approach example},
-  author={Placeholder Author},
-  journal={Placeholder Journal},
+% Multi-source infectious disease modelling papers
+@article{deangelis2018analysing,
+  title={Analysing Multiple Epidemic Data Sources},
+  author={De Angelis, Daniela and Presanis, Anne M},
+  journal={arXiv preprint arXiv:1808.04312},
+  year={2018},
+  url={https://arxiv.org/abs/1808.04312},
+  note={Foundational framework for Bayesian evidence synthesis in epidemic data integration. Core methodological reference for multi-source infectious disease modelling.}
+}
+
+@article{corbella2022inferring,
+  title={Inferring Epidemics from Multiple Dependent Data via Pseudo-Marginal Methods},
+  author={Corbella, Ada and Drovandi, Christopher and Mengersen, Kerrie and McGree, James and Presanis, Anne M},
+  journal={arXiv preprint arXiv:2204.08901},
   year={2022},
-  note={Placeholder reference - to be replaced}
+  url={https://arxiv.org/abs/2204.08901},
+  note={Pseudo-marginal MCMC methods for handling dependent surveillance data streams. Demonstrates multi-stream integration with UK influenza data.}
 }
 
-@article{placeholder_birrell2024,
-  title={Joint model approach example},
-  author={Placeholder Author},
-  journal={Placeholder Journal},
+@article{nicholson2022interoperability,
+  title={Interoperability of Statistical Models in Pandemic Preparedness: Principles and Reality},
+  author={Nicholson, George and Blangiardo, Marta and Richardson, Sylvia and Holmes, Chris and others},
+  journal={Statistical Science},
+  volume={37},
+  number={2},
+  pages={183--206},
+  year={2022},
+  doi={10.1214/22-sts854},
+  note={Eight interoperability principles for pandemic preparedness models. Demonstrates multi-source data integration with REACT survey and PCR testing data.}
+}
+
+@article{bouman2024bayesian,
+  title={Bayesian workflow for time-varying transmission in stratified compartmental infectious disease transmission models},
+  author={Bouman, J A and Abbott, Sam and others},
+  journal={medRxiv preprint},
   year={2024},
-  note={Placeholder reference - to be replaced}
+  doi={10.1101/2023.10.09.23296742},
+  url={https://doi.org/10.1101/2023.10.09.23296742},
+  note={Systematic Bayesian workflow integrating surveillance and serological data with open-source R package implementation.}
 }
 
-@article{placeholder_watson2024,
-  title={Joint model approach example},
-  author={Placeholder Author},
-  journal={Placeholder Journal},
+@article{knock2021key,
+  title={Key epidemiological drivers and impact of interventions in the 2020 SARS-CoV-2 epidemic in England},
+  author={Knock, Edward S and Whittles, Lilith K and Lees, John A and others},
+  journal={Science Translational Medicine},
+  volume={13},
+  number={589},
+  year={2021},
+  doi={10.1126/scitranslmed.abg4262},
+  note={Bayesian evidence synthesis using particle MCMC with seven surveillance streams. Major multi-source application to COVID-19 epidemic analysis.}
+}
+
+@article{abbott2021estimating,
+  title={Estimating the increase in reproduction number associated with the Delta variant using local area dynamics in England},
+  author={Abbott, Sam and Kucharski, Adam J and Funk, Sebastian},
+  journal={medRxiv preprint},
+  year={2021},
+  doi={10.1101/2021.11.30.21267056},
+  note={Integration of epidemiological data with genomic surveillance using EpiNow2. Demonstrates spatial heterogeneity handling in multi-source analysis.}
+}
+
+@article{sherratt2021exploring,
+  title={Exploring surveillance data biases when estimating the reproduction number: with insights into subpopulation transmission of COVID-19 in England},
+  author={Sherratt, Katharine and Abbott, Sam and Meakin, Sophie R and others},
+  journal={Philosophical Transactions of the Royal Society B},
+  volume={376},
+  number={1829},
+  year={2021},
+  doi={10.1098/rstb.2020.0283},
+  note={Comparative analysis of three surveillance data streams using EpiNow2. Important for understanding surveillance biases in multi-source modelling.}
+}
+
+@article{munday2023evaluating,
+  title={Evaluating the use of social contact data to produce age-specific short-term forecasts of SARS-CoV-2 incidence in England},
+  author={Munday, James D and Abbott, Sam and Meakin, Sophie and Funk, Sebastian},
+  journal={PLOS Computational Biology},
+  volume={19},
+  number={7},
+  year={2023},
+  doi={10.1371/journal.pcbi.1011453},
+  note={Age-specific forecasting framework integrating case reports, prevalence data, social contact surveys, and vaccination records.}
+}
+
+@article{russell2024combined,
+  title={Combined analyses of within-host SARS-CoV-2 viral kinetics and information on past exposures to the virus in a human cohort identifies intrinsic differences of Omicron and Delta variants},
+  author={Russell, Timothy W and Townsley, Hermaleigh and Hellewell, Joel and Abbott, Sam and others},
+  journal={PLOS Biology},
+  volume={22},
+  number={1},
   year={2024},
-  note={Placeholder reference - to be replaced}
+  doi={10.1371/journal.pbio.3002463},
+  note={Bayesian hierarchical framework integrating viral load, exposure history, demographics, symptoms, and variant data. Excellent example of joint modelling approach.}
 }
 
-% Outbreak examples and applications
-@article{placeholder_outbreak_examples,
-  title={Recent outbreak examples demonstrating multi-source value},
-  author={Placeholder Author},
-  journal={Placeholder Journal},
+@article{judge2024epifusion,
+  title={EpiFusion: Joint inference of the effective reproduction number by integrating phylodynamic and epidemiological modelling with particle filtering},
+  author={Judge, Ciara and Vaughan, Timothy and Russell, Timothy and Abbott, Sam and others},
+  journal={PLOS Computational Biology},
+  volume={20},
+  number={11},
   year={2024},
-  note={Placeholder reference - to be replaced}
+  doi={10.1371/journal.pcbi.1012528},
+  note={Novel particle filtering framework integrating epidemiological and phylodynamic data. Demonstrates quantified benefits of multi-source approaches.}
 }
 
-% Data source characteristics and limitations
-@article{placeholder_data_limitations,
-  title={Single data source limitations in infectious disease modelling},
-  author={Placeholder Author},
-  journal={Placeholder Journal},
-  year={2023},
-  note={Placeholder reference - to be replaced}
+@article{amaral2024post,
+  title={Post-processing and weighted combination of infectious disease nowcasts},
+  author={Amaral, André Victor Ribeiro and Wolffram, Daniel and Moraga, Paula and Bracher, Johannes},
+  journal={medRxiv preprint},
+  year={2024},
+  doi={10.1101/2024.08.28.24312701},
+  note={Evaluation of post-processing and ensemble approaches for combining multiple nowcasts. Relevant for multi-source model combination strategies.}
 }
 
-% Integration methodologies
-@article{placeholder_integration_methods,
-  title={Methods for integrating multiple data sources},
-  author={Placeholder Author},
-  journal={Placeholder Journal},
+@article{mccaw2023role,
+  title={The role of the mathematical sciences in supporting the COVID-19 response in Australia and New Zealand},
+  author={McCaw, James M and Plank, Michael J},
+  journal={arXiv preprint arXiv:2305.04897},
   year={2023},
-  note={Placeholder reference - to be replaced}
+  url={https://arxiv.org/abs/2305.04897},
+  note={Practical implementation of multi-source data integration in national surveillance systems. Includes behavioural surveys and mobility data synthesis.}
 }
 
-% Computational considerations
-@article{placeholder_computational,
-  title={Computational challenges in multi-source modelling},
-  author={Placeholder Author},
-  journal={Placeholder Journal},
-  year={2023},
-  note={Placeholder reference - to be replaced}
+@article{ro2025estimating,
+  title={Estimating the trend of COVID-19 in Norway by combining multiple surveillance indicators},
+  author={Rø, Gunnar Øyvind Isaksson and Engen, Steinar and Nygård, Karin and Rø, Gunnar Øyvind Isaksson},
+  journal={PLOS ONE},
+  volume={20},
+  number={1},
+  year={2025},
+  doi={10.1371/journal.pone.0317105},
+  note={Meta-analytical framework combining 10 surveillance indicators including wastewater, syndromic surveillance, and participatory data.}
 }
 
-% Practical implementation guidance
-@article{placeholder_practical_guidance,
-  title={Fragmented guidance for practitioners},
-  author={Placeholder Author},
-  journal={Placeholder Journal},
-  year={2023},
-  note={Placeholder reference - to be replaced}
+@article{marshall2024when,
+  title={When are predictions useful? A new method for evaluating epidemic forecasts},
+  author={Marshall, Colm and Delamater, Paul L and Messina, Joseph P},
+  journal={medRxiv preprint},
+  year={2024},
+  url={https://pmc.ncbi.nlm.nih.gov/articles/PMC11622944/},
+  note={Weighted Contextual Interval Score for practical forecast evaluation. Important for assessing utility of multi-source model predictions.}
 }
+
+@article{anonymous2025metric,
+  title={From metric to action: An evaluation framework to translate infectious disease forecasts into policy decisions},
+  author={{Anonymous}},
+  journal={medRxiv preprint},
+  year={2025},
+  doi={10.1101/2025.07.20.25331802},
+  note={Framework bridging statistical forecasting and policy decision-making. Directly relevant to communication and interpretation of multi-source models.}
+}
+
+% Additional methodological references to be added as needed
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
