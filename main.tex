@@ -72,13 +72,14 @@ Single data sources often provide limited or biased information about key epidem
 However, practitioners face complex methodological choices about how to combine these data streams effectively.
 
 % Paragraph 2: Current Approaches
-Current approaches to multi-source integration broadly fall into two categories: pipeline methods that fit separate models to individual data sources before combining estimates, and joint modelling approaches that simultaneously fit all data sources within a unified statistical framework [@placeholder].
+Current approaches to multi-source integration broadly fall into two categories: pipeline methods that fit separate models to individual data sources before combining estimates, and joint modelling approaches that simultaneously fit all data sources within a unified statistical framework \citep{deangelis2018analysing, russell2024combined}.
 Pipeline approaches offer computational efficiency and modular development, but may propagate errors and fail to capture dependencies between data sources [@placeholder].
-Joint modelling can provide more principled uncertainty quantification and better parameter identifiability, but often requires substantial computational resources and model complexity [@placeholder].
+Joint modelling can provide more principled uncertainty quantification and better parameter identifiability, but often requires substantial computational resources and model complexity \citep{russell2024combined, lison2024generative}.
+Recent empirical evidence demonstrates that joint approaches consistently outperform stepwise methods by avoiding error propagation and improving parameter identifiability \citep{lison2024generative}.
 Beyond these choices, practitioners face numerous challenges including: detecting and resolving conflicts between data sources; combining data sources with different spatial or temporal resolutions; validating models when different data streams suggest different dynamics; and navigating branching decision paths where integration choices impose model structure constraints [@placeholder].
 Fitting challenges, such as computational intractability, parameter non-identifiability, and the need to approximate ideal model structures for practical inference, further complicate implementation [@placeholder].
 These integration and fitting considerations can impact model design, yet their implications are rarely made explicit in published analyses [@placeholder].
-The infectious disease modelling community has not widely adopted rigorous Bayesian workflow practices that emphasise iterative model development, systematic model criticism, and principled uncertainty quantification [@placeholder].
+The infectious disease modelling community has not widely adopted rigorous Bayesian workflow practices that emphasise iterative model development, systematic model criticism, and principled uncertainty quantification \citep{gelman2020bayesian, nicholson2022interoperability}.
 Existing guidance for practitioners is fragmented across methodological literature, with limited practical frameworks for navigating these interconnected choices systematically [@placeholder].
 
 % Paragraph 3: Paper Scope and Contribution
@@ -137,7 +138,7 @@ Each case study follows our iterative workflow, demonstrating how DAG-based mode
 
 \subsection{Overview}
 
-We recommend following a structured, iterative workflow for multi-data source modelling (Figure~\ref{fig:workflow}), building on established Bayesian workflow principles [@placeholder].
+We recommend following a structured, iterative workflow for multi-data source modelling (Figure~\ref{fig:workflow}), building on established Bayesian workflow principles [@gelman2020bayesian].
 
 \begin{figure}[htbp]
     \centering
@@ -198,11 +199,33 @@ In the following sections, we will discuss each of these steps in more detail.
 % TODO: Connecting questions to policy needs
 % TODO: Setting scope and boundaries
 
+\begin{itemize}
+\item \textbf{Multi-source research questions:} Identify when multiple data streams are necessary for robust inference. For example, reproduction number estimation benefits from combining case reports with hospitalisation data to account for different population subgroups and reporting biases \citep{sherratt2021exploring}.
+
+\item \textbf{Causal estimand clarification:} Use DAG principles to distinguish between total effects and pathway-specific effects when integrating data sources. Testing rates may mediate relationships between policy interventions and observed case counts, requiring careful estimand specification \citep{digitale2022tutorial}.
+
+\item \textbf{Estimand specification:} Map research questions to specific parameters requiring multi-source data. Variant-specific transmission advantages require integration of genomic surveillance with epidemiological time series \citep{abbott2021estimating}.
+
+\item \textbf{Source complementarity:} Identify how different data sources provide complementary information. Early warning signals from wastewater surveillance can be confirmed through clinical surveillance systems \citep{ro2025estimating}.
+\end{itemize}
+
 \subsection{Process DAG Development}
 % TODO: Representing epidemiological processes
 % TODO: Causal relationships and assumptions
 % TODO: Iterative refinement based on understanding
 % TODO: Incorporating biological mechanisms
+
+\begin{itemize}
+\item \textbf{State-space framework:} Develop directed acyclic graphs separating epidemic processes from observation mechanisms, following the Bayesian evidence synthesis framework for epidemic data integration \citep{deangelis2018analysing}.
+
+\item \textbf{Causal identification:} Use DAG principles to identify confounders, mediators, and colliders when integrating multiple data sources, ensuring minimal adjustment sets for unbiased estimation \citep{digitale2022tutorial}.
+
+\item \textbf{Hierarchical structure:} Account for population heterogeneity and demographic stratification when multiple data sources capture different population subgroups \citep{russell2024combined}.
+
+\item \textbf{Selection bias prevention:} Map data collection processes to identify potential collider structures, particularly when surveillance systems have differential participation patterns \citep{digitale2022tutorial}.
+
+\item \textbf{Causal relationships:} Explicitly represent relationships between transmission processes, interventions, and observed data streams to enable modular model development \citep{nicholson2022interoperability}.
+\end{itemize}
 
 \subsection{Data Source Mapping}
 % TODO: Cataloguing available data streams
@@ -230,6 +253,18 @@ In the following sections, we will discuss each of these steps in more detail.
 % TODO: Cross-validation strategies
 % TODO: Sensitivity analysis frameworks
 
+\begin{itemize}
+\item \textbf{Multi-source diagnostics:} Implement cross-stream validation where each data source validates others, extending standard convergence diagnostics \citep{sherratt2021exploring}.
+
+\item \textbf{DAG-based validation:} Test causal assumptions underlying multi-source integration using sensitivity analyses and, where possible, natural experiments to validate DAG structures \citep{digitale2022tutorial}.
+
+\item \textbf{Bias detection:} Monitor for selection bias patterns across different surveillance systems, particularly when participation differs systematically between data sources \citep{digitale2022tutorial}.
+
+\item \textbf{Decision-focused evaluation:} Assess model performance based on decision utility rather than purely statistical metrics, particularly important for policy-relevant multi-source applications \citep{marshall2024when}.
+
+\item \textbf{Computational validation:} Apply systematic diagnostic frameworks to complex multi-source models, ensuring proper uncertainty propagation across data streams \citep{gelman2020bayesian}.
+\end{itemize}
+
 \subsection{Data Integration Choices}
 % Lead: Anne Presanis
 
@@ -241,7 +276,7 @@ In the following sections, we will discuss each of these steps in more detail.
 % When to integrate vs when to keep separate
 % Assessing complementarity and redundancy
 % Computational vs inferential trade-offs
-In theory, multiple sources of data should always be integrated, as their combination should in principle result in better identified, more precise estimates of latent parameters of interest (REFS). Even if two data streams are redundant, in that they inform exactly the same quantity, their combination should improve precision, following standard meta-analytic principles (REF). In practice, however, there are many reasons why data integration may be challenging: data providing inconsistent evidence through unaccounted biases (REFS); computational complexity (REFS); and real-time pressures during an outbreak emergency (REF).
+In theory, multiple sources of data should always be integrated, as their combination should in principle result in better identified, more precise estimates of latent parameters of interest (REFS). Even if two data streams are redundant, in that they inform exactly the same quantity, their combination should improve precision, following standard meta-analytic principles (REF). Recent work has provided strong empirical evidence that joint modelling approaches consistently outperform stepwise methods by mitigating error propagation and improving reasoning under uncertainty \citep{lison2024generative}. In practice, however, there are many reasons why data integration may be challenging: data providing inconsistent evidence through unaccounted biases (REFS); computational complexity (REFS); and real-time pressures during an outbreak emergency (REF).
 
 Assessment of the strengths and weaknesses of different data sources, as described in Section \ref{sec:datareview}, can and should be carried out in `peace time', between any outbreaks. Such assessment, along with the workflow of specifying process and observation DAGs (Section ??), can help to determine whether estimands of interest are identifiable from the available data. More formally, ``value of information'' methods, applied in a data integration context (REFs), are useful to determine whether data of a particular study design or more data from an existing collection would result in increased precision. However, depending on the complexity of the model, it may not be feasible to determine identifiability ahead of fitting at least an initial model.
 
