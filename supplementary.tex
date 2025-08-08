@@ -1,0 +1,127 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{authblk} % For author affiliations
+\usepackage{hyperref} % For hyperlinks
+\usepackage[margin=1in]{geometry} % Standard margins
+\usepackage{natbib} % For bibliography management
+\usepackage{enumitem} % For customising lists
+\usepackage{color}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{booktabs}
+\newlist{tree}{itemize}{10}
+\setlist[tree]{label=-}
+\setlistdepth{10} 
+
+
+\title{Integrating Multiple Data Sources in Infectious Disease Modelling: Best Practices and Implementation -- Supplementary Materials}
+
+\begin{document}
+
+\maketitle
+
+\section{Survey}
+\paragraph{}We conducted a survey of participants at a workshop on the role of modelling for epidemic surveilllance (see supplementary material) to systematically evaluate different data sources for infectious disease modelling.
+Our survey may help practitioners rate different data sources on quality, timeliness, and usefulness for modelling SARS-CoV-2. We pooled expert opinions to create visual comparisons showing trade-offs between different data types, making it easier to assess which data to use when estimating transmissibility and identifying when different data sources might conflict.
+
+\paragraph{}To systematically identify potential biases across multiple data sources, we developed a structured questionnaire. As our group comprised of researchers from diverse disciplinary backgrounds who have experience in working with various sources of data, the questionnaire design process was shaped by a broad range of perspectives. Our main goal in developing this questionnaire was to enable a visual and comparative assessment of the data source strengths. Therefore, we agreed upon six primary evaluation categories, which we have already discussed in Section XXXX (data characteristics): basic metadata, scope, resolution, data quality, data utility, and practical considerations. Each category was further subdivided into specific subcategories, which allowed respondents to provide input within prespecified ordinal-scale categories, numerical scale (ranging from 0 to 5), and qualitative responses through free-text. We expected this questionnaire structure to facilitate multidimensional characterisation of the data sources, which could in turn support more informed decisions in data selection and integration. 
+
+\paragraph{}Within the basic \textit{metadata} section, predefined options included time-series data, hospitalisation time-series data, wastewater data, or other, with the latter allowing specification of alternative sources of data. This first classification of data served as a foundation for subsequent evaluations, ensuring that the responses were contextualised according to the nature of the data sources under consideration. Furthermore, within this section, respondents were asked to provide a free-text description of the data content, as well as to indicate the primary purpose of the data collection, whether for clinical management or other objectives. These inputs were intended to capture essential basic information of the data source that could affect the interpretation and applicability. 
+
+\paragraph{}Next, the \textit{scope} section of the questionnaire focused on the characteristics of the population represented in the data. Respondents were first asked to specify, via free-text, the source population---the broader population from which the data were sampled. They were also asked to identify the target population, selecting from pre-defined categories such as age-specific, risk-specific, convenience samples, geographic subsets, health-care related populations, the entire population, or other (via free-text option). Additional questions addressed whether the population was stratified by demographic, clinical, or other relevant factors. The respondents were asked to indicate the type of data collection--routine, triggered, or one-off. If the data collection was triggered, further clarification was requested regarding the nature of the trigger (for example, exceeding a specific threshold or the detection of a new pathogen/ variant). 
+
+\paragraph{}The \textit{resolution} section of the questionnaire addressed the level of detail available in each data source. Respondents were first asked to indicate whether the data were collected at the individual level or in an aggregated form. For data with a temporal component, additional questions captured the frequency of the data collection (continuously, daily, weekly, etc.), the frequency of reporting (continuously, daily, weekly, etc.), and the period covered (early outbreak, peak, endemic phase, continuous monitoring or other). If the data included spatial information, the respondents were asked to specify the lowest spatial resolution available, with options to select from international, national, regional, local, or hyperlocal levels. Finally, the respondents were asked to rate, on a scale from 0 to 5, the completeness of coverage across the intended geographical areas. These questions were aimed to asses the the data granularity as well as comprehensive from both a temporal and spatial dimensions. 
+
+\paragraph{}The \textit{data quality} section focused on evaluating the reliability and the trustworthiness of each dataset. Respondents were first invited to provide a free-text description of the perceived quality of the data. They were then asked to asses whether the case definitions used were standardized--across time, space or both--by assigning a score on the scale from 1 to 5. The same numerical scale was used to evaluate key factors of measurement quality, such as sensitivity and specificity of any diagnostic test that was used, the potential for unexplained variability, and the extent of reporting delays. To further explore the potential sources of bias, the respondents were gain invited to provide a description of potential biases, followed by assigning a score from 1 to 5 on issues such as missing data, censoring, truncation, and selection (underrespresntative sampling relative to the target population). The respondents were also asked to asses the potential for selection bias by identifying contributing factors such as ascertainment or under reporting, location-specific observation, and socio-economic infleunecs [these are not all the factors in the questionnaire]. Finally, the respondents were asked to characterise the bias by giving a score from a 1 to 5 scale for biases to vary over time and the direction of bias. 
+
+\paragraph{} The \textit{data utility} section was used to evaluate transmission metrics that the data can inform, and how these metrics could be derived. Respondents were asked to identify which epidemiological targets (such as basic reproduction number, incidence, prevalence, etc) and for each selected metric, they are prompted to specify whether it could be calculated directly, indirectly, or cannot be informed by the dataset. To assess the generalizability of the data, the respondents were asked to rate, on a scale of 1 to 5, the extent to which the information can be generalised to a general population. In cases where generalisations were not possible, the respondents were asked to provide the reason in the form of free text to understand the dataset's applicability. 
+
+\paragraph{}The \textit{practical considerations} section addressed the feasibility and operational aspects of using a dataset. Respondents were asked to indicate the scalability of the data source by selecting from predefined options such as independent, sub-linear, or other relevant categories. They were then asked to rate, on a scale of 1 to 5, key dimensions: sustainability, cost, accessibility, and linkage potential. For datasets that were linked to other sources of data, the respondents are asked to choose the types of data linked, using the same classification we used at the beginning of the questionnaire.  Additionally, the respondents were asked to rate the level of structure within the dataset and the generalisability of the findings to other pathogens, both on a scale of 1 to 5. If the data can be generalisable, a free-text space was provided to list the specific pathogen. 
+
+
+
+
+\section{Full model specification for combining multiple data sources}
+The target estimand for this case study is the time-varying reproduction number $R_t$ during the outbreak period. The objective is to illustrate the process of integrating multiple epidemiological data sources. For each case, we consider two main approaches: fitting separate models independently to each data source and combining the resulting estimates, and fitting a joint model that incorporates both data sources simultaneously. Throughout this work, we denote time series of the variable $X_t$ indexed from day 1 to day $T$ by $X_{1:T} = \{X_1, X_2, \ldots, X_T\}$.
+
+
+\subsection{Case Study 1: Two-source integration (Cases and Deaths)}
+
+\subsubsection{Separate models: Independent estimation from Cases and Deaths}
+
+\paragraph{Case-based $R_{t}$ estimation:}
+We model the latent infection incidence $I_{1:T}$ using the renewal equation framework, with one of three variants considered for the infection process model:
+\begin{align}
+\label{latent_inf}
+\begin{cases}
+I_t = R_t \sum_{s=1}^\infty I_{t-s} w_s & \text{(P1 - deterministic)} \\
+I_t \sim \mathrm{Poisson}\left( R_t \sum_{s=1}^\infty I_{t-s} w_s \right) & \text{(P2 - Poisson)} \\
+I_t \sim \mathrm{NegBin}\left( R_t \sum_{s=1}^\infty I_{t-s} w_s, k \right) & \text{(P3 - Negative Binomial)}
+\end{cases}
+\end{align}
+where $w_s$ is the generation time distribution probability mass function and $k$ is the dispersion parameter.
+
+The observation model relates reported cases $\widehat{I}_{1:T}$ to latent infections as:
+\begin{align}
+\widehat{I}_t \sim \mathrm{Poisson}\left( \sum_{s=1}^\infty N_{s,t} \right), \quad N_{s,t} \sim \mathrm{TruncatedMultinomial}(I_s, \alpha_{t-s}),
+\end{align}
+where $N_{s,t}$ is the number of people infected on day $s$ and reported as a case on day $t$ and $\alpha_s$ is the probability that an infection is reported as a case $s$ days after infection. 
+
+Using observed case incidence $\widehat{I}_{1:T}$, inference targets the posterior distribution:
+\begin{align}
+p\big(R_{1:T}, I_{1:T} \theta | \widehat{I}_{1:T}\big),
+\end{align}
+where $\theta$ denotes all model parameters (e.g., $k$, $\alpha$). This yields posterior estimates $R_{1:T}^\text{cases}$ and uncertainty $\sigma_{1:T}^\text{cases}$.
+
+\paragraph{Death-based $R_{t}$ estimation:}
+
+The latent infections $I_{1:T}$ are generated by the same infection process model as in Eq.~\eqref{latent_inf}, governed by $R_{1:T}$.
+
+The death incidence $D_{1:T}$ is modeled conditional on infections as
+\begin{align}
+D_t \sim \mathrm{Poisson}\left( p_d \sum_{s=1}^\infty I_{t-s} v_s \right),
+\end{align}
+where $p_d$ is the infection-fatality ratio and $v_s$ is the infection-to-death delay distribution.
+
+Observed deaths $\widehat{D}_{1:T}$ relate to true deaths via
+\begin{align}
+\widehat{D}_t = \sum_{s=1}^\infty M_{s,t}, \quad M_{s,t} \sim \mathrm{Multinomial}(D_s, \beta_{t-s}),
+\end{align}
+with $\beta_s$ the death-to-registration delay distribution. Fitting this model to $\widehat{D}_{1:T}$ targets the posterior:
+\begin{align}
+p\big(R_{1:T}, I_{1:T}, D_{1:T},  \theta | \widehat{D}_{1:T}\big),
+\end{align}
+where $\theta$ denotes all model parameters (e.g., $k$, $\alpha$, $p_d$, $\beta$), producing estimates $R_{1:T}^\text{deaths}$ and uncertainty $\sigma_{1:T}^\text{deaths}$.
+
+% \paragraph{Combining estimates via weighted ensembling:}
+% Separate inference produces two time series of $R_t$ estimates with associated uncertainties. As noted in the main text, any inconsistencies between these estimates may indicate the need to refine the underlying models. Once this refinement is complete, the estimates are synthesized into a consensus time series using a weighted ensemble function, i.e., $R_{1:T} = \mathcal{F}_{\mathrm{ens}}\big(R_{1:T}^\mathrm{cases}, R_{1:T}^\mathrm{deaths}, \sigma_{1:T}^\mathrm{cases}, \sigma_{1:T}^\mathrm{deaths}\big)$.
+
+
+\subsubsection{Joint Model: Simultaneous Estimation of $R_{t}$ from Cases and Deaths}
+
+
+\paragraph{Model Structure}
+
+Latent infections $I_{1:T}$ evolve according to the renewal process model (Eq.~\eqref{latent_inf}) governed by $R_{1:T}$.
+
+Observed data are modeled as follows:
+\begin{itemize}
+    \item Cases:
+    \[
+    \widehat{I}_t \sim \mathrm{Poisson}\left( \sum_{s=1}^\infty N_{s,t} \right), \quad N_{s,t} \sim \mathrm{TruncatedMultinomial}(I_s, \alpha_{t-s}),
+    \]
+    \item Deaths:
+    \[
+    D_t \sim \mathrm{Poisson}\left( p_d \sum_{s=1}^\infty I_{t-s} v_s \right), \quad \widehat{D}_t = \sum_{s=1}^\infty M_{s,t}, \quad M_{s,t} \sim \mathrm{Multinomial}(D_s, \beta_{t-s}).
+    \]
+\end{itemize}
+
+\paragraph{Joint Inference}
+
+The joint posterior distribution over $R_{1:T}$, $I_{1:T}$, $D_{1:T}$ and parameters $\theta$ given observed data is:
+\begin{align}
+p\big(R_{1:T}, I_{1:T}, D_{1:T}, \theta | \widehat{I}_{1:T}, \widehat{D}_{1:T}\big), 
+\end{align}
+where $\theta$ denotes all model parameters (e.g., $k$, $\alpha$, $p_d$, $\beta$)
+
+\end{document}
