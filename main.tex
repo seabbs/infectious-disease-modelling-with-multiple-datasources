@@ -62,7 +62,7 @@ However, the infectious disease modelling community has been slow to adopt these
 This paper provides a methodological framework for integrating multiple data sources in infectious disease modelling building on non-domain-specific Bayesian workflow advice, with transmission intensity estimation as a key exemplar.
 We first outline an approach for characterising epidemiological data source properties through a structured checklist,  then present an iterative workflow that extends established Bayesian model development approaches to the infectious disease domain and that references the data checklist throughout.
 Our workflow progresses from research question definition through development of directed acyclic graph (DAG) representations of process and observation, to integration method selection, with explicit consideration of data conflicts and uncertainty quantification.
-We compare integration approaches, from full joint modelling to ensemble methods, and demonstrate through schematic case studies how practitioners can navigate real-world tradeoffs between model complexity, computational feasibility, and inferential goaldirected acyclic graphdirected acyclic graphs.
+We compare integration approaches, from full joint modelling to ensemble methods, and demonstrate through schematic case studies how practitioners can navigate real-world trade-offs between model complexity, computational feasibility, and inferential goal directed acyclic graph directed acyclic graphs.
 The case studies show how different data types, including individual-level observations, provide complementary information for estimating parameters such as time-varying reproduction numbers and overdispersion of transmission dynamics.
 Throughout, we advocate Bayesian thinking for principled model development, regardless of the ultimate fitting approach.
 Our framework emphasises parsimony, interpretability, and model criticism.
@@ -167,79 +167,89 @@ For example, if you initially design a joint model but find it computationally i
 In the following sections, we will discuss each of these steps in more detail as well as providing resources for learning more. We will also demonstrate this workflow in our case studies.
 
 \subsection{Research Question and Target Estimands}
-% TODO: Defining clear research objectives
-% TODO: Specifying target parameters and estimands
-% TODO: Connecting questions to policy needs - actually I think it's maybe connecting epidemiological parameters with policy questions
-% TODO: Setting scope and boundaries
 
-\begin{itemize}
-\item \textbf{Multi-source research questions:} Identify when multiple data streams are necessary for robust inference. For example, reproduction number estimation benefits from combining case reports with hospitalisation data to account for different population subgroups and reporting biases \citep{sherratt2021exploring}.
-
-
-\item \textbf{Estimand specification:} Map research questions to specific parameters requiring multi-source data. Variant-specific transmission advantages require integration of genomic surveillance with epidemiological time series \citep{abbott2021estimating}.
-
-\item \textbf{Source complementarity:} Identify how different data sources provide complementary information. Early warning signals from wastewater surveillance can be confirmed through clinical surveillance systems \citep{ro2025estimating}.
-\end{itemize}
+Determining the research question shapes the entire modelling workflow, from data source selection through integration choices to validation strategies.
+Start by engaging with policymakers and/or stakeholders to understand which epidemiological parameters matter for their decisions: some need simple short-term case forecasts for hospital planning, others require transmission dynamics understanding for intervention design.
+Often, multiple outcomes are desired that require balancing trade-offs: short-term forecasts for operational planning alongside $R_t$ estimates for public communication and interpretability.
+The aim is to translate policy needs into specific target estimands by trying to understand how parameters inform decisions.
+For example, policymakers might need to know if transmission is increasing rather than precise values, or whether superspreading drives transmission, to choose between population-wide versus targeted interventions.
+Try to define scope explicitly, including what the analysis cannot address: a national $R_t$ estimate cannot easily reveal local outbreak dynamics, aggregate case data might not be able to identify transmission chains, and surveillance might not be able to detect mild infections.
+These limitations shape stakeholder expectations and prevent misuse of results.
+Research questions evolve throughout outbreaks as understanding improves and policy needs shift.
+Early outbreak questions focus on growth rates and severity using limited case data.
+As surveillance expands, questions might shift, for example, to variant dynamics requiring genomic integration, then to population immunity needing serological data.
 
 \subsection{Process DAG Development}
-% TODO: Representing epidemiological processes
-% TODO: Causal relationships and assumptions
-% TODO: Iterative refinement based on understanding
-% TODO: Incorporating biological mechanisms
 
-\begin{itemize}
-\item \textbf{State-space framework:} Develop directed acyclic graphs separating epidemic processes from observation mechanisms, following the Bayesian evidence synthesis framework for epidemic data integration \citep{deangelis2018analysing}.
-
-
-\item \textbf{Causal relationships:} Explicitly represent relationships between transmission processes, interventions, and observed data streams to enable modular model development \citep{nicholson2022interoperability}.
-\end{itemize}
+Process DAG development translates research questions into formal causal structures that evolve throughout an outbreak.
+A directed acyclic graph (DAG) represents causal relationships between variables through nodes (variables) and directed edges (causal influences), making assumptions explicit and testable.
+This formalism helps identify confounders, mediators, and colliders that affect parameter estimation from observational data.
+For infectious disease modelling, we recommend constructing DAGs that capture biological mechanisms: susceptible populations, transmission events, infection progression, recovery or death, and intervention effects.
+Begin with simple representations of core transmission dynamics, then iteratively refine as understanding improves during an outbreak.
+Early outbreak DAGs might represent homogeneous mixing, while later versions incorporate age structure, spatial heterogeneity, or variant dynamics as data reveals their importance.
+Key biological mechanisms drive DAG structure: incubation periods create delays between infection and infectiousness, viral load dynamics affect transmission probability, and immune waning influences reinfection risk.
+We suggest separating process DAGs from observation DAGs to distinguish true epidemiological processes from how we measure them.
+This separation enables modular model development where process components can be reused across different surveillance contexts \citep{nicholson2022interoperability}.
 
 \subsection{Data Source Mapping}
-% TODO: Cataloguing available data streams
-% TODO: Assessing data characteristics and biases
-% TODO: Linking data to process components
-% TODO: Evaluating complementarity and redundancy
 
-\item \textbf{Selection bias prevention:} Map data collection processes to identify potential collider structures, particularly when surveillance systems have differential participation patterns \citep{digitale2022tutorial}.
+Data source mapping connects available surveillance streams to epidemiological processes using the characteristics framework from Section~\ref{sec:datareview}.
+Catalogue available data systematically using the six-dimensional checklist: metadata, scope, resolution, data quality, data utility, and practical considerations.
+This structured assessment reveals each source's strengths and limitations for addressing target estimands.
+Link data sources to process components by identifying what epidemiological quantities each stream measures: cases reflect infection incidence with reporting delays and ascertainment bias, hospitalisations capture severe outcomes with admission thresholds, and wastewater indicates population-level viral circulation independent of healthcare seeking.
+Assess data characteristics and biases explicitly and document collection processes that might create selection bias or differential participation \citep{digitale2022tutorial}.
+Evaluate complementarity by examining whether sources provide independent signals or reinforce the same information.
+For example, wastewater can potentially early warning, while clinical surveillance provides individual-level severity data.
+Identify redundancy where multiple sources inform the same parameter, which might improve precision at the cost of model complexity.
+Start with minimum data requirements for target estimands, then expand systematically.
+Each additional source increases complexity and development time, so prioritise based on expected information gain relative to implementation cost.
+Document these mapping decisions explicitly as they shape all downstream workflow choices from observation DAG construction through integration methods.
 
 \subsection{Iterate on the Process DAG}
 
-%TODO: based on available data sources and the original process DAG may need to iterate
-%TODO: An example is the need for individual level modelling for certain data sources which might impact the construction of the process DAG.
+After mapping data sources, revisit your process DAG to ensure alignment between what you want to model and what your data can support.
+Data availability can drive both increases and decreases in model complexity.
+Contact tracing data with identified transmission pairs enables shifting from population-level compartmental models to individual-based representations that capture heterogeneous mixing patterns.
+Conversely, discovering that surveillance only provides aggregate counts may require collapsing a planned age-structured model into simpler compartments.
+Strong prior information can sometimes compensate for data limitations, functioning almost like an additional data source.
+Well-informed priors about transmission parameters from previous outbreaks might support maintaining a complex structure even when current data is limited.
+For example, detailed knowledge about age-specific contact patterns from prior studies could support maintaining the age structure, even with only total case counts.
+Note that assuming fixed parameter values, common in mechanistic modelling literature, is effectively placing infinitely strong priors and should be avoided when possible in favour of appropriately uncertain prior distributions.
+Temporal resolution affects what variation can be identified rather than what can be modelled: you can always build a daily-scale model, but weekly surveillance data will usually inform weekly or longer-term patterns, not daily fluctuations.
+Additional process DAG iteration typically occurs at key workflow stages, such as during model specification when identifiability issues emerge, during validation when misalignment between model structure and data patterns is exposed, during data integration, or due to practical or theoretical considerations related to model fitting (Figure~\ref{fig:workflow}).
+Each iteration should address specific identified problems rather than arbitrary complexity reduction.
+Document why changes were made, preserving the rationale for future model extensions when better data becomes available or computational methods improve.
 
 \subsection{Observation DAG Construction}
-% TODO: Measurement models and reporting processes
-% TODO: Delays and missing data mechanisms
-% TODO: Linking latent processes to observations
-% TODO: Accounting for data collection protocols
 
-\item \textbf{Causal estimand clarification:} Use DAG principles to distinguish between total effects and pathway-specific effects when integrating data sources. Testing rates may mediate relationships between policy interventions and observed case counts, requiring careful estimand specification \citep{digitale2022tutorial}.
-
-\item \textbf{Causal identification:} Use DAG principles to identify confounders, mediators, and colliders when integrating multiple data sources, ensuring minimal adjustment sets for unbiased estimation \citep{digitale2022tutorial}.
-
-\item \textbf{Hierarchical structure:} Account for population heterogeneity and demographic stratification when multiple data sources capture different population subgroups \citep{russell2024combined}.
+Observation DAGs map how latent epidemiological processes generate observed data, with complexity shaped by target estimands and available data sources.
+Build these DAGs by working backwards from measured values through all intermediate steps: symptom onset, healthcare seeking, testing, laboratory processing, and reporting for clinical surveillance; viral shedding, sewage networks, and quantification for wastewater.
+Each step introduces delays, biases, or missing data mechanisms that affect inference.
+The level of detail depends on research questions and later workflow choices.
+Estimating population-level transmission requires simpler observation models than understanding variant-specific dynamics or age-stratified patterns.
+Process DAGs may need revision based on observation DAG constraints: individual-level data enables different process representations than aggregated reports.
+Model reporting delays explicitly as they create temporal misalignment between transmission events and observations.
+Distinguish between missing data mechanisms since random missingness and systematic under-ascertainment require different handling.
+Account for time-varying observation probabilities from testing capacity or surveillance intensity changes.
+Account for hierarchical structure and population heterogeneity when multiple data sources capture different demographic subgroups.
+Multiple observation DAGs for the same underlying process enable validation by checking whether different data streams imply consistent transmission dynamics when properly aligned.
+This separation of process and observation enables modular development where components can be reused across surveillance contexts.
 
 
 \subsection{Model Specification and Validation}\label{sec:spec-validate}
-% TODO: Bayesian workflow principles
-% TODO: Introduce conflict
-% TODO: Prior specification and prior predictive checks
-% TODO: Parameter identifiability assessment
-% TODO: Model criticism and diagnostic approaches
-% TODO: Posterior predictive validation
-% TODO: Cross-validation strategies
-% TODO: Sensitivity analysis frameworks
 
-\begin{itemize}
-\item \textbf{Multi-source diagnostics:} Implement cross-stream validation where each data source validates others, extending standard convergence diagnostics \citep{sherratt2021exploring}.
-
-\item \textbf{DAG-based validation:} Test causal assumptions underlying multi-source integration using sensitivity analyses \citep{digitale2022tutorial}.
-
-\item \textbf{Bias detection:} Monitor for selection bias patterns across different surveillance systems, particularly when participation differs systematically between data sources \citep{digitale2022tutorial}.
-
-\item \textbf{Decision-focused evaluation:} Assess model performance based on decision utility rather than purely statistical metrics, particularly important for policy-relevant multi-source applications \citep{marshall2024when}.
-\item \textbf{Computational validation:} Apply systematic diagnostic frameworks to complex multi-source models, ensuring proper uncertainty propagation across data streams \citep{gelman2020bayesian}.
-\end{itemize}
+Start by validating models in small subcomponents first, then explore combinations to identify integration challenges early.
+Specify priors using domain knowledge where available through informative priors, otherwise use weakly informative priors that regularise without dominating the likelihood \citep{gelman2020bayesian}.
+Validate using prior predictive checks, which simulate data from the prior to ensure model behaviour aligns with epidemiological plausibility before seeing data.
+Assess parameter identifiability by examining whether data sources provide sufficient information to uniquely estimate target parameters; joint modelling often resolves identifiability issues that plague pipeline approaches \citep{@placeholder}.
+Detect conflict between data sources, where different streams imply incompatible parameter values under the current model.
+When conflict arises, use prior sensitivity analysis to quantify how much priors must change to accommodate observed data, revealing potential model misspecification or data quality issues \citep{roos2015sensitivity,nott2021approximation,kallioinen2021detecting}.
+This conflict analysis connects directly to the value of information assessments that prioritise data collection efforts \citep{jackson2019value}.
+Criticise fitted models through posterior predictive validation, simulating new data to test whether models reproduce key features across all integrated sources.
+Apply cross-validation strategies, particularly leave-one-out and time-aware validation, to assess predictive performance while respecting temporal data structure.
+Conduct sensitivity analyses by examining how conclusions change across prior specifications, likelihood assumptions, and data inclusion decisions.
+For comprehensive implementation guidance, see \citet{gelman2020bayesian}, with infectious disease-specific adaptations in \citet{bouman2024bayesian}.
+Model specification and validation have a critical feedback loop with DAG structure and data integration choices.
 
 \subsection{Data Integration Choices}
 % Lead: Anne Presanis
@@ -314,71 +324,10 @@ Modular approaches also support selective trust in sub-models. ``Cutting'' feedb
 %Ultimately, conflict detection should be an iterative process, integrated into model development and refinement. Transparent reporting of conflicts and their resolution enhances the credibility and interpretability of modelling outputs, particularly in high-stakes settings such as outbreak response.
 
 
-Attempt at tree of choices:
-\begin{tree}
-    \item Are you combining alternative/competing models from different groups?
-    \begin{tree}
-        \item Yes
-        \begin{tree}
-            \item How are the results from each available?
-            \begin{tree}
-                \item As point estimate and confidence/credible interval
-                \begin{tree}
-                    \item Do you trust the alternatives equally?
-                    \begin{tree}
-                        \item Yes $\Rightarrow$ standard meta-analysis
-                        \item No
-                        \begin{tree}
-                            \item $\Rightarrow$ weighted meta-analysis, weighted by precision
-                            \item $\Rightarrow$ or weighted by other criteria, e.g. prediction accuracy (ensembling)
-                        \end{tree}
-                    \end{tree}
-                \end{tree}
-                \item As posterior samples or analytic posterior distribution
-                \begin{tree}
-                    \item Do you trust the alternatives equally?
-                    \begin{tree}
-                        \item Yes $\Rightarrow$ stack posterior samples and summarise
-                        \item No
-                        \begin{tree}
-                            \item $\Rightarrow$ weighted meta-analysis, weighted by precision
-                            \item $\Rightarrow$ or weighted by other criteria, e.g. prediction accuracy (ensembling)
-                        \end{tree}
-                    \end{tree}
-                \end{tree}
-            \end{tree}
-        \end{tree}
-        \item No
-        \begin{tree}
-        \item Are your sub-models independent conditional on their common parameters?
-        \begin{tree}
-            \item Yes
-            \begin{tree}
-                \item Do you already have posterior samples from all sub-models?
-                \begin{tree}
-                    \item Yes
-                    \begin{tree}
-                        \item Are you already convinced that all sub-models give consistent results?
-                        \begin{tree}
-                            \item Yes $\Rightarrow$ join all sub-models simultaneously using Markov melding
-                            \item No $\Rightarrow$ join the models sequentially using Markov melding, to test for conflict between each sub-model and iterate development of sub-models to resolve any conflicts
-                        \end{tree}
-                    \end{tree}
-                    \item No $\Rightarrow$ decide order in which to fit/add each sub-model, e.g. start from the one you trust most, and add sequentially using Markov melding, testing for conflict between each sub-model, iterating development of sub-models to resolve any conflicts
-                \end{tree}
-            \end{tree}
-            \item No
-            \begin{tree}
-                \item Specify and fit full joint model accounting for dependency between sub-models
-            \end{tree}
-        \end{tree}
-        \end{tree}
-    \end{tree}
-\end{tree}
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth]{figures/integration choices decision tree.drawio.png}
+    \includegraphics[width=\textwidth]{figures/integration choices decision tree.drawio (1).png}
     \caption{Decision tree of integration choices for integrating multiple data sources in infectious disease modelling.}
     \label{fig:integration}
 \end{figure}
@@ -500,6 +449,8 @@ A wide range of software tools is available to support the implementation of bot
 
 Computational demands vary substantially between inference methods and can constrain the scale and complexity of implementation. MCMC methods can be computationally intensive for high-dimensional parameter spaces. VI is highly scalable and typically much faster than MCMC. However, it trades accuracy for speed and may not always be suitable where posterior uncertainty is critical. Likelihood-free methods tend to be computationally expensive because of repeated model simulation. Parallelization is essential and HPC resources are often required for large-scale studies. 
 
+% Add some stuff talking about performance on CPU vs GPU etc
+
 \begin{landscape}
 \begin{table}[ht]
 \renewcommand{\arraystretch}{1.2}
@@ -526,18 +477,18 @@ Approximation error & Exact (asymp.) & Exact (asymp.) & Exact (asymp.) & Particl
 \midrule
 Computational cost & Low & High & Very high & Med--High & Low & Low--Med & High & High \\
 Scalability (big data) & Good & Poor & Poor & Moderate & Good & Good & Moderate & Moderate \\
-Example software & --- & Stan, PyMC, JAGS, NIMBLE & PyMC, LibBi & PyMC & R-INLA & Stan & abctools, EasyABC & --- \\
+Example software & --- & Stan, PyMC, JAGS, NIMBLE & . & LibBi & R-INLA & Stan, PyMC, Turing.jl & abc, abctools, EasyABC & --- \\
 Tuning required? & Minimal & Step size, priors & Complex & Resampling & Minimal & ELBO opt. & Summary stats, distance metric, threshold & Summary stats \\
 Capable of real-time inference? & Yes & No & No & Yes & Yes & Yes & No & No \\
 Parallelization potential & 
-High, parallel over data points & 
-Limited, chain-level; GPU possible but hard & 
-Limited, particle-level; GPU for simple models & 
-High, particle-level; GPU possible & 
-Low, matrix ops hard to parallelise & 
+High & 
+Limited, GPU possible but hard & 
+Limited, GPU possible for simple models & 
+High, GPU possible & 
+Low, hard to parallelise & 
 Medium, gradient parallelisation; GPU possible & 
 High, simulations parallelisable; GPU possible & 
-Medium, MCMC within BSL;  GPU possible \\
+Medium, GPU possible \\
 Best use case & Simple models & General Bayesian inference & State-space models & Real-time inference & Latent Gaussian models & Fast approximation & Intractable likelihood & Intractable likelihood + summary stats \\
 \bottomrule
 \end{tabular}
