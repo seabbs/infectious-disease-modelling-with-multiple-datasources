@@ -18,7 +18,7 @@
 \setlistdepth{10} 
 \usepackage{comment}
 
-\title{Integrating Multiple Data Sources in Infectious Disease Modelling: Best Practices and Implementation}
+\title{Workflow Best Practices for Infectious Disease Modelling: Multiple Data Sources, Evolving Outbreaks, and Practical Implementation}
 
 \author[1]{Sam Abbott}
 \author[2]{Xiahui Li}
@@ -272,23 +272,27 @@ In principle, integrating multiple data should enhance the identifiability and p
 
 In practice, however, data integration may pose challenges. These include inconsistencies due to unaccounted biases (REFS); computational complexity (REFS); and real-time pressures during an outbreak emergency (REF).
 
-Evaluating the strengths and limitations of different data sources, as described in Section \ref{sec:datareview}, can and should be done during inter-epidemic periods. This evaluation, alongside with the workflow of specifying process and observation DAGs (Section ??), helps assess whether estimands of interest are identifiable from the available data. Value-of-information methods(REFs) can further guide whether new or additional, data would meaningfully improve precision. However, for complex models especially, identifiability may only become evident after fitting an initial version.
+Evaluating the strengths and limitations of different data sources, as described in Section \ref{sec:datareview}, can and should be done during inter-epidemic periods. This evaluation, alongside with the workflow of specifying process and observation DAGs (Section ??), helps assess whether estimands of interest are identifiable from the available data. Value-of-information methods(REFs) can formally guide whether new or additional data would meaningfully improve precision. However, for complex models especially, identifiability may only become evident after fitting an initial version.
 
-Decisions about data integration are inherently context-dependent, but can be guided by the decision tree in Figure \ref{fig:integration}. When combining independant model outputs from different groups, the choice of ensembling or meta-analytic approach should align with the research objective (e.g. estimation or prediction), and influence how estimates or predictions are weighted (e.g. by precision or prediction accuracy). In contrast, when integrating sub-models, the approach will depend on whether existing sub-models have already been fitted, or if the models are being developed de novo.
+Decisions about data integration are inherently context-dependent, but can be guided by the decision tree in Figure \ref{fig:integration}. When combining independant model outputs from different groups, the choice of ensembling or meta-analytic approach should align with the research objective (e.g. estimation or prediction), influencing how estimates or predictions are weighted (e.g. by precision or prediction accuracy). In contrast, when integrating sub-models, the approach will depend on whether existing sub-models have already been fitted, or if the models are being developed de novo.
 
 \subsubsection{Integration Methods}
+
+% TODO: Full joint modelling
+Specifying a full joint model of multiple data sources and the underlying processes generating them offers a coherent framework for integrating such sources simultaneously, in the spirit of Bayesian hierarchical models (REF). This approach is especially suited when there are complex dependencies between data sources, perhaps conditional on the parameters of the underlying process model, such that identification of all parameters is compromised when some data are left out. However, joint models can be computationally intensive and challenging to fit, especially in high-dimensional or real-time settings. Care is needed to ensure complex dependencies are appropriately modelled and that observational biases, such as selection biases, are adequately accounted for in the model, to avoid conflict between data sources (REF). 
+
 % Modular approaches and staged fitting
 % Markov melding
-A modular model building approach (REFs) is generally preferable, buided by the principle of parsimony (``Occam's razor'', REF). 
-Starting with simple sub-models makes it easier to diagnose issues such as poor fit, model misspecification or convergence issues. Complexity can then be added incrementally, only as far as needed. Sequentially combining sub-models also dacilitates the detection of inconsistencies or conflicts between them (REFs). 
+A modular model building approach (REFs) is therefore generally recommended, guided by the principle of parsimony (``Occam's razor'', REF). 
+Starting with simple sub-models makes it easier to diagnose issues such as poor fit, model misspecification or convergence issues. Complexity can then be added incrementally, only as far as needed. Sequentially combining sub-models also facilitates the detection of inconsistencies or conflicts between them (REFs). Modular approaches also offer computational advantages over joint modelling. Techniques like Markov melding (REF) allow posterior samples from one sub-model to serve as a proposal distribution for the next, avoiding the need to refit a full joint model. Similar sequential strategies, using the posterior from one sub-model as the prior (rather than proposal) for another, have a long history (REF?).
 
-Modular approaches offer computational advantages. Techniques like Markov melding (REF) allow posterior samples from one sub-model to serve as a proposal distributions for the next, avoiding the need to refit a full joint model. This sequential strategy, using the posterior from one sub-model as the prior for another, have a long history (REF?). 
-While the theory and some applications of Markov melding are well-established (REFs), practical implementation remains challenging. Limitations include the availability of user-friendly Bayesian software 
-and methods for assessing sub-model compatibility (REF). As a result, approximate methods are often used. A common approach 
-is to combine a Stage 1 estimate with a Stage 2 model by assuming the Stage 1 point estimate is a realisation (on an appropriate scale) of a Normal distribution with fixed variance given by the squared Stage 1 standard error or posterior standard deviation (REFs). This mirrorsstandard meta-analysis techniques (REF); and has been shown to be an approximation to Markov melding with ``product of experts'' pooling, considering a Normal approximation for the Stage 1 sub-model (REF).
+While the theory and some applications of Markov melding are well-established (REFs), practical implementation remains challenging. Limitations include the availability of user-friendly Bayesian software and methods for assessing sub-model compatibility (REF). As a result, approximate methods are often used. A common approach is the one used in standard meta-analysis (REF) to combine previous estimates using a normal approximation. A Stage 1 point estimate, $\hat{y}_1$, and its corresponding standard error or posterior standard deviation $\hat{\sigma}^2_1$, can be incorporated in a Stage 2 model as a likelihood term, on an appropriate scale:
+$$
+\hat{y}_1 \sim N(\theta, \hat{\sigma}^2_1)
+$$ for some parameter $\theta$ in the Stage 2 model informed by the Stage 1 estimate. This approach has been shown to be an approximation to Markov melding with ``product of experts'' pooling (REF).
 
 % Cut distribution and generalised evidence synthesis
-Modular approaches also support selective trust in sub-models. ``Cutting'' feedback - i.e. preventing less reliable sub-models from influencing more trusted ones while allowing the reverse — enables nuanced evidence synthesis(REFs).
+Modular approaches also support selective trust in sub-models. ``Cutting'' feedback -- i.e. preventing less reliable sub-models from influencing more trusted ones while allowing the reverse -- enables nuanced evidence synthesis (REFs).
 
 % TODO: Full joint modelling
 % suggested text from copilot in case useful:
@@ -297,8 +301,30 @@ Modular approaches also support selective trust in sub-models. ``Cutting'' feedb
 
 % TODO: Ensemble and weighting methods
 % suggested text from copilot in case useful:
-% When multiple models or estimates are available—whether from different research groups or alternative specifications—ensemble methods provide a flexible way to combine them. The choice of ensemble strategy should reflect the research objective. For prediction, weighting by out-of-sample accuracy may be appropriate; for estimation, weights might reflect precision or model credibility.
-%Common approaches include Bayesian model averaging, stacking, and meta-analytic pooling. These methods can accommodate model uncertainty and allow for robustness across competing hypotheses. In practice, ensemble weights may be fixed, data-driven, or informed by expert judgment, depending on the context and available information.
+When multiple models or estimates are available—whether from different research groups or alternative specifications—ensemble methods provide a flexible way to combine them. The choice of ensemble strategy should reflect the research objective. For prediction, weighting by out-of-sample accuracy may be appropriate; for estimation, weights might reflect precision or model credibility (REF). Common approaches include Bayesian model averaging, stacking, and meta-analytic pooling (REF). These methods can accommodate model uncertainty and allow for robustness across competing hypotheses. In practice, ensemble weights may be fixed, data-driven, or informed by expert judgment, depending on the context and available information (REF).
+
+
+\subsubsection{Conflict Detection and Resolution}
+% Prior-data conflict
+% Data-data conflict
+% Model criticism in multi-source settings
+% Sensitivity analysis approaches
+
+Detecting and resolving conflicting evidence about underlying latent processes is essential to ensure coherent inference and robustly informed decisions (REF). Such conflicts may arise between prior assumptions and data (``prior-data conflict''), between different data sources, between different partitions of a joint model into submodels, or even within a data source but between different units of data (REF).
+
+If data sources and/or prior information provide inconsistent evidence on a parameter, this conflict usually manifests either as a lack of identifiability, a symptom of which may be lack of convergence of an MCMC algorithm or equivalent; or as lack of fit to one or more data sources (REF). Resulting estimates may therefore be more uncertain than if each data source were modelled independently. Such conflicts are typically the result of model misspecification: some observational bias that has not been accounted for in the observation model (e.g. under-reporting or selection bias); or some approximation in the process model that fails to explain the variation in the data (e.g. a fixed under-reporting proportion); or an unrealistic prior specification (e.g. an infection-fatality risk based on a previous pathogen which is not that similar to a newly emerging one).  
+
+Diagnostic tools to detect conflicts in evidence synthesis models include prior-, mixed- and posterior-predictive checks (REF) and extensions of these to latent levels of a hierarchical model (REF).
+
+
+% Copilot suggestion to flesh out the above in case useful:
+%In multi-source modelling, detecting and resolving conflicts is essential to ensure coherent inference and robust decision-making. Conflicts can arise at various levels:
+%Prior–Data Conflict: When prior beliefs are strongly contradicted by observed data, it may indicate misspecification or overly informative priors. Diagnostic tools such as prior predictive checks and posterior–prior overlap metrics can help identify such conflicts early in the modelling process.
+%Data–Data Conflict: Different data sources may provide inconsistent evidence about the same underlying process, due to biases, measurement error, or contextual differences. Identifying these conflicts requires careful comparison of marginal likelihoods, posterior distributions, and model fit across data streams.
+%Model Criticism in Multi-Source Settings: Traditional model criticism techniques—such as posterior predictive checks, residual analysis, and information criteria—must be adapted to account for the complexity introduced by multiple data sources. Modular approaches can help isolate problematic components, while joint models may require more sophisticated diagnostics.
+%Sensitivity Analysis: Sensitivity analysis plays a key role in conflict resolution. Varying priors, data inclusion, or model structure can reveal the robustness of conclusions and help identify influential assumptions. In modular settings, sensitivity analysis can be performed component-wise, while in joint models, global sensitivity approaches may be more appropriate.
+%Ultimately, conflict detection should be an iterative process, integrated into model development and refinement. Transparent reporting of conflicts and their resolution enhances the credibility and interpretability of modelling outputs, particularly in high-stakes settings such as outbreak response.
+
 
 \subsubsection{Practical Constraints}
 % Different teams with different expertise/languages
@@ -313,21 +339,6 @@ Modular approaches also support selective trust in sub-models. ``Cutting'' feedb
 %Computational Resources: High-dimensional models or those requiring extensive simulation (e.g., via MCMC) can be computationally demanding. Limited access to high-performance computing infrastructure may constrain the complexity or scale of models that can be feasibly implemented, particularly in low-resource settings.
 %Time Constraints in Outbreak Settings: During public health emergencies, the need for rapid decision-making often precludes the development of fully integrated or optimised models. In such contexts, simpler or pre-existing models may be prioritised over more comprehensive but time-intensive approaches.
 %These constraints highlight the importance of planning and infrastructure development during inter-epidemic periods, including the creation of interoperable modelling frameworks, shared codebases, and cross-disciplinary training.
-
-\subsubsection{Conflict Detection and Resolution}
-% Prior-data conflict
-% Data-data conflict
-% Model criticism in multi-source settings
-% Sensitivity analysis approaches
-
-% Copilot suggestion to flesh out the above in case useful:
-%In multi-source modelling, detecting and resolving conflicts is essential to ensure coherent inference and robust decision-making. Conflicts can arise at various levels:
-%Prior–Data Conflict: When prior beliefs are strongly contradicted by observed data, it may indicate misspecification or overly informative priors. Diagnostic tools such as prior predictive checks and posterior–prior overlap metrics can help identify such conflicts early in the modelling process.
-%Data–Data Conflict: Different data sources may provide inconsistent evidence about the same underlying process, due to biases, measurement error, or contextual differences. Identifying these conflicts requires careful comparison of marginal likelihoods, posterior distributions, and model fit across data streams.
-%Model Criticism in Multi-Source Settings: Traditional model criticism techniques—such as posterior predictive checks, residual analysis, and information criteria—must be adapted to account for the complexity introduced by multiple data sources. Modular approaches can help isolate problematic components, while joint models may require more sophisticated diagnostics.
-%Sensitivity Analysis: Sensitivity analysis plays a key role in conflict resolution. Varying priors, data inclusion, or model structure can reveal the robustness of conclusions and help identify influential assumptions. In modular settings, sensitivity analysis can be performed component-wise, while in joint models, global sensitivity approaches may be more appropriate.
-%Ultimately, conflict detection should be an iterative process, integrated into model development and refinement. Transparent reporting of conflicts and their resolution enhances the credibility and interpretability of modelling outputs, particularly in high-stakes settings such as outbreak response.
-
 
 
 \begin{figure}[htbp]
