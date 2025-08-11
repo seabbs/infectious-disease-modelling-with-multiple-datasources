@@ -56,9 +56,9 @@
 
 \begin{abstract}
 %Lead: Sam Abbott
-The increase in available data sources during recent infectious disease outbreaks has created both opportunities and challenges for modellers seeking to integrate diverse data streams.
-Rigorous Bayesian workflow approaches for integrating diverse data streams are becoming increasingly formalised and widely used.
-However, the infectious disease modelling community has been slow to adopt these approaches, despite working in rapidly evolving settings where novel data sources emerge and surveillance systems adapt in real-time, increasing the need for practices of this kind.
+Recent infectious disease outbreaks have demonstrated how rapidly evolving data landscapes create both opportunities and challenges for modellers seeking to integrate diverse data streams.
+These outbreak settings are characterised by evolving research questions, emerging data sources, and adapting surveillance systems that require flexible analytical approaches.
+The infectious disease modelling community has been slow to adopt rigorous Bayesian workflow approaches for integrating diverse data streams which might help mitigate these domain specific challenges, even as these methods become increasingly formalised and widely used in other domains.
 This paper provides a methodological framework for integrating multiple data sources in infectious disease modelling building on non-domain-specific Bayesian workflow advice, with transmission intensity estimation as a key exemplar.
 We first outline an approach for characterising epidemiological data source properties through a structured checklist,  then present an iterative workflow that extends established Bayesian model development approaches to the infectious disease domain and that references the data checklist throughout.
 Our workflow progresses from research question definition through development of directed acyclic graph (DAG) representations of process and observation, to integration method selection, with explicit consideration of data conflicts and uncertainty quantification.
@@ -163,6 +163,11 @@ Practical constraints shape integration choices in multiple ways. Teams using in
 Integration complexity itself may require simplifying observation models to maintain computational feasibility. Conflicts between data sources during integration often reveal model misspecification, requiring revision of earlier assumptions. 
 Computational constraints during fitting may require approximating or restructuring the process DAG. Limited computational resources or available expertise may favour modular over joint integration approaches despite the theoretical advantages of joint modelling. 
 For example, if you initially design a joint model but find it computationally intractable with available methods, you might iterate back to choose a modular integration approach, which in turn might influence how you structure your observation DAGs.
+
+Practitioners should expect to repeat this workflow as outbreaks evolve.
+Understanding of pathogen characteristics improves over time, research questions shift from immediate response to longer-term planning, and decision-making timescales change from days to months.
+New data sources emerge whilst surveillance systems adapt to changing circumstances.
+This evolution favours modular approaches that enable component reuse rather than bespoke models requiring complete redevelopment when applications change.
 
 In the following sections, we will discuss each of these steps in more detail as well as providing resources for learning more. We will also demonstrate this workflow in our case studies.
 
@@ -494,6 +499,23 @@ Best use case & Simple models & General Bayesian inference & State-space models 
 \end{tabular}
 \end{table}
 \end{landscape}
+
+\subsection{Outbreak Evolution and Workflow Iteration}
+
+Two types of changes during outbreaks require revisiting this workflow.
+First, new information emerges about pathogen characteristics, surveillance capabilities, and population dynamics that may necessitate updating model assumptions and data integration choices.
+Second, research questions evolve as outbreak priorities shift from initial detection and characterisation towards intervention evaluation and long-term planning.
+When these changes occur, practitioners should iterate through the workflow, visiting their earlier decisions, rather than developing entirely new models.
+
+Changes that warrant workflow iteration include: substantial new data sources becoming available (such as genomic surveillance or serological surveys); shifts in research questions that alter target estimands; and improved understanding of pathogen biology that changes process model assumptions.
+The modular approach we advocate enables practitioners to update specific workflow components whilst preserving elements from previous iterations.
+For example, observation models developed for case surveillance can often be reused when adding death reporting, whilst process models for transmission dynamics may require updating when new variants emerge.
+This incremental approach reduces development time and maintains continuity across evolving outbreak contexts.
+
+These steps are often carried out on an ad-hoc basis by teams during outbreaks but we think that a more formal approach that tracks decisions is likely to improve the quality of models produced, and be ultimately less resource intensive.
+Establishing regular review points to assess whether workflow iteration is needed is likely to be beneficial with more regular reviews during acute outbreak phases.
+Each iteration should document what has changed, why updates are necessary, and how new approaches build upon previous work.
+Having this documentation supports both real-time decision-making and retrospective evaluation of analytical approaches.
 
 \section{Case Studies}
 % Lead: Anne Cori
