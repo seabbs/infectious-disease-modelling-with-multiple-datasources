@@ -21,16 +21,16 @@
 \title{Integrating Multiple Data Sources in Infectious Disease Modelling: Best Practices and Implementation}
 
 \author[1]{Sam Abbott}
-\author[2]{Xiahui Li}
-\author[3]{Punya Alahakoon}
-\author[4]{Dhorasso Junior Temfack Nguefack}
+\author[2]{Xiahui Li$^\dagger$}
+\author[3]{Punya Alahakoon$^\dagger$}
+\author[4]{Dhorasso Junior Temfack Nguefack$^\dagger$}
 \author[5]{Johannes Bracher}
 \author[6]{Felix Günther}
 \author[7]{@working-group-members}
 \author[8]{@workshop-participants}
 \author[9]{Mircea T. Sofonea}
 \author[10]{Michael Plank}
-\author[12]{Anne Cori\thanks{Joint last authors}$^*$}
+\author[12]{Anne Cori$^{*\dagger}$}
 \author[11]{Anne Presanis$^*$}
 
 \affil[1]{London School of Hygiene \& Tropical Medicine}
@@ -47,6 +47,10 @@
 \affil[12]{Imperial College London}
 
 % Note: Author order is provisional and subject to change
+
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\footnotetext[1]{$^\dagger$Equal contribution}
+\footnotetext[2]{$^*$Joint last authors}
 
 \date{\today}
 
@@ -825,27 +829,20 @@ Each case study also leads to new fitting choices and model validation strategie
 Throughout we highlight that considering each submodel in isolation is a useful starting point for model development and validation.
 Each case study illustrates real-world trade-offs between model complexity, computational feasibility, and parameter identifiability.
 
+\subsection{Strengths and Limitations/Outstanding Challenges}
 
- 
+A key strength of our suggested workflow is the explicit separation of epidemiological process DAGs from observation DAGs, recognising that these components draw from different domains: epidemiological processes are informed by infectious disease theory whilst observation models reflect data source characteristics and collection mechanisms.
+This separation provides clarity for model development and validation.
+The framework's applicability across diverse contexts, from early outbreak analysis to routine surveillance, offers flexibility for varied epidemiological questions.
+In addition, our suggested data review process provides a structured approach to understanding different epidemiological data sources.
 
+Our suggested approach can be implemented with current tools, though doing so may require choosing between statistical rigour (resource-intensive joint models) and computational feasibility (pipeline approaches with known limitations).
+The DAG-based workflow helps analysts plan for evolving data availability, but adapting models as surveillance systems change typically requires substantial rework.
+Teams may need to maintain multiple parallel models for different data scenarios, potentially limiting rapid response capabilities.
 
-
-
-
-
-
-\subsection{Strengths and Limitations}
-% TODO: Strengths: Modular framework, practical focus rooted in SARS-CoV-2 experience across multiple countries, worked examples
-% TODO: Strengths: Integration of diverse methodological approaches
-% TODO: Strengths: Expert survey and empirical evidence base
-% TODO: Limitations: Model selection and validation challenges
-% TODO: Limitations: Dependence on data quality and availability
-% TODO: Limitations: Computational considerations and scalability
-% TODO: Limitations: perhaps we don't actually provide the code for the CSs. 
-% I suggest starting with limitations and then having strenghts so it doesn't sound like we are shooting ourselves in the foot. 
-
-A key feature is the explicit separation of epidemiological process DAGs from observation DAGs, recognising that whilst these components interact through feedback mechanisms, they draw from different domains: epidemiological processes are informed by infectious disease theory whilst observation models are motivated by data source characteristics and collection mechanisms.
-Start with a clear research question, such as estimating transmission intensity—, and use systematic model development through directed acyclic graphs (DAGs) with iterative refinement.
+Without shared infrastructure, teams typically rebuild common epidemiological processes for each application.
+Current probabilistic programming frameworks provide foundations but often lack the epidemiological abstractions needed for routine use.
+These implementation barriers can lead teams to adopt simpler approaches despite understanding their statistical limitations.
 
 \subsection{Comparison with Existing Literature}
 % TODO: Position relative to pipeline vs joint modelling literature
@@ -854,26 +851,29 @@ Start with a clear research question, such as estimating transmission intensity�
 % TODO: Distinguish from existing reviews and methodological papers
 % TODO: Compare with other multi-source integration frameworks
 
-\subsection{Outstanding Challenges and Future Directions}
-% TODO: Real-time implementation constraints and solutions
-% TODO: Computational scalability for large-scale integration
-% TODO: Methodological gaps in current approaches
-% TODO: Emerging data sources and integration needs / opportunities
-% TODO: Community standards and best practices
-% TODO: Research priorities and next steps
+\subsection{Future work}
 
+Future progress requires infrastructure that bridges the gap between methodological best practice and routine implementation.
+Composable modelling tools, where individual self contained components can be combined to build more complex models, could enable modular development where domain experts contribute specialised components without rebuilding core functionality.
+Such tools would need standardised interfaces between model components, epidemiological abstractions for common processes, and support for seamless reconfiguration as data availability evolves.
+
+Key priorities include developing community standards for model specification and validation across multiple data sources.
+Computational scalability remains critical, particularly for joint analysis of individual-level genomic data with population surveillance.
+As emerging data sources from digital health systems and environmental monitoring become available, frameworks must incorporate these streams whilst maintaining interpretability.
+Model validation procedures that can detect conflicts between data sources and assess component compatibility need development beyond current approaches.
+These advances would make rigorous multi-source integration accessible to public health teams without prohibitive resource requirements, enabling the rapid response capabilities that outbreak situations demand.
 
 
 \section{Conclusions}
 
-Integrating multiple data sources offers substantial benefits for infectious disease modelling, but requires careful consideration of trade-offs between information gain, computational complexity, and interpretability.
-Our framework provides infectious disease modellers with practical tools for navigating these choices through structured workflows, expert consensus on data characteristics, and demonstrated case studies that progress from single-source baselines to complex multi-stream integration.
-The modular approach we advocate offers a pragmatic path forward that balances methodological rigor with practical considerations.
-By making modelling assumptions explicit through DAG-based development and providing clear guidance on integration method selection, this framework enables more transparent, reproducible, and effective multi-source modelling.
-We recommend that the infectious disease modelling community adopt these structured approaches for both model development and evaluation.
-Readers can use this framework as a checklist when evaluating modelling papers to assess whether data integration choices are appropriate and transparent.
-Practitioners should implement these workflows across all infectious disease modelling contexts, with particular value during rapidly evolving situations where new data sources emerge.
-Community standards for data integration should prioritise both methodological rigour and practical implementation needs.
+Infectious disease modelling workflows benefit from systematic approaches that can adapt to multiple data sources and evolving outbreak contexts.
+We have presented workflow best practices that provide practical guidance for navigating trade-offs between information gain, computational complexity, and interpretability across diverse modelling scenarios.
+Our workflow extends established Bayesian principles through structured steps from data characterisation to model validation, supported by expert consensus on data source characteristics and progressive case studies.
+The modular approach we advocate enables practitioners to build complexity incrementally whilst maintaining transparency about modelling assumptions and integration choices.
+We recommend that the infectious disease modelling community adopt these workflow best practices for both model development and evaluation.
+Readers can use our framework as a systematic checklist when evaluating modelling papers to assess whether workflow choices are appropriate and transparent.
+Practitioners should implement these approaches across all infectious disease modelling contexts, with particular value during rapidly evolving outbreaks where research questions shift and new data sources emerge.
+Establishing community standards around systematic workflow practices will improve both methodological rigour and practical implementation across the field.
 
 \section{Acknowledgements}
 
