@@ -73,6 +73,8 @@ Our framework emphasises parsimony, interpretability, and model criticism.
 We also provide practical guidance supported by schematic worked examples.
 \end{abstract}
 
+\newpage
+
 \section{Introduction}
 % Lead: Sam Abbott
 
@@ -449,13 +451,13 @@ When exact likelihoods are unavailable but the model can be simulated repeatedly
 
 Selecting an appropriate inference method involves balancing trade-offs between computational efficiency, statistical rigor, data availability, interpretability, and model complexity \citep{funk2020choices}. Rather than adopting a universal approach, the choice should be tailored to the specific modeling context and inferential goals. 
 
-For evolving epidemics, a key consideration is the dynamic nature of epidemic processes and data streams. As transmission rates and intervention effects change over time, and new data arrive continuously, methods that support sequential data updates, such as SMC, are generally preferred for real-time epidemic tracking \cite{birrell2020efficient, storvik2023sequential}. In contrast, MCMC-based methods, while statistically robust, are typically better suited for retrospective analyses, due to their reliance on complete datasets and high computational demands for reanalysis. 
+For evolving epidemics, a key consideration is the dynamic nature of epidemic processes and data streams. As transmission rates and intervention effects change over time, and new data arrive continuously, methods that support sequential data updates, such as SMC, are generally preferred for real-time epidemic tracking \citep{birrell2020efficient, storvik2023sequential}. In contrast, MCMC-based methods, while statistically robust, are typically better suited for retrospective analyses, due to their reliance on complete datasets, high computational demands for reanalysis, and computational intensity in high-dimensional parameter spaces. 
 
- When computational resources are constrained, for example during real-time outbreak monitoring or when analyzing large datasets, approximate methods like VI or ABC-SMC might offer scalable alternatives \citep{chatzilena2019contemporary, engebretsen2023real}.
+When computational resources are constrained, for example during real-time outbreak monitoring or when analyzing large datasets, approximate methods like VI or ABC-SMC might offer scalable alternatives \citep{chatzilena2019contemporary, engebretsen2023real}. VI is highly scalable and typically much faster than MCMC, although it trades accuracy for speed and may not always be suitable where posterior uncertainty is important. Likelihood-free methods, while offering flexibility for complex models, tend to be computationally expensive because of repeated model simulation.
 
-Beyond computational efficiency, statistical accuracy is influenced by algorithmic choices including priors distributions, tuning parameters, tolerance thresholds, and the number of particles or iterations. Full-likelihoods methods typically yield higher accuracy, subject to likelihood tractability and proper specification, whereas likelihood-free approaches often prioritise flexibility and scalability over precision \cite{alahmadi2020comparison}. 
+Beyond computational efficiency, statistical accuracy is influenced by algorithmic choices including priors distributions, tuning parameters, tolerance thresholds, and the number of particles or iterations. Full-likelihoods methods typically yield better estimator performance, subject to likelihood tractability and proper specification, whereas likelihood-free approaches often prioritise flexibility and scalability over precision \cite{alahmadi2020comparison}. 
 
-Interpretability and ease of implementation also play a role. Certain methods integrate smoothly with probabilistic programming environments, while others may require further tuning and computational expertise. Ultimately, method selection should followa systematic decision process that considers modeling goals, urgency or latency constraints, system complexity, and available computational resources. 
+Interpretability and ease of implementation also play a role. Certain methods integrate smoothly with probabilistic programming environments, while others may require further tuning and computational expertise. Ultimately, method selection should follow a systematic decision process that considers modeling goals, urgency or latency constraints, system complexity, and available computational resources. 
 
 Regardless of the approach chosen, model checking, sensitivity analysis, and validation are essential to ensure that inferences are not only statistically valid but also scientifically meaningful and actionable.
 
@@ -471,13 +473,17 @@ A wide range of software tools is available to support the implementation of bot
 Computational demands vary substantially between inference methods and can constrain the scale and complexity of implementation. MCMC methods can be computationally intensive for high-dimensional parameter spaces. VI is highly scalable and typically much faster than MCMC. However, it trades accuracy for speed and may not always be suitable where posterior uncertainty is critical. Likelihood-free methods tend to be computationally expensive because of repeated model simulation. Parallelization is essential and HPC resources are often required for large-scale studies. 
 
 % Add some stuff talking about performance on CPU vs GPU etc
+Parallelization is essential for large-scale epidemiological studies, where high-performance computing (HPC) resources are often required to handle complex models and extensive datasets. The parallelization potential varies across inference methods. MLE is highly parallelizable across data points, making it efficient scaling on both multi-core CPUs and GPUs for large datasets. Traditional MCMC methods have limited parallelization due to their sequential chain structure, GPU implementation remain challenging. Particle-based methods (PMCMC, SMC) benefit from particle-level parallelism and are well-suited for many-core GPU architectures, where thousands of particles can be processed simultaneously \citep{henriksen2012parallel}. However, INLA has low parallelization potential due to its dependence on sequential matrix operations that resist decomposition. VI scales well when processing small chunks of data at a time, where gradient calculations for each chunk can run in parallel \citep{hoffman2013stochastic}. Most modern VI implementations commonly use GPU acceleration, making them quite efficient for large datasets \citep{bingham2019pyro}. Likelihood-free methods like ABC excel in parallelization, as simulations are trivially parallelizable and GPU-friendly, though practitioners should account for potentially high memory requirements when scaling to many cores \citep{kulkarni2022hardware}. BSL allows parallelization with GPU acceleration to be possible for computationally intensive density estimation steps. When selecting methods for HPC environments, practitioners should carefully weight these parallelization capabilities against memory constraints, available hardware, and the specific computational demands of the epidemiological applications.
+
+
+
 
 \begin{landscape}
 \begin{table}[ht]
 \renewcommand{\arraystretch}{1.2}
 \centering
 \caption{\textbf{Comparison of Likelihood-Based and Likelihood-Free Fitting Methods (Could table masters improve the current table format please?).} 
-This table focuses on foundational algorithms. More recent methodological advancements that build upon these classical approaches are discussed in Section 4.9 of the main text.}
+This table focuses on foundational algorithms. More recent methodological advancements that build upon these classical approaches are discussed in Section 4.9 of the main text. "PPL" stands for Probabilistic Programming Languages. For this review, PPL examples include Stan, PyMC, JAGS, NIMBLE, Turing. jl, etc.}
 \label{tab:methods_comparison}
 \small
 \begin{tabular}{@{}p{3.2cm}p{1.5cm}p{1.5cm}p{1.5cm}p{1.5cm}p{1.5cm}p{1.5cm}p{1.5cm}p{1.5cm}@{}}
@@ -498,15 +504,15 @@ Approximation error & Exact (asymp.) & Exact (asymp.) & Exact (asymp.) & Particl
 \midrule
 Computational cost & Low & High & Very high & Med--High & Low & Low--Med & High & High \\
 Scalability (big data) & Good & Poor & Poor & Moderate & Good & Good & Moderate & Moderate \\
-Example software & --- & Stan, PyMC, JAGS, NIMBLE & . & LibBi & R-INLA & Stan, PyMC, Turing.jl & abc, abctools, EasyABC & --- \\
-Tuning required? & Minimal & Step size, priors & Complex & Resampling & Minimal & ELBO opt. & Summary stats, distance metric, threshold & Summary stats \\
+Example software & PPL & PPL & POMP, NIMBLE & LibBi & R-INLA & PPL & abc, abctools, EasyABC, ELFI & ELFI \\
+Tuning required? & Minimal & Step size, priors & Complex & Resampling & Minimal & ELBO opt. & Sum. stats., distance, threshold & Sum. stats. \\
 Capable of real-time inference? & Yes & No & No & Yes & Yes & Yes & No & No \\
 Parallelization potential & 
 High & 
-Limited, GPU possible but hard & 
-Limited, GPU possible for simple models & 
-High, GPU possible & 
-Low, hard to parallelise & 
+Limited, chain-level, GPU possible but hard & 
+Limited, particle-level, GPU possible for simple models & 
+High, particle-level, GPU possible & 
+Low, matrix operation hard to parallelise & 
 Medium, gradient parallelisation; GPU possible & 
 High, simulations parallelisable; GPU possible & 
 Medium, GPU possible \\
@@ -573,8 +579,8 @@ We demonstrate our iterative workflow through four progressive case studies, eac
 All case studies share a common estimand -- the time-varying reproduction number ($R_t$) -- while the final case study has the overdispersion parameter ($k$) as an additional estimand. The case studies use SARS-CoV-2 outbreak data to leverage expert survey evidence on data source characteristics.
 Each case study follows our complete workflow framework, demonstrating how adding more data sources enables analyses to answer questions that would otherwise require strong assumptions.
 
-The progression between case studies illustrates key principles: case counts are often used to monitor transmissibiliy over time but require assumptions on the fraction of infections reported (CS0); data on deaths can eliminate reporting fraction assumptions that beset case-only analyses (if the case fatality ratio is known, CS1); wastewater data eliminates testing bias inherent in symptomatic surveillance (but is limited by uncertainty in the average shedding rate per infected individual, CS2); individual-level data enables direct overdispersion estimation without distributional assumptions (CS3).
-Implementation choices reflect practical considerations including available expertise, computational resources, time availability, and model complexity trade-offs, whilst generally favouring efficient methods like NUTS where applicable.
+The progression between case studies illustrates key principles: case counts are often used to monitor transmissibility over time but require assumptions on the fraction of infections reported (CS0); data on deaths can eliminate reporting fraction assumptions that beset case-only analyses (if the case fatality ratio is known, CS1); wastewater data eliminates testing bias inherent in symptomatic surveillance, but is limited by uncertainty in the average shedding rate per infected individual (CS2); individual-level data enables direct overdispersion estimation without distributional assumptions (CS3).
+
 
 TODO: need to add something on data source mapping which all the case studies will draw from: what data are available that may inform Rt and superspreading estimates? (Can draw from the survey and Anne C's slides at CIRM). What are their pluses and minuses (if we cannot do the full mapping from survey we can still discuss - otherwise refer to that section).
 
@@ -599,7 +605,7 @@ We then decided on a set of characteristics for the data sourves we consider in 
 The full version of this is in SI. Interesting comment on free text
 
 It is also useful to look in detail at individual data sources. Table blah is an example of this. Note blah and blah and blah.
-We have the rest of thesee in the SI. 
+We have the rest of these in the SI. 
 The following case studies will demonstrate referring back to these and blah blah.
 
 
@@ -656,7 +662,7 @@ We refer to these models as $O_{000}$ (for the simplest observation model not mo
 %%%%%%%%%%%%% MJP: The following is an attempt to be more explicit about the equations for the observation model - we could delete this or move it to SI or to a Figure if we don't want this level of detail in the text. 
 The $O_{111}$ model could be represented by the following equation for the observed variable $\hat{I}_t$, representing the number of reported cases on day $t$:
 \begin{equation}
-    \hat{I}_t \sim \mathrm{Poiss}\left( \sum_{s=0}^\infty N_{s,t}\right)
+    \hat{I}_t \sim \mathrm{Poiss}\left( \sum_{s=1}^t N_{s,t}\right)
 \end{equation}
 where $N_{s,t}$ is the number of people infected on day $s$ and reported as a case on day $t$, given by
 \begin{equation}
@@ -781,7 +787,7 @@ The target estimand for this case study is the same as in the previous case stud
    Wastewater samples are typically collected at some cadence from one or more sampling sites, and the concentration of pathogen RNA in the samples is quantified via PCR testing. 
    The existence of multiple sites with different catchments populations and non-contemporaneous sampling frequencies complicates the interpretation of quantitative wastewater data, which can be modelled at varying levels of complexity.  
    
-    Here, we assume that a noise-free measurement of the wastewater concentration $W_t$, either from a single representative site or a suitable average of multiple sites, is available on some subset of days $t$. Then the equation for the observed variable $\hat{W}_t$ is simply
+    Here, we assume that a noise-free measurement of the wastewater concentration $W_t$, either from a single representative site or a suitable average of multiple sites, is taken on some subset of days $t$. Then the equation for the observed variable $\hat{W}_t$ is simply
     \begin{equation}
         \hat{W}_t=W_t
     \end{equation}
