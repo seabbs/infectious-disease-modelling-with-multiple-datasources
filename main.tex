@@ -91,7 +91,8 @@ Joint modelling can provide more principled uncertainty quantification and bette
 Recent empirical evidence demonstrates that joint approaches consistently outperform stepwise methods by avoiding error propagation and improving parameter identifiability \citep{lison2024generative}.
 Beyond these choices, practitioners face numerous challenges, including: detecting and resolving conflicts between data sources; combining data sources with different spatial or temporal resolutions; validating models when different data streams suggest different dynamics; and navigating branching decision paths where integration choices impose model structure constraints [@placeholder].
 Fitting challenges, such as computational intractability, parameter non-identifiability, and the need to approximate ideal model structures for practical inference, further complicate implementation [@placeholder].
-These integration and fitting considerations can impact model design, yet their implications are rarely made explicit in published analyses [@placeholder].
+These integration and fitting considerations can impact model design, yet their implications are rarely made explicit in published analyses.
+Many complex multi-source models lack transparent reporting of workflow decisions, validation procedures, and code availability, creating barriers to evaluation and reproduction [@Ward2024-sp; @Fyles2024-qz; @Abbott2021-delta; @Abbott2022-prevalence].
 The infectious disease modelling community has not widely adopted rigorous Bayesian workflow practices that emphasise iterative model development, systematic model criticism, and principled uncertainty quantification \citep{gelman2020bayesian, nicholson2022interoperability}.
 Existing guidance for practitioners is fragmented across methodological literature, with limited practical frameworks for navigating these interconnected choices systematically [@placeholder].
 
@@ -174,6 +175,7 @@ New data sources emerge whilst surveillance systems adapt to changing circumstan
 This evolution favours modular approaches that enable component reuse rather than bespoke models requiring complete redevelopment when applications change.
 
 In the following sections, we will discuss each of these steps in more detail as well as providing resources for learning more. We will also demonstrate this workflow in our case studies.
+Critical to this workflow is transparent reporting of all decisions and validation procedures, enabling both reproduction and adaptation of models for future applications.
 
 \subsection{Research Question and Target Estimands}
 
@@ -533,6 +535,37 @@ Establishing regular review points to assess whether workflow iteration is neede
 Each iteration should document what has changed, why updates are necessary, and how new approaches build upon previous work.
 Having this documentation supports both real-time decision-making and retrospective evaluation of analytical approaches.
 
+\subsection{Workflow Reporting}
+
+Complex multi-source models require clear documentation to enable evaluation and reproduction.
+Without structured reporting, even well-designed workflows are difficult to assess or improve upon.
+
+Visual schematics should clearly communicate model architecture.
+Process and observation DAGs should be reported separately, with integration methods explicitly diagrammed if multi-step methods are used.
+For example, Ward et al.'s analysis of COVID-19 hospitalisation and fatality risk provides useful visual communication of model relationships but would benefit from process DAGs and code availability [@Ward2024-sp].
+
+Validation procedures should be documented comprehensively: prior and posterior predictive checks, conflict detection, and sensitivity analyses.
+Abbott et al.'s COVID-19 Delta variant analysis demonstrates reporting with code, data and posterior predictions, though lacks prior predictive checks and integration conflict discussion [@Abbott2021-delta].
+Readers cannot fully assess model performance without diagnostic outputs, as illustrated by recent preprints where validation procedures are unreported [@Fyles2024-qz].
+
+Code should be shared alongside results because it enables verification and accelerates progress.
+For example, Abbott et al.'s prevalence estimation work has complete GitHub code, with clear links to model verification utilities, alongside the write up[@Abbott2022-prevalence].
+Not sharing code, sharing it on request [@Ward2024-sp], or only once a paper is in a peer reviewed journal [@Fyles2024-qz] all create barriers to assess data integration workflows.
+
+When data cannot be shared, synthetic data generation helps readers understand model behaviour.
+For example, Mellor et al.'s norovirus nowcasting study provides training data with statistical noise added to preserve anonymity [@Mellor2025-norovirus].
+Progressive disclosure is preferable to indefinite withholding.
+Even incomplete sharing - mathematical specifications, validation code, synthetic examples - supports scientific progress.
+
+Throughout our workflow, we emphasise making decisions transparent at each stage.
+These decisions should be reported alongside the results from the work, including rationales for data source selection, integration method choices, model structure assumptions, and validation procedures undertaken.
+This reporting enables both evaluation of current work and informed adaptation for future applications.
+
+Ideally, version control should be used for workflow development with the full git history available to demonstrate how models evolved during development.
+Even more ideally, to gain trust, the full analysis should be public as much as possible at all stages [@Abbott2021-delta; @Abbott2022-prevalence].
+However, this may need careful management when working with confidential data sources.
+Progressive disclosure of development history builds confidence in analytical approaches and enables learning from both successes and challenges encountered during model development.
+
 \section{Case Studies}
 % Lead: Anne Cori
 
@@ -847,6 +880,7 @@ A key strength of our suggested workflow is the explicit separation of epidemiol
 This separation provides clarity for model development and validation.
 The framework's applicability across diverse contexts, from early outbreak analysis to routine surveillance, offers flexibility for varied epidemiological questions.
 In addition, our suggested data review process provides a structured approach to understanding different epidemiological data sources.
+By providing explicit guidance on reporting standards, including validation procedures and code availability, we aim to improve both the development and evaluation of multi-source models.
 
 Our suggested approach can be implemented with current tools, though doing so may require choosing between statistical rigour (resource-intensive joint models) and computational feasibility (pipeline approaches with known limitations).
 The DAG-based workflow helps analysts plan for evolving data availability, but adapting models as surveillance systems change typically requires substantial rework.
@@ -855,6 +889,10 @@ Teams may need to maintain multiple parallel models for different data scenarios
 Without shared infrastructure, teams typically rebuild common epidemiological processes for each application.
 Current probabilistic programming frameworks provide foundations but often lack the epidemiological abstractions needed for routine use.
 These implementation barriers can lead teams to adopt simpler approaches despite understanding their statistical limitations.
+
+Workflow reporting remains inconsistent across the field, with varying levels of detail about model validation, code availability, and decision rationales.
+Even when models are technically sound, incomplete reporting limits their utility for learning and adaptation.
+Establishing community standards for workflow documentation would accelerate progress by enabling systematic learning from both successes and failures.
 
 \subsection{Comparison with Existing Literature}
 % TODO: Position relative to pipeline vs joint modelling literature
