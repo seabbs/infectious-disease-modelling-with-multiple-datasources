@@ -126,7 +126,7 @@ We propose that these six characteristics be used as a checklist to guide the sy
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth]{figures/visualization of core steps.drawio.png}
+    \includegraphics[width=\textwidth]{figures/core steps with more details.drawio.png}
     \caption{Recommended workflow for integrating multiple data sources in infectious disease modelling. Begin by defining research questions and target estimands, proceed through iterative development of process and observation DAGs, and follow critical decisions about data integration and inference methods. Key feedback loops from downstream parts of the workflow that impact earlier choices are represented with dashed arrows and boxes.}
     \label{fig:workflow}
 \end{figure}
@@ -266,12 +266,13 @@ Decisions about data integration are inherently context-dependent, but can be gu
 
 \subsubsection{Integration Methods}
 
-% TODO: Full joint modelling
+\textbf{Full joint modelling }
+
 Specifying a full joint model of multiple data sources and the underlying processes generating them offers a coherent framework for integrating such sources simultaneously, in the spirit of Bayesian hierarchical models \citep{gelman2020bayesian}. This approach is especially suited when there are complex dependencies between data sources, perhaps conditional on the parameters of the underlying process model, such that identification of all parameters is compromised when some data are left out. However, joint models can be computationally intensive and challenging to fit, especially in high-dimensional or real-time settings. Care is needed to ensure complex dependencies are appropriately modelled and that observational biases, such as selection biases, are adequately accounted for in the model, to avoid conflict between data sources (REF). 
 
-% Modular approaches and staged fitting
-% Markov melding
-A modular model building approach \citep{nicholson2022interoperability} is therefore generally recommended, guided by the principle of parsimony (``Occam's razor''). 
+\textbf{Modular approaches and staged fitting}
+
+\textit{Markov melding: }A modular model building approach \citep{nicholson2022interoperability} is therefore generally recommended, guided by the principle of parsimony (``Occam's razor''). 
 Starting with simple sub-models makes it easier to diagnose issues such as poor fit, model misspecification or convergence issues. Complexity can then be added incrementally, only as far as needed. Sequentially combining sub-models also facilitates the detection of inconsistencies or conflicts between them (REFs). Modular approaches also offer computational advantages over joint modelling. Techniques like Markov melding (REF) allow posterior samples from one sub-model to serve as a proposal distribution for the next, avoiding the need to refit a full joint model. Similar sequential strategies, using the posterior from one sub-model as the prior (rather than proposal) for another, have a long history (REF?).
 
 While the theory and some applications of Markov melding are well-established (REFs), practical implementation remains challenging. Limitations include the availability of user-friendly Bayesian software and methods for assessing sub-model compatibility (REF). As a result, approximate methods are often used. A common approach is the one used in standard meta-analysis (REF) to combine previous estimates using a normal approximation. A Stage 1 point estimate, $\hat{y}_1$, and its corresponding standard error or posterior standard deviation $\hat{\sigma}^2_1$, can be incorporated in a Stage 2 model as a likelihood term, on an appropriate scale:
@@ -279,17 +280,9 @@ $$
 \hat{y}_1 \sim N(\theta, \hat{\sigma}^2_1)
 $$ for some parameter $\theta$ in the Stage 2 model informed by the Stage 1 estimate. This approach has been shown to be an approximation to Markov melding with ``product of experts'' pooling (REF).
 
-% Cut distribution and generalised evidence synthesis
-Modular approaches also support selective trust in sub-models. ``Cutting'' feedback -- i.e. preventing less reliable sub-models from influencing more trusted ones while allowing the reverse -- enables nuanced evidence synthesis (REFs).
+\textit{Cutting feedback:} Modular approaches also support selective trust in sub-models. ``Cutting'' feedback -- i.e. preventing less reliable sub-models from influencing more trusted ones while allowing the reverse -- enables nuanced evidence synthesis (REFs).
 
-% TODO: Full joint modelling
-% suggested text from copilot in case useful:
-% Full joint modelling offers a coherent framework for integrating multiple data sources and processes simultaneously. By specifying a single joint likelihood and prior structure, this approach can capture dependencies and interactions across sub-models more naturally than modular alternatives. It is particularly valuable when feedback between components is essential or when sub-models are tightly coupled.
-% However, joint models can be computationally intensive and challenging to fit, especially in high-dimensional or real-time settings. They also require careful specification to avoid identifiability issues and to ensure that all components are appropriately informed by the data. Despite these challenges, joint modelling remains the gold standard when feasible, offering the most principled basis for inference.
-
-% TODO: Ensemble and weighting methods
-% suggested text from copilot in case useful:
-When multiple models or estimates are available—whether from different research groups or alternative specifications—ensemble methods provide a flexible way to combine them. The choice of ensemble strategy should reflect the research objective. For prediction, weighting by out-of-sample accuracy may be appropriate; for estimation, weights might reflect precision or model credibility (REF). Common approaches include Bayesian model averaging, stacking, and meta-analytic pooling (REF). These methods can accommodate model uncertainty and allow for robustness across competing hypotheses. In practice, ensemble weights may be fixed, data-driven, or informed by expert judgment, depending on the context and available information (REF).
+\textit{Ensembling independent models:} When multiple models or estimates are available—whether from different research groups or alternative specifications—ensemble methods provide a flexible way to combine them. The choice of ensemble strategy should reflect the research objective. For prediction, weighting by out-of-sample accuracy may be appropriate; for estimation, weights might reflect precision or model credibility (REF). Common approaches include Bayesian model averaging, stacking, and meta-analytic pooling (REF). These methods can accommodate model uncertainty and allow for robustness across competing hypotheses. In practice, ensemble weights may be fixed, data-driven, or informed by expert judgment, depending on the context and available information (REF).
 
 
 \subsubsection{Conflict Detection and Resolution}
