@@ -85,6 +85,7 @@ Fitting challenges, such as computational intractability, parameter non-identifi
 These integration and fitting considerations can impact model design, yet their implications are rarely made explicit in published analyses.
 Many complex multi-source models lack transparent reporting of workflow decisions, validation procedures, and code availability, creating barriers to evaluation and reproduction \citep{Ward2024-sp, Fyles2024-qz, Abbott2021-delta, Abbott2022-prevalence}.
 The infectious disease modelling community has not widely adopted rigorous Bayesian workflow practices that emphasise iterative model development, systematic model criticism, and principled uncertainty quantification \citep{gelman2020bayesian, nicholson2022interoperability}.
+While some recent work has partially implemented workflow elements, such as \citet{bouman2024bayesian} who explore modelling choices through simulation, these efforts lack structured guidance and omit key workflow components like prior predictive checks and systematic model criticism.
 Existing guidance for practitioners is fragmented across methodological literature, with limited practical frameworks for navigating these interconnected choices systematically \citep{nicholson2022interoperability, deangelis2018analysing}.
 
 % Paragraph 3: Paper scope and contribution
@@ -250,7 +251,7 @@ This conflict analysis connects directly to the value of information assessments
 Criticise fitted models through posterior predictive validation, simulating new data to test whether models reproduce key features across all integrated sources.
 Apply cross-validation strategies, particularly leave-one-out and time-aware validation, to assess predictive performance while respecting temporal data structure.
 Conduct sensitivity analyses by examining how conclusions change across prior specifications, likelihood assumptions, and data inclusion decisions.
-Ideally, use simulation-based calibration for each submodel to verify that inference algorithms can recover true parameters from simulated data, as this provides stronger validation than posterior predictive checks alone \citep{talts2018validating}.
+Using simulated scenarios to validate parameter recovery provides valuable insights into model performance \citep{bouman2024bayesian}, though ideally simulation-based calibration for each submodel would verify that inference algorithms can recover true parameters from simulated data, as this provides stronger validation than posterior predictive checks alone \citep{talts2018validating}.
 For comprehensive implementation guidance, see \citet{gelman2020bayesian}, with infectious disease-specific adaptations in \citet{bouman2024bayesian}.
 Model specification and validation have a critical feedback loop with DAG structure and data integration choices.
 
@@ -895,6 +896,13 @@ Establishing community standards for workflow documentation would accelerate pro
 % TODO: Compare with other multi-source integration frameworks
 
 Recent advances in machine learning-augmented fitting methods show promise, with neural network-based summary statistic construction \citep{raynal2019abc} and deep learning phylodynamic methods \citep{voznica2022deep}, providing alternatives to traditional likelihood evaluation. However, applying these methodological advances into the structured workflow framework we propose requires consideration of interpretability.
+
+Recent work has made progress towards structured infectious disease modelling workflows, though implementation remains incomplete.
+For example, \citet{bouman2024bayesian} systematically compared modelling choices for SARS-CoV-2 transmission and provided open-source implementation through their HETTMO package.
+However, their approach, while methodologically sound, lacks the structured workflow guidance needed for broader application.
+Key workflow elements such as prior predictive checks, systematic model criticism, and clear decision frameworks are absent.
+Their work exemplifies the gap between implementing good models and following reproducible workflow practices.
+In contrast, our framework provides explicit structured guidance through each workflow stage, with case studies demonstrating not just model implementation but the decision process itself.
 
 \subsection{Future work}
 
