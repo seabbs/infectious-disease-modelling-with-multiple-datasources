@@ -282,7 +282,22 @@ $$ for some parameter $\theta$ in the Stage 2 model informed by the Stage 1 esti
 
 \textit{Cutting feedback:} Modular approaches also support selective trust in sub-models. ``Cutting'' feedback -- i.e. preventing less reliable sub-models from influencing more trusted ones while allowing the reverse -- enables nuanced evidence synthesis (REFs).
 
-\textit{Ensembling independent models:} When multiple models or estimates are available—whether from different research groups or alternative specifications—ensemble methods provide a flexible way to combine them. The choice of ensemble strategy should reflect the research objective. For prediction, weighting by out-of-sample accuracy may be appropriate; for estimation, weights might reflect precision or model credibility (REF). Common approaches include Bayesian model averaging, stacking, and meta-analytic pooling (REF). These methods can accommodate model uncertainty and allow for robustness across competing hypotheses. In practice, ensemble weights may be fixed, data-driven, or informed by expert judgment, depending on the context and available information (REF).
+\textit{Ensembling independent models:} When multiple models target the same estimand, ensemble methods provide frameworks for combination through Bayesian stacking \citep{yao2018using}, model averaging \citep{hoeting1999bayesian}, or meta-analytical pooling \citep{jackson2011multivariate}.
+These differ from approaches like Markov melding or cut distributions that integrate models at the likelihood level rather than combining outputs.
+The choice of ensemble strategy should reflect the research objective.
+For prediction, weighting by out-of-sample accuracy may be appropriate; for estimation, weights might reflect precision or model credibility \citep{yao2018using}.
+Ensemble methods offer practical advantages when joint modelling proves infeasible, enabling collaboration between research teams and potentially improving robustness over single models.
+The European COVID-19 Forecast Hub demonstrated performance gains from simple median aggregation \citep{sherratt2021exploring}, whilst the UK's SPI-M consensus used random-effects meta-analysis to pool Rt estimates from multiple academic groups \citep{manley2024combining}.
+
+However, important limitations constrain ensemble approaches for infectious disease modelling.
+When models make different assumptions about latent quantities, apparent heterogeneity may reflect definitional differences rather than true uncertainty about the estimand \citep{brockhaus2023why}.
+Temporal alignment becomes particularly problematic for latent targets where the underlying definition remains ambiguous, with models using different reference points, generation time distributions, or reporting delay assumptions \citep{manley2024combining,brockhaus2023why}.
+Combining outputs at the prediction level discards information about data conflicts and model disagreements that would be preserved in joint modelling approaches.
+Weighted ensemble methods often show limited improvement over simple aggregation in nowcasting applications \citep{sherratt2021exploring}, partly because the black-box nature of many models obscures why predictions differ.
+
+We recommend joint modelling or approximations such as Markov melding and cut distributions when computationally and practically feasible, as integrating at the data level enables coherent uncertainty quantification and avoids the definitional ambiguities that affect output-level combinations \citep{brockhaus2023why}.
+Ensemble methods remain valuable when joint modelling proves impossible due to computational constraints, data access limitations, or institutional boundaries between research teams.
+When employing ensembles, careful attention to ensuring all models target the same estimand, resolving temporal alignment, and documenting methodological assumptions becomes essential for meaningful combination.
 
 
 \subsubsection{Conflict Detection and Resolution}
