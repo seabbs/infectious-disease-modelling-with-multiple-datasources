@@ -12,6 +12,8 @@
 \usepackage{multirow} 
 \usepackage{array} 
 \usepackage{pdflscape}
+ \usepackage{booktabs}
+\usepackage{tabularray}
 
 \newlist{tree}{itemize}{10}
 \setlist[tree]{label=-}
@@ -256,33 +258,32 @@ Model specification and validation have a critical feedback loop with DAG struct
 
 \subsubsection{Decision Framework}
 
-In principle, integrating multiple data should enhance the identifiability and precision of parameter estimates \citep{deangelis2018analysing, lison2024generative, russell2024combined}. Even when data streams are redundant (informing the same quantity), their combination can improve precision, consistent with meta-analytic principles \citep{deangelis2018analysing}. 
+In principle, integrating multiple data sources should enhance the identifiability and precision of parameter estimates \citep{deangelis2018analysing, lison2024generative, russell2024combined, birrell2025real}. Even when data streams are redundant (informing the same quantity), their combination can improve precision, consistent with meta-analytic principles \citep{deangelis2018analysing,borenstein2021introduction}. 
 
-In practice, however, data integration may pose challenges. These include inconsistencies due to unaccounted biases \citep{knock2021key, corbella2022inferring, Ward2024-sp}; computational complexity \citep{corbella2022inferring}; and real-time pressures during an outbreak emergency \citep{mccaw2023role}.
+In practice, however, data integration may pose challenges. These include inconsistencies due to unaccounted biases \citep{presanis2013conflict,knock2021key, Ward2024-sp, corbella2022inferring}; computational complexity \citep{corbella2022inferring}; and real-time pressures during an outbreak emergency \citep{mccaw2023role}.
 
-Evaluating the strengths and limitations of different data sources, as described in Section \ref{sec:datareview}, can and should be done during inter-epidemic periods. This evaluation, alongside with the workflow of specifying process and observation DAGs (Section ??), helps assess whether estimands of interest are identifiable from the available data. Value-of-information methods \citep{jackson2019value} can formally guide whether new or additional data would meaningfully improve precision. However, for complex models especially, identifiability may only become evident after fitting an initial version.
+Evaluating the strengths and limitations of different data sources, as described in Section \ref{sec:datareview}, can and should be done during inter-epidemic periods. This evaluation, alongside the workflow of specifying process and observation DAGs (Section ??), helps assess whether estimands of interest are identifiable from the available data. Value-of-information methods \citep{jackson2019value,heath2024value} can formally guide whether new or additional data would meaningfully improve precision. However, for complex models especially, identifiability may only become evident after fitting an initial version.
 
-Decisions about data integration are inherently context-dependent, but can be guided by the decision tree in Figure \ref{fig:integration}. When combining independant model outputs from different groups, the choice of ensembling or meta-analytic approach should align with the research objective (e.g. estimation or prediction), influencing how estimates or predictions are weighted (e.g. by precision or prediction accuracy). In contrast, when integrating sub-models, the approach will depend on whether existing sub-models have already been fitted, or if the models are being developed de novo.
+Decisions about data integration are inherently context-dependent, but can be guided by the decision tree in Figure \ref{fig:integration}. When combining independent model outputs from different groups, the choice of ensembling or meta-analytic approach should align with the research objective (e.g. estimation or prediction), influencing how estimates or predictions are weighted (e.g. by precision or prediction accuracy). In contrast, when integrating sub-models, the approach will depend on whether existing sub-models have already been fitted, or if the models are being developed de novo.
 
 \subsubsection{Integration Methods}
 
-\textbf{Full joint modelling }
+\paragraph{Full joint modelling}
 
-Specifying a full joint model of multiple data sources and the underlying processes generating them offers a coherent framework for integrating such sources simultaneously, in the spirit of Bayesian hierarchical models \citep{gelman2020bayesian}. This approach is especially suited when there are complex dependencies between data sources, perhaps conditional on the parameters of the underlying process model, such that identification of all parameters is compromised when some data are left out. However, joint models can be computationally intensive and challenging to fit, especially in high-dimensional or real-time settings. Care is needed to ensure complex dependencies are appropriately modelled and that observational biases, such as selection biases, are adequately accounted for in the model, to avoid conflict between data sources (REF). 
+Specifying a full joint model of multiple data sources and the underlying processes generating them offers a coherent framework for integrating such sources simultaneously, in the spirit of Bayesian hierarchical models \citep{gelman2020bayesian}. This approach is especially suited when there are complex dependencies between data sources \citep{corbella2022inferring}, perhaps conditional on the parameters of the underlying process model, such that identification of all parameters is compromised when some data are left out. However, joint models can be computationally intensive and challenging to fit, especially in high-dimensional or real-time settings. Care is needed to ensure complex dependencies are appropriately modelled and that observational biases, such as selection biases, are adequately accounted for in the model, to avoid conflict between data sources \citep{presanis2013conflict,corbella2022inferring}. 
 
-\textbf{Modular approaches and staged fitting}
+\paragraph{Modular approaches and staged fitting}
+A modular model building approach \citep{deangelis2018analysing,goudie2019joining,gelman2020bayesian,nicholson2022interoperability} is generally recommended, guided by the principle of parsimony (``Occam's razor''). 
+Starting with simple sub-models makes it easier to diagnose issues such as poor fit, model misspecification or convergence issues. Complexity can then be added incrementally, only as far as needed. Sequentially combining sub-models also facilitates the detection of inconsistencies or conflicts between them \citep{presanis2013conflict,manderson2023combining}. Modular approaches also offer computational advantages over joint modelling. Techniques like Markov melding \citep{goudie2019joining} allow posterior samples from one sub-model to serve as a proposal distribution for the next, potentially in a sequential chain of models \citep{manderson2023combining}. Similar sequential strategies, using the posterior from one sub-model as the prior (rather than proposal) for another, have a long history \citep{west1997bayesian}, closely related to Sequential Monte Carlo algorithms \citep{doucet2001introduction} (see Section \ref{sec:fitting}).
 
-\textit{Markov melding: }A modular model building approach \citep{nicholson2022interoperability} is therefore generally recommended, guided by the principle of parsimony (``Occam's razor''). 
-Starting with simple sub-models makes it easier to diagnose issues such as poor fit, model misspecification or convergence issues. Complexity can then be added incrementally, only as far as needed. Sequentially combining sub-models also facilitates the detection of inconsistencies or conflicts between them (REFs). Modular approaches also offer computational advantages over joint modelling. Techniques like Markov melding (REF) allow posterior samples from one sub-model to serve as a proposal distribution for the next, potentially in a sequential chain of models (REF). Similar sequential strategies, using the posterior from one sub-model as the prior (rather than proposal) for another, have a long history (REF?).
-
-While the theory and some applications of Markov melding are well-established (REFs), practical implementation remains challenging. Limitations include the availability of user-friendly Bayesian software and methods for assessing sub-model compatibility (REF). As a result, approximate methods are often used. A common approach is the one used in standard meta-analysis (REF) to combine previous estimates using a normal approximation. A Stage 1 point estimate, $\hat{y}_1$, and its corresponding standard error or posterior standard deviation $\hat{\sigma}^2_1$, can be incorporated in a Stage 2 model as a likelihood term, on an appropriate scale:
+While the theory and some applications of Markov melding are well-established \citep{goudie2019joining,nicholson2022interoperability,manderson2023combining}, practical implementation remains challenging. Limitations include the availability of user-friendly Bayesian software and methods for assessing sub-model compatibility (REF). As a result, approximate methods are often used. A common approach is the one used in standard meta-analysis \citep{borenstein2021introduction} to combine previous estimates using a normal approximation. A Stage 1 point estimate, $\hat{y}_1$, and its corresponding standard error or posterior standard deviation $\hat{\sigma}^2_1$, can be incorporated in a Stage 2 model as a likelihood term, on an appropriate scale:
 $$
 \hat{y}_1 \sim N(\theta, \hat{\sigma}^2_1)
-$$ for some parameter $\theta$ in the Stage 2 model informed by the Stage 1 estimate. This approach has been shown to be an approximation to Markov melding with ``product of experts'' pooling (REF).
+$$ for some parameter $\theta$ in the Stage 2 model informed by the Stage 1 estimate. This approach has been shown to be an approximation to Markov melding with ``product of experts'' pooling \citep{goudie2019joining}.
 
-\textit{Cutting feedback:} Modular approaches also support selective trust in sub-models. ``Cutting'' feedback -- i.e. preventing less reliable sub-models from influencing more trusted ones while allowing the reverse -- enables nuanced evidence synthesis (REFs).
+Modular approaches also support selective trust in sub-models. ``Cutting'' feedback -- i.e. preventing less reliable sub-models from influencing more trusted ones while allowing the reverse -- enables nuanced evidence synthesis \citep{plummer2015cuts,carmona2022scalable,yu2023variational,liu2025general}.
 
-\textit{Ensembling independent models:} When multiple models target the same estimand, ensemble methods provide frameworks for combination through Bayesian stacking \citep{yao2018using}, model averaging \citep{hoeting1999bayesian}, or meta-analytical pooling \citep{jackson2011multivariate}.
+\paragraph{Ensembling independent models:} When multiple models target the same estimand, ensemble methods such as Bayesian stacking \citep{yao2018using}, model averaging \citep{hoeting1999bayesian}, or meta-analytical pooling \citep{jackson2011multivariate} can be used to combine estimates.
 These differ from approaches like Markov melding or cut distributions that integrate models at the likelihood level rather than combining outputs.
 The choice of ensemble strategy should reflect the research objective.
 For prediction, weighting by out-of-sample accuracy may be appropriate; for estimation, weights might reflect precision or model credibility \citep{yao2018using}.
@@ -291,11 +292,12 @@ The European COVID-19 Forecast Hub demonstrated performance gains from simple me
 
 However, important limitations constrain ensemble approaches for infectious disease modelling.
 When models make different assumptions about latent quantities, apparent heterogeneity may reflect definitional differences rather than true uncertainty about the estimand \citep{brockhaus2023why}.
-Temporal alignment becomes particularly problematic for latent targets where the underlying definition remains ambiguous, with models using different reference points, generation time distributions, or reporting delay assumptions \citep{manley2024combining,brockhaus2023why}.
+Temporal alignment becomes particularly problematic for latent targets where the underlying definition remains ambiguous, with models using different reference points, generation time distributions, or reporting delay assumptions \citep{brockhaus2023why}.
+This can lead to estimates that are less timely and/or less precise, with lower utility for decision makers than the component models \citep{manley2024combining}.
 Combining outputs at the prediction level discards information about data conflicts and model disagreements that would be preserved in joint modelling approaches.
 Weighted ensemble methods often show limited improvement over simple aggregation in nowcasting applications \citep{sherratt2021exploring}, partly because the black-box nature of many models obscures why predictions differ.
 
-We recommend joint modelling or approximations such as Markov melding and cut distributions when computationally and practically feasible, as integrating at the data level enables coherent uncertainty quantification and avoids the definitional ambiguities that affect output-level combinations \citep{brockhaus2023why}.
+We recommend joint modelling, perhaps implemented via Markov melding or its approximations and making use of cut distributions if needed, when computationally and practically feasible. This type of integration enables coherent uncertainty quantification and avoids the definitional ambiguities that affect output-level combinations \citep{brockhaus2023why}.
 Ensemble methods remain valuable when joint modelling proves impossible due to computational constraints, data access limitations, or institutional boundaries between research teams.
 When employing ensembles, careful attention to ensuring all models target the same estimand, resolving temporal alignment, and documenting methodological assumptions becomes essential for meaningful combination.
 
@@ -306,11 +308,11 @@ When employing ensembles, careful attention to ensuring all models target the sa
 % Model criticism in multi-source settings
 % Sensitivity analysis approaches
 
-Detecting and resolving conflicting evidence about underlying latent processes is essential to ensure coherent inference and robustly informed decisions \citep{sherratt2021exploring}. Such conflicts may arise between prior assumptions and data (``prior-data conflict''), between different data sources, between different partitions of a joint model into submodels, or even within a data source but between different units of data (REF).
+Detecting and resolving conflicting evidence about underlying latent processes is essential to ensure coherent inference and robustly informed decisions \citep{presanis2013conflict,sherratt2021exploring}. Such conflicts may arise between prior assumptions and data (``prior-data conflict''), between different data sources, between different partitions of a joint model into submodels, or even within a data source but between different units of data \citep{presanis2013conflict,yang2025detecting}.
 
-If data sources and/or prior information provide inconsistent evidence on a parameter, this conflict usually manifests either as a lack of identifiability, a symptom of which may be lack of convergence of an MCMC algorithm or equivalent; or as lack of fit to one or more data sources (REF). Resulting estimates may therefore be more uncertain than if each data source were modelled independently. Such conflicts are typically the result of model misspecification: some observational bias that has not been accounted for in the observation model (e.g. under-reporting or selection bias); or some approximation in the process model that fails to explain the variation in the data (e.g. a fixed under-reporting proportion); or an unrealistic prior specification (e.g. an infection-fatality risk based on a previous pathogen which is not that similar to a newly emerging one).  
+If data sources and/or prior information provide inconsistent evidence on a parameter, this conflict usually manifests either as a lack of identifiability, a symptom of which may be lack of convergence of an MCMC algorithm or equivalent; or as lack of fit to one or more data sources \citep{presanis2013conflict,deangelis2018analysing}. Resulting estimates may therefore be more uncertain than if each data source were modelled independently. Such conflicts are typically the result of model misspecification: some observational bias that has not been accounted for in the observation model (e.g. under-reporting or selection bias); or some approximation in the process model that fails to explain the variation in the data (e.g. a fixed under-reporting proportion); or an unrealistic prior specification (e.g. an infection-fatality risk based on a previous pathogen which is not that similar to a newly emerging one).  
 
-Diagnostic tools to detect conflicts in evidence synthesis models include prior-, mixed- and posterior-predictive checks (REF) and extensions of these to latent levels of a hierarchical model (REF).
+Diagnostic tools to detect conflicts in evidence synthesis models include prior-, mixed- and posterior-predictive checks, the latter often in a cross-validatory setting to avoid conservatism due to double use of the data \citep[][and references therein]{presanis2013conflict,yang2025detecting}; and extensions of these to latent levels of a hierarchical model \citep{yang2025detecting}. Once conflicts have been identified, they need to be resolved, through careful consideration of unaccounted biases or overly restrictive model assumptions (e.g. equi-dispersion) that may underlie the conflicts. Adjustments to the model structure may be needed, starting another cycle of the model development and criticism process. These adjustments might include loosening prior assumptions, weighting approaches to account for selection biases and other bias modelling approaches \citep{deangelis2018analysing}.
 
 
 % Copilot suggestion to flesh out the above in case useful:
@@ -322,7 +324,7 @@ Diagnostic tools to detect conflicts in evidence synthesis models include prior-
 %Ultimately, conflict detection should be an iterative process, integrated into model development and refinement. Transparent reporting of conflicts and their resolution enhances the credibility and interpretability of modelling outputs, particularly in high-stakes settings such as outbreak response.
 
 
-\subsubsection{Practical Constraints}
+%\subsubsection{Practical Constraints}
 % Different teams with different expertise/languages
 % Software compatibility issues
 % Computational resource limitations
@@ -345,36 +347,21 @@ Diagnostic tools to detect conflicts in evidence synthesis models include prior-
 \end{figure}
 
 \subsection{Fitting Choices}\label{sec:fitting}
-% Lead: Anne Presanis, with Dhorasso and Xiahui
+% Lead: Xiahui and Dhorasso with support from Anne Presanis
 
 Inference for infectious disease models typically involves estimating a set of parameters $\theta$ from observed data $Y$, which may include case counts, hospitalizations, deaths, wastewater surveillance or other epidemiological measurements. These data are assumed to arise from a probabilistic model characterized by a likelihood function $p(Y | \theta)$ that links the parameters to the data through both an underlying transmission dynamics (represented by the process DAG in our workflow) and a noisy observation mechanism (captured by the observation DAG).  The choice of inferential approach depends on the tractability of the likelihood: 
 whether $ p(Y | \theta)$ is analytically or numerically computable, intractable and requiring approximation, or entirely  unavailable (necessitating likelihood-free, simulation-based methods). This section provides a brief overview of common computational strategies, with a focus on practical considerations and current best practices.. 
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth]{figures/Subpanel_fitting choices_v2.drawio.png}
+    \includegraphics[width=\textwidth]{figures/subpanel_fitting choices.drawio.pdf}
     \caption{Fitting choices workflow for integrating multiple data sources in infectious disease modelling.}
     \label{fig:fitting}
 \end{figure}
 
-% \subsubsection{Tools for Tractable Likelihood Functions}
-% % TODO: MCMC and its variants for joint models
-% % TODO: Sequential Monte Carlo (SMC) approaches
-
-% \subsubsection{Tools for Partially Tractable Likelihood Functions}
-% % TODO: Particle MCMC (pMCMC) for state-space formulations
-% % TODO: Variational inference (VI) and INLA for specific model classes
-
-% \subsubsection{Tools for Intractable Likelihood Functions}
-% % TODO: Approximate Bayesian Computation (ABC-MCMC, ABC-SMC)
-% % TODO: ABC with history matching
-% % TODO: Bayesian Synthetic Likelihood (BSL)
-% % TODO: Simulation-based inference approaches
-
-
 
 \subsubsection{Likelihood-based methods}
-Likelihood-based inference encompasses frequentist and Bayesian appraoches. Classical frequentist methods such as maximum likelihood estimation (MLE)\citep{myung2003tutorial, baltazar2024maximum} and profile likelihood \citep{tonsing2018profile, plank2024structured} provide well-established tools for parameters estimation. However, here we focus mainly on Bayesian methods due to their flexibility in handling uncertainty and incorporating various sources of information.
+Likelihood-based inference encompasses frequentist and Bayesian approaches. Classical frequentist methods such as maximum likelihood estimation (MLE)\citep{myung2003tutorial, baltazar2024maximum} and profile likelihood \citep{tonsing2018profile, plank2024structured} provide well-established tools for parameters estimation. However, here we focus mainly on Bayesian methods due to their flexibility in handling uncertainty and incorporating various sources of information.
 
 Bayesian inference updates prior beliefs $ p(\theta)$ in light of observed data to obtain a posterior distribution, $p(\theta | Y) \propto p(Y|\theta) \,p(\theta)$. For simple models with exponential family likelihoods, conjugate priors that allow closed-form posterior solutions \citep{gelman1995bayesian,  cori2013new}. However, many infectious disease models typically involve complexities that preclude exact inference.
 
@@ -398,11 +385,8 @@ ABC-SMC further enhances efficiency by iteratively refining  tolerances and prop
 When exact likelihoods are unavailable but the model can be simulated repeatedly, synthetic likelihood methods provide an alternative by approximating the likelihood via assuming Gaussian distributions for summary statistics \citep{wood2010statistical, price2018bayesian}. 
 
 \subsubsection{Selecting the Right Tool}
-% TODO: Trade-offs between computational complexity, accuracy, bias
-% TODO: Interpretability and implementation ease considerations
-% TODO: Decision-making frameworks for method selection
 
-Selecting an appropriate inference method involves balancing trade-offs between computational efficiency, statistical rigor, data availability, interpretability, and model complexity \citep{funk2020choices}. Rather than adopting a universal approach, the choice should be tailored to the specific modeling context and inferential goals. 
+Selecting an appropriate inference method involves balancing trade-offs between computational efficiency, statistical rigor, data availability, interpretability, and model complexity \citep{funk2020choices}. Rather than adopting a universal approach, the choice should be tailored to the specific modelling context and inferential goals. 
 
 For evolving epidemics, a key consideration is the dynamic nature of epidemic processes and data streams. As transmission rates and intervention effects change over time, and new data arrive continuously, methods that support sequential data updates, such as SMC, are generally preferred for real-time epidemic tracking \citep{birrell2020efficient, storvik2023sequential}. In contrast, MCMC-based methods, while statistically robust, are typically better suited for retrospective analyses, due to their reliance on complete datasets, high computational demands for reanalysis, and computational intensity in high-dimensional parameter spaces. 
 
@@ -415,11 +399,6 @@ Interpretability and ease of implementation also play a role. Certain methods in
 Regardless of the approach chosen, model checking, sensitivity analysis, and validation are essential to ensure that inferences are not only statistically valid but also scientifically meaningful and actionable.
 
 \subsubsection{Practical Implementation}
-% Lead: Sam Abbott
-% TODO: Software implementations and availability
-% TODO: Diagnostic tools and convergence assessment
-% TODO: Computational resource requirements
-% TODO: Reference to inference subpanel workflow figure
 
 A wide range of software tools is available to support the implementation of both likelihood-based and likelihood-free methods in infectious disease modeling. Bayesian inference platforms such as Stan, JAGS and NIMBLE are widely used for likelihood-based approaches, offering flexibility in model specification and efficient MCMC algorithms \citep{carpenter2017stan,abril2023pymc}. For more complex or high-dimensional models, Python based PyMC and Julia based Turing.jl provide probabilistic programming environments with good performance \citep{abril2023pymc,ge2018turing,fjelde2025turing}. Using a fully generative probabilistic programming language like Turing.jl or NumPyro makes model validation such as simulation-based calibration easier, as one can easily sample from the model without writing separate model generators required when using other approaches. For more scalable alternatives to MCMC, INLA is implemented in the R-INLA package \citep{martins2013bayesian} and is particularly efficient for latent Gaussian models, including spatiotemporal structures commonly used in disease mapping and surveillance. VI is also available in PyMC and Turing.jl. These implementations allow rapid inference for large datasets or real-time modelling applications.  Additionally, tools such as LibBi support SMC-based inference for state-space models and can scale to high-dimensional problems using GPU and parallel computing \citep{murray2015bayesian}. For likelihood-free methods, ABC is supported in packages like EasyABC, abc, abctools \citep{jabot2013easy,csillery2012abc,nunes2015abctools}.
 
@@ -431,7 +410,7 @@ Parallelization is essential for large-scale epidemiological studies, where high
 \begin{table}[ht]
 \renewcommand{\arraystretch}{1.2}
 \centering
-\caption{\textbf{Comparison of Likelihood-Based and Likelihood-Free Fitting Methods (Could table masters improve the current table format please?).} 
+\caption{\textbf{Comparison of Likelihood-Based and Likelihood-Free Fitting Methods.} 
 This table focuses on foundational algorithms. More recent methodological advancements that build upon these classical approaches are discussed in Section 4.9 of the main text. "PPL" stands for Probabilistic Programming Languages. For this review, PPL examples include Stan, PyMC, JAGS, NIMBLE, Turing. jl, etc.}
 \label{tab:methods_comparison}
 \small
@@ -472,7 +451,7 @@ Best use case & Simple models & General Bayesian inference & State-space models 
 \end{landscape}
 
 \subsection{Outbreak Evolution and Workflow Iteration}
-
+% Lead Sam Abbott
 Two types of changes during outbreaks require revisiting this workflow.
 First, new information emerges about pathogen characteristics, surveillance capabilities, and population dynamics that may necessitate updating model assumptions and data integration choices \citep{mccaw2023role}.
 Second, research questions evolve as outbreak priorities shift from initial detection and characterisation towards intervention evaluation and long-term planning.
@@ -489,7 +468,7 @@ Each iteration should document what has changed, why updates are necessary, and 
 Having this documentation supports both real-time decision-making and retrospective evaluation of analytical approaches.
 
 \subsection{Workflow Reporting}
-
+% Lead Sam Abbott
 Complex multi-source models require clear documentation to enable evaluation and reproduction.
 Without structured reporting, even well-designed workflows are difficult to assess or improve upon.
 
@@ -545,6 +524,125 @@ TODO: need to add something on data source mapping which all the case studies wi
 
 \paragraph{}In addition to this view, we conducted detailed assessments of individual data sources to explore how these characteristics manifest[?] in practice and to identify the context-specific strengths and limitations. Detailed views of these are presented in Tables xxx [to do: and write what you see in them]
 
+% \usepackage{tabularray}
+\begin{table}
+\centering
+\caption{Selected categorical survey responses for confirmed time series (6 responses) and wastewater (5 responses)}
+\label{tab:placeholder_label}
+\begin{tblr}{
+  width = \linewidth,
+  colspec = {Q[508]Q[87]Q[227]Q[115]},
+  cell{1}{2} = {c},
+  cell{1}{3} = {c},
+  cell{1}{4} = {c},
+  cell{2}{2} = {c},
+  cell{2}{3} = {c},
+  cell{3}{2} = {c},
+  cell{3}{3} = {c},
+  cell{3}{4} = {c},
+  cell{4}{2} = {c},
+  cell{4}{3} = {c},
+  cell{4}{4} = {c},
+  cell{5}{2} = {c},
+  cell{5}{3} = {c},
+  cell{5}{4} = {c},
+  cell{6}{2} = {c},
+  cell{6}{3} = {c},
+  cell{6}{4} = {c},
+  cell{7}{2} = {c},
+  cell{7}{3} = {c},
+  cell{7}{4} = {c},
+  cell{8}{2} = {c},
+  cell{8}{3} = {c},
+  cell{8}{4} = {c},
+  cell{9}{2} = {c},
+  cell{9}{3} = {c},
+  cell{9}{4} = {c},
+  cell{10}{2} = {c},
+  cell{10}{3} = {c},
+  cell{10}{4} = {c},
+  cell{11}{2} = {c},
+  cell{11}{3} = {c},
+  cell{11}{4} = {c},
+  cell{12}{2} = {c},
+  cell{12}{3} = {c},
+  cell{12}{4} = {c},
+  cell{13}{2} = {c},
+  cell{13}{3} = {c},
+  cell{13}{4} = {c},
+  cell{14}{2} = {c},
+  cell{14}{3} = {c},
+  cell{14}{4} = {c},
+  cell{15}{2} = {c},
+  cell{15}{3} = {c},
+  cell{15}{4} = {c},
+  cell{16}{2} = {c},
+  cell{16}{3} = {c},
+  cell{16}{4} = {c},
+  cell{17}{2} = {c},
+  cell{17}{3} = {c},
+  cell{17}{4} = {c},
+  cell{18}{2} = {c},
+  cell{18}{3} = {c},
+  cell{18}{4} = {c},
+  cell{19}{2} = {c},
+  cell{19}{3} = {c},
+  cell{19}{4} = {c},
+  cell{20}{2} = {c},
+  cell{20}{3} = {c},
+  cell{20}{4} = {c},
+  cell{21}{2} = {c},
+  cell{21}{3} = {c},
+  cell{21}{4} = {c},
+  cell{22}{2} = {c},
+  cell{22}{3} = {c},
+  cell{22}{4} = {c},
+  cell{23}{2} = {c},
+  cell{23}{3} = {c},
+  cell{23}{4} = {c},
+  cell{24}{2} = {c},
+  cell{24}{3} = {c},
+  cell{24}{4} = {c},
+  cell{25}{2} = {c},
+  cell{25}{3} = {c},
+  cell{25}{4} = {c},
+  cell{26}{2} = {c},
+  cell{26}{3} = {c},
+  cell{26}{4} = {c},
+  hline{1,28} = {-}{0.08em},
+  hline{3} = {1-3}{0.03em},
+  hline{3} = {4}{},
+  hline{27} = {-}{},
+}
+\textbf{Characteristic} & \textbf{Overall} & \textbf{Confirmed cases time series} & \textbf{Wastewater}\\
+ & N = 11\textsuperscript{\textit{1}} & N = 6\textsuperscript{\textit{1}} & N = 5\textsuperscript{\textit{1}}\\
+\textbf{ Primary purpose} &  &  & \\
+~ ~Case management & 1 (9.1\%) & 1 (17\%) & 0 (0\%)\\
+~ ~Clinical management & 5 (45\%) & 5 (83\%) & 0 (0\%)\\
+~ ~Pathogen surveillance & 1 (9.1\%) & 0 (0\%) & 1 (20\%)\\
+~ ~Presence/absence and monitoring prevalence in a community & 1 (9.1\%) & 0 (0\%) & 1 (20\%)\\
+~ ~Surveillance & 2 (18\%) & 0 (0\%) & 2 (40\%)\\
+~ ~Trend monitoring, detection of variants, variant proportions & 1 (9.1\%) & 0 (0\%) & 1 (20\%)\\
+\textbf{Target population} &  &  & \\
+~ ~All the population & 1 (9.1\%) & 1 (17\%) & 0 (0\%)\\
+~ ~Geographic structure & 2 (18\%) & 0 (0\%) & 2 (40\%)\\
+~ ~Whole population & 7 (64\%) & 5 (83\%) & 2 (40\%)\\
+~ ~Whole population, sometimes specific e.g., to student or military populations & 1 (9.1\%) & 0 (0\%) & 1 (20\%)\\
+\textbf{Data aggregation} &  &  & \\
+~ ~Aggregated & 7 (64\%) & 2 (33\%) & 5 (100\%)\\
+~ ~Individual & 4 (36\%) & 4 (67\%) & 0 (0\%)\\
+\textbf{Collection frequency} &  &  & \\
+~ ~Continuously & 2 (18\%) & 1 (17\%) & 1 (20\%)\\
+~ ~Daily & 4 (36\%) & 4 (67\%) & 0 (0\%)\\
+~ ~Multiple times a week & 3 (27\%) & 0 (0\%) & 3 (60\%)\\
+~ ~Weekly & 2 (18\%) & 1 (17\%) & 1 (20\%)\\
+\textbf{Reporting frequency} &  &  & \\
+~ ~Daily & 3 (27\%) & 3 (50\%) & 0 (0\%)\\
+~ ~Multiple times a week & 2 (18\%) & 0 (0\%) & 2 (40\%)\\
+~ ~Weekly & 6 (55\%) & 3 (50\%) & 3 (60\%)\\
+\textsuperscript{\textit{1}}n (\%) &  &  & 
+\end{tblr}
+\end{table}
 \begin{figure}[H] 
 \includegraphics[width=1\linewidth]{figures/survey_responses.png}
 \centering
@@ -661,7 +759,7 @@ Other possible choices of fitting methods that could be considered / why not (re
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth]{figures/Case study puzzle.png}
+    \includegraphics[width=\textwidth]{figures/case_study_jigsaw.png}
     \caption{A visual of jigsaw puzzle presenting a library of process models, observation models, integration methods, and fitting methods.}
     \label{fig:case_study_visual}
 \end{figure}
