@@ -31,7 +31,7 @@
 \author[8]{@invited-survey-respondees}
 \author[9]{Mircea T. Sofonea}
 \author[10, 11]{Pierre Nouvellet}
-\author[12]{Michael Plank}
+\author[12]{Michael Plank*}
 \author[11]{Anne Cori$^*$}
 \author[13]{Anne Presanis$^*$}
 
@@ -540,7 +540,7 @@ When complex methods fail to initialise properly within prior bounds, simpler me
 Variational Inference often proves effective for initialisation due to its speed and robustness, whilst MLE can provide reasonable point estimates.
 However, initialisation difficulties may indicate unrealistic prior specifications, suggesting model validation should be revisited before proceeding with complex inference.
 
-\subsubsection{Practical Implementation}
+\subsubsection{Implementation considerations}
 
 A wide range of software tools is available to support the implementation of both likelihood-based and likelihood-free methods in infectious disease modeling (Table \ref{tab:methods_comparison} provides specific software examples for each method). Bayesian inference platforms such as Stan, JAGS and NIMBLE are widely used for likelihood-based approaches, offering flexibility in model specification and efficient MCMC algorithms \citep{carpenter2017stan,abril2023pymc}. For more complex or high-dimensional models, Python based PyMC and Julia-based Turing.jl provide probabilistic programming environments with good performance \citep{abril2023pymc,ge2018turing,fjelde2025turing}. For more scalable alternatives to MCMC, INLA is implemented in the R-INLA package \citep{martins2013bayesian} and is particularly efficient for latent Gaussian models, including spatiotemporal structures commonly used in disease mapping and surveillance. VI is also available in PyMC and Turing.jl. These implementations allow rapid inference for large datasets or real-time modelling applications.  Additionally, tools such as LibBi support SMC-based inference for state-space models and can scale to high-dimensional problems using GPU and parallel computing \citep{murray2015bayesian}. For likelihood-free methods, ABC is supported in packages like EasyABC, abc, abctools \citep{jabot2013easy,csillery2012abc,nunes2015abctools}.
 
@@ -643,7 +643,7 @@ However, this may need careful management when working with confidential data so
 Progressive disclosure of development history builds confidence in analytical approaches and enables learning from both successes and challenges encountered during model development.
 
 \section{Case Studies}
-% Lead: Anne Cori
+% Lead: Michael Plank
 
 \subsection{Overview}
 
