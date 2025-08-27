@@ -72,10 +72,10 @@ Infectious disease modelling increasingly relies on integrating multiple data so
 
 % Paragraph 1: Motivation and Context
 Infectious disease modelling increasingly relies on integrating multiple data sources to improve parameter estimation, reduce uncertainty, and provide more robust evidence for public health decision making \citep{deangelis2018analysing}.
-Recent outbreaks, including COVID-19, mpox, and Ebola have highlighted both the potential value and practical challenges of combining diverse data streams such as case reports, deaths, hospitalisations, genomic sequences, wastewater surveillance, and serological surveys \citep{knock2021key, ro2025estimating, Abbott2021-delta, Abbott2022-prevalence, Ward2024-sp}.
+Recent outbreaks, including COVID-19, mpox, and Ebola have highlighted both the potential value and practical challenges of combining diverse data streams such as case reports, deaths, hospitalisations, genomic sequences, wastewater surveillance, and serological surveys \citep{knock2021key, ro2025estimating, Abbott2021-delta, Abbott2022-prevalence, Ward2024-sp,birrell2025real}.
 These outbreak settings create unique pressures where novel data streams emerge rapidly, surveillance systems evolve to meet changing needs, and models must be developed under severe time constraints with limited understanding of new data sources \citep{mccaw2023role}.
 Single data sources often provide limited or biased information about key epidemiological parameters, whilst multiple sources can offer complementary perspectives that improve model accuracy and reliability or conflicting perspectives leading to  \citep{lison2024generative, sherratt2021exploring}.
-Additionally, in some cases, some parameters are only identifiable by combining data sources that together indirectly inform latent parameters, which are not directly observed.
+Additionally, in some cases, some parameters are only identifiable by combining data sources that together indirectly inform latent parameters, which are not directly observed \citep{deangelis2018analysing}.
 However, practitioners face complex methodological choices about how to combine these, potentially conflicting, data streams effectively.
 
 % Paragraph 2: Current Approaches
@@ -105,11 +105,11 @@ By focusing on this common estimation task, we provide practitioners with a conc
 \section{Data Sources and Characteristics} \label{sec:datareview}
 % Lead: Punya Alahakoon
 
-There is an increasing number of data sources being used for infectious disease surveillance and modelling, including case notifications, hospitalisations, viral load measurements from clinical samples, and wastewater samples. While each of these data sources offers unique advantages, such as timelines, population coverage, and XXX, they also come with distinct limitations, including reporting delays,  measurement noise, or under-representativeness. There is currently no standardised approach to assess and compare these data sources in terms of their strengths and weaknesses. This lack of standardisation hinders our ability to compare, integrate, and prioritise data streams effectively across contexts. 
+There is an increasing number of data sources being used for infectious disease surveillance and modelling, including case notifications, hospitalisations, viral load measurements from clinical samples, and wastewater samples. While each of these data sources offers unique advantages, such as timelines, population coverage, and XXX, they also come with distinct limitations, including reporting delays,  measurement noise, or lack of representativeness. There is currently no standardised approach to assess and compare these data sources in terms of their strengths and weaknesses, hindering our ability to compare, integrate, and prioritise data streams effectively across contexts. 
 
-We propose the six overarching characteristics as an approach to evaluate different data sources in a common framework (Figure \ref{data_characteristics}).  These characteristics are (1) \textit{metadata}  that encapsulates the foundational information about each data stream; (2) \textit{scope} of a data source that refers to the representative breadth and epidemiological relevance of a data source; (3) \textit{Resolution} that describes the granularity and the level of details captured by a data source; (4) \textit{Data quality} that encompasses the reliability, accuracy and completeness of the measurements within a data stream; (5) \textit{Data utility} that refers to the practical applicability of a data source in informing epidemiological metrics and supporting public-health decision making; (6)\textit{ Practical considerations} that addresses the feasibility of using a data stream i n modelling and surveillance contexts. We further define additional potential criteria for each of these characteristics which are given in the Supplementary Materials. 
+We propose six overarching characteristics with which to evaluate different data sources in a common framework (Figure \ref{data_characteristics}).  These characteristics are: (1) \textit{metadata}  that encapsulates  foundational information about each data stream; (2) the \textit{scope} of a data source, i.e. its representative breadth and epidemiological relevance; (3) \textit{resolution} that describes the granularity and level of detail captured by a data source; (4) \textit{data quality} that encompasses the reliability, accuracy and completeness of the measurements within a data stream; (5) \textit{data utility} that refers to the practical applicability of a data source in informing epidemiological metrics and supporting public-health decision making; and (6)\textit{ practical considerations} that addresses the feasibility of using a data stream in modelling and surveillance contexts. We define additional potential criteria for each of these characteristics in the Supplementary Materials. 
 
-We propose that these six characteristics be used as a checklist to guide the systematic assessment of a data stream's strengths and weaknesses. While the precise structure, relevance, and sub-attributes of each component may vary depending on the specific surveillance data and modelling objectives, the key objective of this checklist is to promote structured, transparent, thinking. We suggest first assessing our checklist within your collaboration, or team,  and then modifying it to better align with your own views. Once happy with the checklist review each dataset available to you in turn, ideally independently and collate the responses. We then suggest summarising these responses, as demonstrated in our case study, and referring back to them through the remainder of the workflow (we key points to refer to these data reviews in the following sections).
+We propose that these six characteristics be used as a checklist to guide the systematic assessment of a data stream's strengths and weaknesses. While the precise structure, relevance, and sub-attributes of each component may vary depending on the specific surveillance  and modelling objectives, the key objective of this checklist is to promote structured, transparent, thinking. We suggest first assessing our checklist within your collaboration, or team,  and then modifying it to better align with your own views. Once happy with the checklist review each dataset available to you in turn, ideally independently and collate the responses. We then suggest summarising these responses, as demonstrated in our case study, and referring back to them through the remainder of the workflow (we key points to refer to these data reviews in the following sections).
 
 
 \begin{figure}[H] 
@@ -139,8 +139,8 @@ We advocate this approach because it makes modelling choices transparent, assump
 The workflow should be implemented through multiple iterations, starting with high-level considerations and becoming more detailed with each pass, as some steps require later workflow components (e.g., posterior prediction requires inference and computation choices).
 
 Begin with \textbf{decision making}: clearly define your research question and target estimands (e.g., time-varying reproduction number, overdispersion parameters).
-Next, we suggest using \textbf{directed acyclic graphs (DAG)} approach to define your models. However, we depart from standard approaches in that we suggest decoupling the definition of the \textbf{process} and \textbf{observation} models.
-Here the \textbf{process model (DAG)} represents the underlying epidemiological process, i.e. the transmission and related processes.
+Next, we suggest using \textbf{directed acyclic graphs (DAG)}  to define your models. However, we depart from standard approaches in that we suggest decoupling the definition of the \textbf{process} and \textbf{observation} models.
+Here the \textbf{process model DAG} represents the underlying epidemiological process, i.e. the transmission and related processes.
 A key part of this workflow is iterating on this representation as understanding develops i.e. during an outbreak.
 The next step is to make use of the data source characterisation from the last section to \textbf{map available \textbf{data sources} }to your process model, such as incidence time series, genomic data, contact tracing, viral load measurements, and serological surveys based on those identified in the previous section.
 Data sources should be selected based on their expected contributions to the research question.
@@ -148,7 +148,7 @@ For each data source, develop an \textbf{observation DAG} linking the underlying
 Different data sources may also impact your \textbf{process DAG} assumptions, such as whether you can collapse your representation of the process from individual-level to population-level.
 
 Once you have developed your \textbf{process} and \textbf{observation DAGs}, proceed to \textbf{model specification and validation}, including prior specification, parameter identifiability assessment, and prior predictive checks.
-You then face the key decisions \textbf{data integration choices}: \textbf{``What to combine?''} and \textbf{``How to combine?''}.
+You then face key decisions on \textbf{data integration choices}: \textbf{``What to combine?''} and \textbf{``How to combine?''}.
 
 If combining multiple sources is not beneficial or feasible, you can proceed to single-source modelling and potentially the combination of estimates, e.g. where multiple models estimate the effective reproduction number from different data sources, and so these estimates can be ensembled.
 If integration is warranted, select among \textbf{data integration} methods. 
@@ -156,7 +156,7 @@ Once your data sources have been integrated, it is time to make \textbf{inferenc
 Finally, \textbf{fit your model} and evaluate its performance through posterior predictive validation and sensitivity analysis.
 
 Throughout this workflow, there is the potential for feedback loops between steps so that model development is rarely a single forward pass (see Figure~\ref{fig:workflow}). 
-Data characteristics alter process DAG structure; individual-level data requires different representations than population-level data. 
+Data characteristics can alter process DAG structure: individual-level data requires different representations than population-level data. 
 Identifiability issues discovered during model specification may require simplifying either the process model or observation models. 
 Practical constraints shape integration choices in multiple ways. Teams using incompatible programming languages may necessitate modular rather than joint approaches. 
 Integration complexity itself may require simplifying observation models to maintain computational feasibility. Conflicts between data sources during integration often reveal model misspecification, requiring revision of earlier assumptions. 
@@ -189,7 +189,7 @@ As surveillance expands, questions might shift, for example, to variant dynamics
 Process DAG development translates research questions into formal causal structures that evolve throughout an outbreak.
 A directed acyclic graph (DAG) represents causal relationships between variables through nodes (variables) and directed edges (causal influences), making assumptions explicit and testable \citep{digitale2022tutorial}.
 This formalism helps identify confounders, mediators, and colliders that affect parameter estimation from observational data.
-For infectious disease modelling, we recommend constructing DAGs that capture biological mechanisms: susceptible populations, transmission events, infection progression, recovery or death, and intervention effects \\\citep{deangelis2018analysing}.
+For infectious disease modelling, we recommend constructing DAGs that capture biological mechanisms: susceptible populations, transmission events, infection progression, recovery or death, and intervention effects \citep{deangelis2018analysing}.
 Begin with simple representations of core transmission dynamics, then iteratively refine as understanding improves during an outbreak.
 Early outbreak DAGs might represent homogeneous mixing, while later versions incorporate age structure, spatial heterogeneity, or variant dynamics as data reveals their importance.
 Key biological mechanisms drive DAG structure: incubation periods create delays between infection and infectiousness, viral load dynamics affect transmission probability, and immune waning influences reinfection risk.
@@ -199,33 +199,33 @@ This separation enables modular model development where process components can b
 \subsection{Data Source Mapping}
 
 Data source mapping connects available surveillance streams to epidemiological processes using the characteristics framework from Section~\ref{sec:datareview}.
-After cataloguing the available data systematically, as suggested in ~\ref{sec:datareview},  it is then important to relate the strengths and weaknesses of each available data source to the target estimands.
+After this systematic cataloguing of the available data,  it is then important to relate the strengths and weaknesses of each available data source to the target estimands.
 Link data sources to process components by identifying what epidemiological quantities each stream measures. 
 For example, cases reflect infection incidence with reporting delays and ascertainment bias, hospitalisations capture severe outcomes with admission thresholds, and wastewater indicates population-level viral circulation independent of healthcare-seeking.
 Evaluate complementarity by examining whether sources provide independent signals or reinforce the same information.
-For example, wastewater can potentially early warning, while clinical surveillance provides individual-level severity data.
+For example, wastewater can potentially provide early warning of outbreaks, while clinical surveillance provides individual-level severity data.
 Identify redundancy where multiple sources inform the same parameter, which might improve precision at the cost of model complexity.
 Start with minimum data requirements for target estimands, then expand systematically.
-Each additional source increases complexity and development time, so prioritise based on expected information gain relative to implementation cost.
+Each additional source increases complexity and development time, so prioritise based on expected information gain relative to implementation cost \citep{jackson2019value,heath2024value}.
 Document these mapping decisions explicitly as they shape all downstream workflow choices from observation DAG construction through integration methods.
 
 \subsection{Observation DAG Construction} \label{sec:observation}
 
 Observation DAGs map how latent epidemiological processes generate observed data, with complexity shaped by target estimands and available data sources \citep{deangelis2018analysing}.
-Build these DAGs by working backwards from measured values through all intermediate steps: symptom onset, healthcare seeking, testing, laboratory processing, and reporting for clinical surveillance; viral shedding, sewage networks, and quantification for wastewater.
-Each step introduces delays, biases, or missing data mechanisms that affect inference.
+Build these DAGs by working backwards from measured values through all intermediate steps: e.g. symptom onset, healthcare seeking, testing, laboratory processing, and reporting for clinical surveillance; viral shedding, sewage networks, and quantification for wastewater.
+Each step introduces delays, selection biases, or missing data mechanisms that affect inference.
 The level of detail depends on research questions and later workflow choices.
 Estimating population-level transmission requires simpler observation models than understanding variant-specific dynamics or age-stratified patterns.
 Individual-level data enables different observation models compared to aggregated reports.
-Model reporting delays explicitly as they create temporal misalignment between transmission events and observations.
+Model reporting and other delays explicitly as they create temporal misalignment between transmission events, disease sequelae and observations \citep{seaman2022nowcasting}.
 Distinguish between missing data mechanisms since random missingness and systematic under-ascertainment require different handling \citep{sherratt2021exploring}.
-Account for time-varying observation probabilities from testing capacity or surveillance intensity changes.
+Account for time-varying observation probabilities from testing capacity, healthcare seeking or surveillance intensity changes.
 Account for hierarchical structure and population heterogeneity when multiple data sources capture different demographic subgroups.
 Multiple observation DAGs for the same underlying process enable validation by checking whether different data streams imply consistent transmission dynamics when properly aligned.
 
 \subsection{Iterate on the model DAGs}
 
-After mapping data sources and constructing your observations DAGs, revisit your process and observations DAGs to ensure alignment between what you want to model and what your data can support \citep{gelman2020bayesian}.
+After mapping data sources and constructing your observation process DAGs, revisit your process and observations DAGs to ensure alignment between what you want to model and what your data can support \citep{gelman2020bayesian}.
 This step of the workflow aims to create a single joint DAG composed of your process and observations DAGs.
 Data availability can drive both increases and decreases in model complexity.
 Contact tracing data with identified transmission pairs enables shifting from population-level compartmental models to individual-based representations that capture heterogeneous mixing patterns.
