@@ -190,6 +190,7 @@ Process DAG development translates research questions into formal causal structu
 A directed acyclic graph (DAG) represents causal relationships between variables through nodes (variables) and directed edges (causal influences), making assumptions explicit and testable \citep{digitale2022tutorial}.
 This formalism helps identify confounders, mediators, and colliders that affect parameter estimation from observational data.
 For infectious disease modelling, we recommend constructing DAGs that capture biological mechanisms: susceptible populations, transmission events, infection progression, recovery or death, and intervention effects \\\citep{deangelis2018analysing}.
+Rather than starting from scratch, adapt established epidemiological models for similar pathogens or transmission routes, modifying components as outbreak-specific data emerges \citep{gelman2020bayesian}.
 Begin with simple representations of core transmission dynamics, then iteratively refine as understanding improves during an outbreak.
 Early outbreak DAGs might represent homogeneous mixing, while later versions incorporate age structure, spatial heterogeneity, or variant dynamics as data reveals their importance.
 Key biological mechanisms drive DAG structure: incubation periods create delays between infection and infectiousness, viral load dynamics affect transmission probability, and immune waning influences reinfection risk.
@@ -214,6 +215,8 @@ Document these mapping decisions explicitly as they shape all downstream workflo
 Observation DAGs map how latent epidemiological processes generate observed data, with complexity shaped by target estimands and available data sources \citep{deangelis2018analysing}.
 Build these DAGs by working backwards from measured values through all intermediate steps: symptom onset, healthcare seeking, testing, laboratory processing, and reporting for clinical surveillance; viral shedding, sewage networks, and quantification for wastewater.
 Each step introduces delays, biases, or missing data mechanisms that affect inference.
+Treat observation components as modular and replaceable: initial Poisson noise models can become negative binomial, simple delays can incorporate weekly patterns \citep{gelman2020bayesian}.
+This flexibility reduces initial specification burden whilst enabling systematic refinement.
 The level of detail depends on research questions and later workflow choices.
 Estimating population-level transmission requires simpler observation models than understanding variant-specific dynamics or age-stratified patterns.
 Individual-level data enables different observation models compared to aggregated reports.
@@ -225,7 +228,8 @@ Multiple observation DAGs for the same underlying process enable validation by c
 
 \subsection{Iterate on the model DAGs}
 
-After mapping data sources and constructing your observations DAGs, revisit your process and observations DAGs to ensure alignment between what you want to model and what your data can support \citep{gelman2020bayesian}.
+After mapping data sources and constructing your observations DAGs, revisit your process and observations DAGs to ensure alignment between what you want to model and what your data can support.
+Model development can begin simple and add complexity, or start comprehensive and simplify to essential components \citep{gelman2020bayesian}.
 This step of the workflow aims to create a single joint DAG composed of your process and observations DAGs.
 Data availability can drive both increases and decreases in model complexity.
 Contact tracing data with identified transmission pairs enables shifting from population-level compartmental models to individual-based representations that capture heterogeneous mixing patterns.
@@ -240,26 +244,56 @@ Document why changes were made, preserving the rationale for future model extens
 
 \subsection{Model Specification and Validation}\label{sec:spec-validate}
 
+Follow the systematic Bayesian workflow for model validation \citep{gelman2020bayesian}, working through structured phases that provide clear decision points and feedback loops.
 Start by validating models in small subcomponents first, then explore combinations to identify integration challenges early.
-As already outlined, specify priors using domain knowledge where available through informative priors; otherwise, use weakly informative priors that regularise without dominating the likelihood \citep{gelman2020bayesian}.
-Validate using prior predictive checks, which simulate data from the prior to ensure model behaviour aligns with epidemiological plausibility before seeing data.
+
+\subsubsection{Prior Specification and Prior Predictive Checks}
+
+Specify priors using domain knowledge where available through informative priors; otherwise, use weakly informative priors that regularise without dominating the likelihood.
+Prior predictive checks simulate data from the prior to ensure model behaviour aligns with epidemiological plausibility before seeing data.
+These checks can reveal several issues requiring model modification: unrealistic parameter ranges may indicate need for different priors or model constraints; implausible epidemic dynamics may suggest DAG structural changes; computational issues during simulation may indicate need for model approximations or reparameterisation.
+When prior predictive checks reveal problems, return to DAG development (Sections \ref{sec:process} and \ref{sec:observation}) to simplify models, add model components, increase complexity through hierarchical structure, or implement approximations for computational tractability.
+Prior specification problems may also indicate need for additional data sources or expert consultation to inform appropriate prior distributions.
+
+\subsubsection{Model Fitting and Computational Validation}
+
+After resolving prior predictive issues, fit the model using methods from Section \ref{sec:fitting}.
+Validate computational aspects through diagnostic checks, fake data simulation, and simulation-based calibration where feasible.
+Using simulated scenarios to validate parameter recovery provides valuable insights into model performance \citep{bouman2024bayesian}, whilst simulation-based calibration for each submodel provides stronger validation by verifying that inference algorithms can recover true parameters from simulated data \citep{talts2018validating}.
+Address computational issues systematically: simplify model structure or increase prior informativeness if convergence fails; examine submodels in detail if joint fitting proves intractable; reparameterise models if mixing is poor; plot intermediate quantities like effective reproduction numbers to identify problematic components; run on data subsets or reduce iterations to speed up iteration; check for multimodality using multiple chains or parallel tempering.
+Remember that the goal is to make predictions or learn about epidemiological processes, not merely achieve convergence of an arbitrary model \citep{gelman2020bayesian}.
+If computational validation succeeds, provisionally accept the model for posterior validation.
+Persistent computational issues require returning to model specification or considering alternative integration approaches (Section \ref{sec:integration}).
+
+\subsubsection{Evaluate and Use Model}
+
+Begin with posterior predictive checks to assess whether fitted models reproduce key features across all integrated sources.
+These checks form the foundation of model validation by comparing model-generated predictions against observed patterns.
+Apply cross-validation strategies, particularly leave-one-out and time-aware validation, to assess predictive performance whilst respecting temporal data structure.
+Examine influence of individual data points and prior specifications through sensitivity analysis.
+
 Assess parameter identifiability by examining whether data sources provide sufficient information to uniquely estimate target parameters; joint modelling often resolves identifiability issues that plague pipeline approaches \citep{lison2024generative, russell2024combined}.
 For some models, formal structural identifiability approaches may be used to indicate where additional data or prior information is needed.
+Implement poststratification as needed to correct for population representativeness issues.
+
 Detect conflict between data sources, where different streams imply incompatible parameter values under the current model.
 When conflict arises, use prior sensitivity analysis to quantify how much priors must change to accommodate observed data, revealing potential model misspecification or data quality issues \citep{roos2015sensitivity,nott2021approximation,kallioinen2021detecting}.
-This conflict analysis connects directly to the value of information assessments that prioritise data collection efforts \citep{jackson2019value}.
-Criticise fitted models through posterior predictive validation, simulating new data to test whether models reproduce key features across all integrated sources.
-Apply cross-validation strategies, particularly leave-one-out and time-aware validation, to assess predictive performance while respecting temporal data structure.
-When multiple plausible model specifications exist, use Leave-One-Out Cross-Validation (LOO-CV), Watanabe-Akaike Information Criterion (WAIC), Continuous Ranked Probability Score (CRPS), or other methods to compare predictive accuracy \citep{vehtari2017practical,yao2018using,bosse2023scoring} combined with visual posterior predictive checks.
+This conflict analysis connects directly to value of information assessments that prioritise data collection efforts \citep{jackson2019value}.
+
+If posterior validation reveals model inadequacies, return to DAG development to modify model structure, add complexity, or implement different approximations.
+
+\subsubsection{Model Comparison}
+
+When multiple plausible model specifications exist, use Leave-One-Out Cross-Validation (LOO-CV), Watanabe-Akaike Information Criterion (WAIC), Continuous Ranked Probability Score (CRPS), or other methods to compare predictive accuracy \citep{vehtari2017practical,yao2018using,gneiting2007strictly} combined with visual posterior predictive checks.
 High Pareto-k values from LOO-CV identify influential observations requiring careful modelling.
 For infectious disease models, consider scoring transformations such as the log when using CRPS \citep{bosse2023scoring}.
-Conduct sensitivity analyses by examining how conclusions change across prior specifications, likelihood assumptions, and data inclusion decisions.
-Prioritise calibration followed by sharpness: models should produce statistically consistent predictions with the minimal required uncertainty \citep{gneiting2007strictly}.
-Using simulated scenarios to validate parameter recovery provides valuable insights into model performance \citep{bouman2024bayesian}, though ideally simulation-based calibration for each submodel would verify that inference algorithms can recover true parameters from simulated data, as this provides stronger validation than posterior predictive checks alone \citep{talts2018validating}.
-For comprehensive implementation guidance, see \citep{gelman2020bayesian}.
-Model specification and validation have a critical feedback loop with DAG structure and data integration choices.
+Maximise sharpness subject to calibration: models should produce statistically consistent predictions whilst minimising required uncertainty \citep{gneiting2007strictly}.
+Model comparison serves as the final validation step, ensuring that chosen specifications provide optimal predictive performance whilst maintaining epidemiological interpretability.
 
-\subsection{Data Integration Choices}
+This approach creates multiple feedback loops with earlier workflow stages: prior predictive issues modify DAGs and data integration choices; computational problems may require approximations or different integration methods; posterior validation failures necessitate structural model changes.
+For comprehensive implementation guidance, see \citep{gelman2020bayesian}.
+
+\subsection{Data Integration Choices}\label{sec:integration}
 % Lead: Anne Presanis
 
 \subsubsection{Decision Framework}
