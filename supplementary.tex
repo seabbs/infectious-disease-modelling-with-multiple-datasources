@@ -170,7 +170,7 @@ D_t \sim \mathrm{Poisson}\left(p_d \sum_{s=1}^\infty I_{t-s} v_s \right), \\[6pt
 W_t \sim \Gamma\left(\frac{\alpha}{N_{\mathrm{pop}}} \sum_{s=1}^\infty I_{t-s} u_s, b \right),
 \end{cases}
 \end{align}
-Observed data models:
+Observation model:
 \begin{itemize}
     \item \textbf{Cases:} $\widehat{I}_t \sim \mathrm{Poisson}\left(\sum_{s=1}^\infty N_{s,t}\right), \quad N_{s,t} \sim \mathrm{TruncatedMultinomial}(I_s, \alpha_{t-s})$,
     \item \textbf{Deaths:} $\widehat{D}_t = \sum_{s=1}^\infty M_{s,t}, \quad M_{s,t} \sim \mathrm{Multinomial}(D_s, \beta_{t-s})$,
@@ -185,7 +185,7 @@ where $\theta$ includes all model parameters such as $k, \alpha, p_d, \beta, b$.
 
 \subsection{Case Study 3: Individual-Level Data (Cases and Transmission Pairs)}
 
-\noindent\textbf{Estimands.} The time-varying reproduction number $R_{1:T}$ and the dispersion parameter $k$ capturing heterogeneity in the number of secondary infections per index case.
+\noindent\textbf{Estimands.} The time-varying reproduction number $R_{1:T}$ and the dispersion parameter $k$ capturing heterogeneity in the number of secondary infections per index case. \textcolor{red}{[ TO BE CHANGE DEPENDING ON THE FINAL VERSION IN THE MAIN TEXT.]}
 
 \subsubsection{Separate models: Independent estimation from counts and pairs}
 
@@ -212,13 +212,34 @@ Z_i \sim g\big(Y_i, T_i, R_{1:T}\big) =
 where $\widetilde{R}_t \equiv \sum_{s} R_{t+s} w_s$ is the effective reproduction number averaged over the infectious period of
 an individual who was infected on day $t$.
 
-\emph{Observation for linked pairs.} Let $\mathcal{D}_{\mathrm{pairs}}:=\{(\widehat{Z}_i, t_i): i\in\mathcal{I}\}$ denote the set of index cases $i$ for which the number of \emph{linked} secondary cases $\widehat{Z}_i$ is observed, together with the index case’s reporting day $t_i$ and independently linked with probability $p_l$. Ignoring infection-to-report delays for the index (so that $T_i \approx t_i$ for modeling $\tilde{R}$ at the index’s calendar time), the sampling model for the pairs data is \textcolor{red}{[ TO BE CHANGE DEPENDING ON THE FINAL VERSION IN THE MAIN TEXT.]}
+\emph{Observation for linked pairs.} Let $\mathcal{D}_{\mathrm{pairs}}:=\{(\widehat{Z}_i, t_i): i\in\mathcal{I}\}$ denote the set of index cases $i$ for which the number of \emph{linked} secondary cases $\widehat{Z}_i$ is observed, together with the index case’s reporting day $t_i$ and independently linked with probability $p_l$. Ignoring infection-to-report delays for the index (so that $T_i \approx t_i$ for modeling $\tilde{R}$ at the index’s calendar time), the sampling model for the pairs data is 
 \begin{align}
 \widehat{Z}_i \sim\mathrm{NegBin}\!\big(p_l\,\tilde{R}_{t_i},\, k\big), 
 \qquad i\in\mathcal{I}.
 \end{align}
 Fitting this model to $\mathcal{D}_{\mathrm{pairs}}$ targets the posterior: $\label{cs3_post_pairs}
-p\left(R_{1:T}, Z_,\theta |\mathcal{D}_{\text{pairs}}\right)$
+p\left(R_{1:T}, \{Z_i\}_{i\in\mathcal{I}},\theta |\mathcal{D}_{\text{pairs}}\right)$, where $\theta$ denotes all other model parameters (e.g., $w_s$, $p_l$, $k$).  Posterior inference produces estimates $R_{1:T}^p$ (from pairs data) and $k$, the dispersion parameter describing heterogeneity in secondary transmission.
+
+\subsubsection{Joint model: Simultaneous estimation of $R_{t}$ from counts and transmission pairs}
+
+\paragraph{Model structure.}
+In the joint framework, latent infections $I_t$ are modeled at the population level via the renewal process (Eq.~\eqref{latent_inf}), while individual-level offspring counts $Z_i$ are simultaneously modeled using the transmission-pair framework (Eqs.~\eqref{cs3_ind_process}--\eqref{offspring_cases}).  
+
+Observation process:
+\begin{itemize}
+    \item \textbf{Case counts:} $\widehat{I}_t \sim \mathrm{Poisson}\left(\sum_{s=1}^\infty N_{s,t}\right), \quad N_{s,t} \sim \mathrm{TruncatedMultinomial}(I_s, \alpha_{t-s})$,
+
+    \item \textbf{Transmission pairs:} $
+    \widehat{Z}_i \sim \mathrm{NegBin}\!\big(p_l\,\tilde{R}_{t_i},\, k\big), 
+    \qquad i\in\mathcal{I},$
+\end{itemize}
+
+\paragraph{Joint inference.}
+Combining case incidence data $\widehat{I}_{1:T}$ and transmission pairs $\mathcal{D}_{\mathrm{pairs}}$, inference targets the joint posterior distribution:
+\begin{align}
+p\big(R_{1:T}, I_{1:T}, \{Z_i\}_{i\in\mathcal{I}}, \theta \,\big|\, \widehat{I}_{1:T}, \mathcal{D}_{\mathrm{pairs}}\big),
+\end{align}
+where $\theta$ denotes nuisance and auxiliary parameters (e.g., $w_s$, $\alpha$, $p_l$, $k$).  
 
 \bibliographystyle{plainnat}
 \bibliography{references,zotero-references}
