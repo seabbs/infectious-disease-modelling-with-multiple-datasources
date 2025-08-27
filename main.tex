@@ -15,6 +15,8 @@
  \usepackage{booktabs}
 \usepackage{tabularray}
 
+\newcommand\Fontvi{\fontsize{7}{7}\selectfont}
+
 \newlist{tree}{itemize}{10}
 \setlist[tree]{label=-}
 \setlistdepth{10} 
@@ -348,8 +350,11 @@ Diagnostic tools to detect conflicts in evidence synthesis models include prior-
 \subsection{Fitting Choices}\label{sec:fitting}
 % Lead: Xiahui and Dhorasso with support from Anne Presanis
 
-Inference for infectious disease models typically involves estimating a set of parameters $\theta$ from observed data $Y$, which may include case counts, hospitalisations, deaths, wastewater surveillance or other epidemiological measurements. These data are assumed to arise from a probabilistic model characterised by a likelihood function $p(Y | \theta)$ that links the parameters to the data through both an underlying transmission dynamics (represented by the process DAG (Section \ref{sec:process}) in our workflow) and a noisy observation mechanism (captured by the observation DAG (Section \ref{sec:observation})).  The choice of inferential approach depends on the tractability of the likelihood: 
-whether $ p(Y | \theta)$ is analytically or numerically computable, intractable and requiring approximation, or entirely  unavailable (necessitating likelihood-free, simulation-based methods). This section provides a brief overview of common computational strategies, with a focus on practical considerations and current best practices.
+Inference for infectious disease models typically involves estimating a set of parameters $\theta$ from observed data $Y$, which may include case counts, hospitalisations, deaths, wastewater surveillance or other epidemiological measurements. These data are assumed to arise from a probabilistic model characterised by a likelihood function $p(Y | \theta)$ that links the parameters to the data through both an underlying transmission dynamics (represented by the process DAG (Section \ref{sec:process}) in our workflow) and a noisy observation mechanism (captured by the observation DAG (Section \ref{sec:observation})). However, choosing an appropriate inferential approach becomes increasingly complex when integrating multiple data sources, as researchers must balance model complexity, computational feasibility, likelihood tractability, and available expertise, decisions that are often interdependent and may require iterative refinement.
+
+The fitting choices workflow (Figure \ref{fig:fitting}) illustrates the systematic decision-making process required when selecting appropriate inference methods for integrating multiple data sources in infectious disease modelling. The workflow contains four interconnected components. Model Complexity Assessment evaluates key factors such as dimensionality, hierarchical structure, likelihood tractability, and computational constraints to determine the feasibility of different fitting approaches. This assessment directly informs the critical choice between two primary methodological pathways: likelihood-based methods (when the likelihood function $ p(Y | \theta)$ is analytically or computationally tractable) and likelihood-free methods (when the likelihood is intractable or unavailable), each requiring detailed consideration of their advantages, limitations, and implementation challenges. Throughout the fitting process, Diagnostics procedures provide essential feedback on model performance and computational efficiency: convergence checks verify that parameter estimates have stabilized across chains or iterations, sensitivity analysis assesses robustness to prior specifications and different model assumptions, and evaluation of computational trade-offs balance between inferential accuracy and feasibility constraints. Implementation Considerations address the real-world challenges, including making decisions around software selection and managing compatibility requirements across different computational environments. The workflow's iterative nature is particularly important in practice, as computational limitations or fitting difficulties may require researchers to revisit earlier decisions about model structure (returning to Process DAG development) or integration strategy (reconsidering Data Integration Choices).
+
+The following subsections provide detailed guidance on navigating these methodological choices in practice. We begin with likelihood-based methods (Section \ref{sec:like-base}), then turn to likelihood-free approaches (Section \ref{sec:like-free}), discussing when these methods become necessary and how to implement them effectively. Since practical implementation often determines modelling strategies, we first address implementation considerations (Section \ref{sec:implement}), exploring concrete challenges such as software environment compatibility, computing resource constraints. Based on this consideration, we discuss the selection of the appropriate inference approach (Section \ref{sec:select-tool}), highlighting how different computational frameworks align with model complexity, data integration demands, and methodological choices.
 
 \begin{figure}[htbp]
     \centering
@@ -358,8 +363,8 @@ whether $ p(Y | \theta)$ is analytically or numerically computable, intractable 
     \label{fig:fitting}
 \end{figure}
 
+\subsubsection{Likelihood-based methods} \label{sec:like-base}
 
-\subsubsection{Likelihood-based methods}
 Likelihood-based inference encompasses frequentist and Bayesian approaches. Classical frequentist methods such as maximum likelihood estimation (MLE)\citep{myung2003tutorial, baltazar2024maximum} and profile likelihood \citep{tonsing2018profile, plank2024structured} provide well-established tools for parameter estimation. However, here we focus mainly on Bayesian methods due to their flexibility in handling uncertainty and incorporating various sources of information.
 
 Bayesian inference updates prior beliefs $ p(\theta)$ in light of observed data to obtain a posterior distribution $p(\theta | Y) \propto p(Y|\theta) \,p(\theta)$. For simple models with exponential family likelihoods, conjugate priors allow closed-form posterior solutions \citep{gelman1995bayesian,  cori2013new}. However, many infectious disease models involve complexities that preclude exact inference.
@@ -369,9 +374,9 @@ When the likelihood can be evaluated (up to a constant) but closed-form posterio
 Alternatives to MCMC include Variational Inference (VI), which approximates the posterior by optimizing a tractable surrogate distribution, offering scalability at the cost of some bias \citep{blei2017variational, chatzilena2019contemporary}. Similarly, the Integrated Nested Laplace Approximation (INLA) 
 offers a computationally efficient method for approximating posterior marginals in latent Gaussian models, without relying on sampling-based methods \citep{rue2017bayesian}.
 
-In state-space models with high-dimensional latent state structures, the likelihood maybe intractable due to the need to marginalise over latent states. Sequential Monte Carlo (SMC) methods, or particle filters, approximate the posterior using weighted particles and yield unbiased likelihood estimates \citep{doucet2001introduction}. These can be embedded within MCMC to form particle MCMC (PMCMC) \citep{andrieu2010particle, endo2019introduction} , enabling joint parameter and latent state inference. Sequential Monte Carlo Squared (SMC$^2$) \citep{chopin2013smc2} extends this to fully sequential Bayesian updating as new data are accumulated.
+In state-space models with high-dimensional latent state structures, the likelihood maybe intractable due to the need to marginalise over latent states. Sequential Monte Carlo (SMC) methods, or particle filters, approximate the posterior using weighted particles and yield unbiased likelihood estimates \citep{doucet2001introduction}. These can be embedded within MCMC to form particle MCMC (PMCMC) \citep{andrieu2010particle, endo2019introduction}, enabling joint parameter and latent state inference. Sequential Monte Carlo Squared (SMC$^2$) \citep{chopin2013smc2} extends this to fully sequential Bayesian updating as new data are accumulated.
 
-\subsubsection{Likelihood-Free Methods}
+\subsubsection{Likelihood-Free Methods}  \label{sec:like-free}
 
 Likelihood-based methods are powerful for parameter inference but rely on evaluating the likelihood function, which is sometimes infeasible for complex infectious disease models. Likelihood-free methods circumvent this by simulating from the model instead.
 
@@ -383,26 +388,36 @@ ABC-SMC further enhances efficiency by iteratively refining  tolerances and prop
 
 When exact likelihoods are unavailable but the model can be simulated repeatedly, synthetic likelihood methods provide an alternative by approximating the likelihood via assuming Gaussian distributions for summary statistics \citep{wood2010statistical, price2018bayesian}. 
 
-\subsubsection{Selecting the Right Tool}
 
-Selecting an appropriate inference method involves balancing trade-offs between computational efficiency, statistical rigor, data availability, interpretability, and model complexity \citep{funk2020choices}. Rather than adopting a universal approach, the choice should be tailored to the specific modelling context and inferential goals. 
+\subsubsection{Implementation Considerations}  \label{sec:implement}
 
-For evolving epidemics, a key consideration is the dynamic nature of epidemic processes and data streams. As transmission rates and intervention effects change over time, and new data arrive continuously, methods that support sequential data updates, such as SMC, are generally preferred for real-time epidemic tracking \citep{birrell2020efficient, storvik2023sequential}. In contrast, MCMC-based methods, while statistically robust, are typically better suited for retrospective analyses, due to their reliance on complete datasets, high computational demands for reanalysis, and computational intensity in high-dimensional parameter spaces. 
+A wide range of software tools is available to support the implementation of both likelihood-based and likelihood-free methods in infectious disease modelling. When selecting software for infectious disease modelling, the primary consideration should be matching the tool's strengths to the specific modelling requirements and computational constraints. 
 
-When computational resources are constrained, for example during real-time outbreak monitoring or when analyzing large datasets, approximate methods like VI or ABC-SMC might offer scalable alternatives \citep{chatzilena2019contemporary, engebretsen2023real}. VI is highly scalable and typically much faster than MCMC, although it trades accuracy for speed and may not always be suitable where posterior uncertainty is important. Likelihood-free methods, while offering flexibility for complex models, tend to be computationally expensive because of repeated model simulation.
+Bayesian inference platforms such as Stan, JAGS, NIMBLE, PyMC, Turing.jl, and NumPyro are widely used for likelihood-based approaches \citep{carpenter2017stan,abril2023pymc, ge2018turing,fjelde2025turing, phan2019composable}. Stan is good for high-dimensional problems through efficient HMC algorithms, while JAGS and NIMBLE offer flexibility for model structures that may not well-suited to gradient-based methods. For models requiring rapid inference with large datasets, INLA and VI are good alternatives. INLA implementations are available in R-INLA package \citep{martins2013bayesian}, Stan, and TMB (Template Model Builder) \citep{osgood2023statistical}, while VI methods are supported across multiple platforms including PyMC, Turing.jl, Stan, and NumPyro. Additionally, tools such as LibBi support SMC-based inference for state-space models and can scale to high-dimensional problems using GPU and parallel computing \citep{murray2015bayesian}. 
 
-Beyond computational efficiency, statistical accuracy is influenced by algorithmic choices including priors distributions, tuning parameters, tolerance thresholds, and the number of particles or iterations. Full-likelihoods methods typically yield better estimator performance, subject to likelihood tractability and proper specification, whereas likelihood-free approaches often prioritise flexibility and scalability over precision \cite{alahmadi2020comparison}. 
-
-Interpretability and ease of implementation also play a role. Certain methods integrate smoothly with probabilistic programming environments, while others may require further tuning and computational expertise. Ultimately, method selection should follow a systematic decision process that considers modeling goals, urgency or latency constraints, system complexity, and available computational resources. 
-
-Regardless of the approach chosen, model checking, sensitivity analysis, and validation are essential to ensure that inferences are not only statistically valid but also scientifically meaningful and actionable.
-
-\subsubsection{Practical Implementation}
-
-A wide range of software tools is available to support the implementation of both likelihood-based and likelihood-free methods in infectious disease modeling. Bayesian inference platforms such as Stan, JAGS and NIMBLE are widely used for likelihood-based approaches, offering flexibility in model specification and efficient MCMC algorithms \citep{carpenter2017stan,abril2023pymc}. For more complex or high-dimensional models, Python based PyMC and Julia-based Turing.jl provide probabilistic programming environments with good performance \citep{abril2023pymc,ge2018turing,fjelde2025turing}. Using a fully generative probabilistic programming language like Turing.jl or NumPyro makes model validation such as simulation-based calibration easier, as one can easily sample from the model without writing separate model generators required when using other approaches. For more scalable alternatives to MCMC, INLA is implemented in the R-INLA package \citep{martins2013bayesian} and is particularly efficient for latent Gaussian models, including spatiotemporal structures commonly used in disease mapping and surveillance. VI is also available in PyMC and Turing.jl. These implementations allow rapid inference for large datasets or real-time modelling applications.  Additionally, tools such as LibBi support SMC-based inference for state-space models and can scale to high-dimensional problems using GPU and parallel computing \citep{murray2015bayesian}. For likelihood-free methods, ABC is supported in packages like EasyABC, abc, abctools \citep{jabot2013easy,csillery2012abc,nunes2015abctools}.
+For likelihood-free methods, the decision typically centers on computational scalability. Simple ABC and BSL implementations are sufficient for low-to-moderate-dimensional problems and are supported in packages/ softwares like EasyABC, abc, abctools, and ELFI\citep{jabot2013easy,csillery2012abc,nunes2015abctools, lintusaari2018elfi}. However, more complex scenarios may require specialized tools that support parallel and GPU computing. 
 
 % Add some stuff talking about performance on CPU vs GPU etc
-Parallelization is essential for large-scale epidemiological studies, where high-performance computing (HPC) resources are often required to handle complex models and extensive datasets. The parallelization potential varies across inference methods. MLE is highly parallelizable across data points, making it efficient scaling on both multi-core CPUs and GPUs for large datasets. Traditional MCMC methods have limited parallelization due to their sequential chain structure, GPU implementation remain challenging. Particle-based methods (PMCMC, SMC) benefit from particle-level parallelism and are well-suited for many-core GPU architectures, where thousands of particles can be processed simultaneously \citep{henriksen2012parallel}. However, INLA has low parallelization potential due to its dependence on sequential matrix operations that resist decomposition. VI scales well when processing small chunks of data at a time, where gradient calculations for each chunk can run in parallel \citep{hoffman2013stochastic}. Most modern VI implementations commonly use GPU acceleration, making them quite efficient for large datasets \citep{bingham2019pyro}. Likelihood-free methods like ABC excel in parallelization, as simulations are trivially parallelizable and GPU-friendly, though practitioners should account for potentially high memory requirements when scaling to many cores \citep{kulkarni2022hardware}. BSL allows parallelization with GPU acceleration to be possible for computationally intensive density estimation steps. When selecting methods for HPC environments, practitioners should carefully weight these parallelization capabilities against memory constraints, available hardware, and the specific computational demands of the epidemiological applications.
+Computational scalability is essential for large-scale epidemiological studies, where the choice of inference method should align with available high-performance computing (HPC) resources and parallelization opportunities. The parallelization potential varies across inference methods, when working with extensive datasets or complex models, one should consider the following computational trade-offs. MLE is highly parallelizable across data points, making it efficient scaling on both multi-core CPUs and GPUs for large datasets. Traditional MCMC methods have limited parallelization due to their sequential chain structure, though within-chain parallelization is possible for computationally expensive likelihood evaluations, and while GPU implementations are available in many settings, they are generally most effective for operations involving large matrix multiplications rather than the sequential parameter updates. Particle-based methods (PMCMC, SMC) benefit from particle-level parallelism and are well-suited for many-core GPU architectures, where thousands of particles can be processed simultaneously \citep{henriksen2012parallel}. However, INLA has low parallelization potential due to its dependence on sequential matrix operations that resist decomposition. VI scales well when processing small chunks of data at a time, where gradient calculations for each chunk can run in parallel \citep{hoffman2013stochastic}. Most modern VI implementations commonly use GPU acceleration, making them quite efficient for large datasets \citep{bingham2019pyro}. Likelihood-free methods like ABC excel in parallelization, as simulations are trivially parallelizable and GPU-friendly, though practitioners should account for potentially high memory requirements when scaling to many cores \citep{kulkarni2022hardware}. BSL allows parallelization with GPU acceleration to be possible for computationally intensive density estimation steps. When selecting methods for HPC environments, practitioners should carefully weight these parallelization capabilities against memory constraints, available hardware, and the specific computational demands of the epidemiological applications.
+
+\subsubsection{Selecting the Right Inference Approach}  \label{sec:select-tool}
+
+Selecting an appropriate inference method in infectious disease modeling requires carefully balancing between model complexity, computational constraints, statistical accuracy and data availability \citep{funk2020choices}. Rather than adopting a universal approach, the choice should be tailored to the specific modeling context and inferential goals. In practice, this decision is best approached as part of an iterative process, where model structure and inferential approach are continuously refined as new sources of information emerge and outbreak conditions change. Table \ref{tab:methods_comparison} provides a concise, though not exhaustive, reference to help assess these trade-offs and to guide selection based on typical use cases. 
+
+For general scenarios with computationally tractable likelihoods, Bayesian MCMC methods are the most interpretable and reliable solution and provide a good description of the uncertainty with high statistical rigor. In most practical applications, we recommend using NUTS as the default MCMC algorithm whenever possible, as it efficiently explores high-dimensional parameter spaces with minimal tuning. When there are multiple heterogeneous data sources to be merged, particle-based approaches, such as PMCMC, should be particularly considered. Its strength lies in efficiently handling complex, stochastic latent dynamics and combining diverse data streams through sequential updating within a single probabilistic framework. The trade-off is higher computational demand, requiring careful consideration of hardware resources and parallelization strategies.
+
+
+In settings where computational speed, repeated analyses, or large-scale scenario exploration are priorities, approximate methods such as VI or ABC-SMC might offer scalable alternatives \citep{chatzilena2019contemporary, engebretsen2023real}. VI is highly efficient for high-dimensional, differentiable models and typically much faster than MCMC, although it trades some accuracy for speed and may not always capture full posterior uncertainty. ABC-SMC is flexible when likelihoods are unavailable but simulations are feasible, though it can be computationally expensive due to repeated model simulation. Both approaches balance inferential precision against speed and scalability, making them particularly useful for iterative scenario exploration and timely decision-making.
+
+
+Within a workflow-guided strategy, we recommend starting with the simplest feasible full-likelihood Bayesian approach, using NUTS, and escalating to particle-based approaches when integration of multiple data streams, sequential updating or model complexity exceeds the capabilities of MCMC.  Approximate methods can be reserved for scenarios requiring rapid iteration or large-scale simulations, where some loss of precision is an acceptable trade-off for scalability. Regardless of the chosen approach, iterative model checking, sensitivity analysis, and validation across data streams remain essential to produce credible and actionable insights, particularly in evolving outbreak contexts.
+
+
+% Beyond computational efficiency, statistical accuracy is influenced by algorithmic choices including priors distributions, tuning parameters, tolerance thresholds, and the number of particles or iterations. Full-likelihoods methods typically yield better estimator performance, subject to likelihood tractability and proper specification, whereas likelihood-free approaches often prioritise flexibility and scalability over precision \citep{alahmadi2020comparison}. 
+
+% Interpretability and ease of implementation also play a role. Certain methods integrate smoothly with probabilistic programming environments, while others may require further tuning and computational expertise. Ultimately, method selection should follow a systematic decision process that considers modeling goals, urgency or latency constraints, system complexity, and available computational resources. 
+
+% Regardless of the approach chosen, model checking, sensitivity analysis, and validation are essential to ensure that inferences are not only statistically valid but also scientifically meaningful and actionable.
 
 
 \begin{landscape}
@@ -448,6 +463,9 @@ Best use case & Simple models & General Bayesian inference & State-space models 
 \end{tabular}
 \end{table}
 \end{landscape}
+
+
+
 
 \subsection{Outbreak Evolution and Workflow Iteration}
 % Lead Sam Abbott
@@ -523,125 +541,389 @@ TODO: need to add something on data source mapping which all the case studies wi
 
 \paragraph{}In addition to this view, we conducted detailed assessments of individual data sources to explore how these characteristics manifest[?] in practice and to identify the context-specific strengths and limitations. Detailed views of these are presented in Tables xxx [to do: and write what you see in them]
 
+
+{\Fontvi
+% \usepackage{color}
 % \usepackage{tabularray}
-\begin{table}
-\centering
-\caption{Selected categorical survey responses for confirmed time series (6 responses) and wastewater (5 responses)}
-\label{tab:placeholder_label}
-\begin{tblr}{
+\definecolor{Shark}{rgb}{0.125,0.129,0.141}
+\definecolor{Alto}{rgb}{0.827,0.827,0.827}
+\begin{longtblr}[
+  caption = {ddxxx},
+  label = {tab:placeholder_label},
+]{
   width = \linewidth,
-  colspec = {Q[508]Q[87]Q[227]Q[115]},
-  cell{1}{2} = {c},
+  colspec = {Q[115]Q[402]Q[148]Q[92]Q[63]Q[56]Q[56]},
   cell{1}{3} = {c},
   cell{1}{4} = {c},
-  cell{2}{2} = {c},
+  cell{1}{6} = {c=2}{0.112\linewidth},
+  cell{2}{1} = {fg=Shark},
   cell{2}{3} = {c},
-  cell{3}{2} = {c},
+  cell{2}{4} = {c},
+  cell{2}{6} = {c=2}{0.112\linewidth},
   cell{3}{3} = {c},
   cell{3}{4} = {c},
-  cell{4}{2} = {c},
+  cell{3}{6} = {c=2}{0.112\linewidth},
   cell{4}{3} = {c},
   cell{4}{4} = {c},
-  cell{5}{2} = {c},
+  cell{4}{6} = {c=2}{0.112\linewidth},
   cell{5}{3} = {c},
   cell{5}{4} = {c},
-  cell{6}{2} = {c},
+  cell{5}{6} = {c=2}{0.112\linewidth},
   cell{6}{3} = {c},
   cell{6}{4} = {c},
-  cell{7}{2} = {c},
+  cell{6}{6} = {c=2}{0.112\linewidth},
   cell{7}{3} = {c},
   cell{7}{4} = {c},
-  cell{8}{2} = {c},
+  cell{7}{6} = {c=2}{0.112\linewidth},
   cell{8}{3} = {c},
   cell{8}{4} = {c},
-  cell{9}{2} = {c},
+  cell{8}{6} = {c=2}{0.112\linewidth},
   cell{9}{3} = {c},
   cell{9}{4} = {c},
-  cell{10}{2} = {c},
+  cell{9}{6} = {c=2}{0.112\linewidth},
   cell{10}{3} = {c},
   cell{10}{4} = {c},
-  cell{11}{2} = {c},
+  cell{10}{6} = {c=2}{0.112\linewidth},
   cell{11}{3} = {c},
   cell{11}{4} = {c},
-  cell{12}{2} = {c},
+  cell{11}{6} = {c=2}{0.112\linewidth},
   cell{12}{3} = {c},
   cell{12}{4} = {c},
-  cell{13}{2} = {c},
+  cell{12}{6} = {c=2}{0.112\linewidth},
   cell{13}{3} = {c},
   cell{13}{4} = {c},
-  cell{14}{2} = {c},
+  cell{13}{6} = {c=2}{0.112\linewidth},
   cell{14}{3} = {c},
   cell{14}{4} = {c},
-  cell{15}{2} = {c},
+  cell{14}{6} = {c=2}{0.112\linewidth},
   cell{15}{3} = {c},
   cell{15}{4} = {c},
-  cell{16}{2} = {c},
+  cell{15}{6} = {c=2}{0.112\linewidth},
   cell{16}{3} = {c},
   cell{16}{4} = {c},
-  cell{17}{2} = {c},
+  cell{16}{6} = {c=2}{0.112\linewidth},
   cell{17}{3} = {c},
   cell{17}{4} = {c},
-  cell{18}{2} = {c},
+  cell{17}{6} = {c=2}{0.112\linewidth},
   cell{18}{3} = {c},
   cell{18}{4} = {c},
-  cell{19}{2} = {c},
+  cell{18}{6} = {c=2}{0.112\linewidth},
   cell{19}{3} = {c},
   cell{19}{4} = {c},
-  cell{20}{2} = {c},
+  cell{19}{6} = {c=2}{0.112\linewidth},
+  cell{20}{1} = {fg=Shark},
   cell{20}{3} = {c},
   cell{20}{4} = {c},
-  cell{21}{2} = {c},
+  cell{20}{6} = {c=2}{0.112\linewidth},
   cell{21}{3} = {c},
   cell{21}{4} = {c},
-  cell{22}{2} = {c},
+  cell{21}{6} = {c=2}{0.112\linewidth},
   cell{22}{3} = {c},
   cell{22}{4} = {c},
-  cell{23}{2} = {c},
+  cell{22}{6} = {c=2}{0.112\linewidth},
   cell{23}{3} = {c},
   cell{23}{4} = {c},
-  cell{24}{2} = {c},
+  cell{23}{6} = {c=2}{0.112\linewidth},
   cell{24}{3} = {c},
   cell{24}{4} = {c},
-  cell{25}{2} = {c},
+  cell{24}{6} = {c=2}{0.112\linewidth},
   cell{25}{3} = {c},
   cell{25}{4} = {c},
-  cell{26}{2} = {c},
+  cell{25}{6} = {c=2}{0.112\linewidth},
   cell{26}{3} = {c},
   cell{26}{4} = {c},
-  hline{1,28} = {-}{0.08em},
-  hline{3} = {1-3}{0.03em},
-  hline{3} = {4}{},
-  hline{27} = {-}{},
+  cell{26}{6} = {c=2}{0.112\linewidth},
+  cell{27}{3} = {c},
+  cell{27}{4} = {c},
+  cell{27}{6} = {c=2}{0.112\linewidth},
+  cell{28}{3} = {c},
+  cell{28}{4} = {c},
+  cell{28}{6} = {c=2}{0.112\linewidth},
+  cell{29}{3} = {c},
+  cell{29}{4} = {c},
+  cell{29}{6} = {c=2}{0.112\linewidth},
+  cell{30}{3} = {c},
+  cell{30}{4} = {c},
+  cell{30}{6} = {c=2}{0.112\linewidth},
+  cell{31}{3} = {c},
+  cell{31}{4} = {c},
+  cell{31}{6} = {c=2}{0.112\linewidth},
+  cell{32}{3} = {c},
+  cell{32}{4} = {c},
+  cell{32}{6} = {c=2}{0.112\linewidth},
+  cell{33}{3} = {c},
+  cell{33}{4} = {c},
+  cell{33}{6} = {c=2}{0.112\linewidth},
+  cell{34}{3} = {c},
+  cell{34}{4} = {c},
+  cell{34}{6} = {c=2}{0.112\linewidth},
+  cell{35}{3} = {c},
+  cell{35}{4} = {c},
+  cell{35}{6} = {c=2}{0.112\linewidth},
+  cell{36}{3} = {c},
+  cell{36}{4} = {c},
+  cell{36}{6} = {c=2}{0.112\linewidth},
+  cell{37}{3} = {c},
+  cell{37}{4} = {c},
+  cell{37}{6} = {c=2}{0.112\linewidth},
+  cell{38}{3} = {c},
+  cell{38}{4} = {c},
+  cell{38}{6} = {c=2}{0.112\linewidth},
+  cell{39}{3} = {c},
+  cell{39}{4} = {c},
+  cell{39}{6} = {c=2}{0.112\linewidth},
+  cell{40}{3} = {c},
+  cell{40}{4} = {c},
+  cell{40}{6} = {c=2}{0.112\linewidth},
+  cell{41}{3} = {c},
+  cell{41}{4} = {c},
+  cell{41}{6} = {c=2}{0.112\linewidth},
+  cell{42}{3} = {c},
+  cell{42}{4} = {c},
+  cell{42}{6} = {c=2}{0.112\linewidth},
+  cell{43}{3} = {c},
+  cell{43}{4} = {c},
+  cell{43}{6} = {c=2}{0.112\linewidth},
+  cell{44}{1} = {fg=Shark},
+  cell{44}{3} = {c},
+  cell{44}{4} = {c},
+  cell{44}{6} = {c=2}{0.112\linewidth},
+  cell{45}{3} = {c},
+  cell{45}{4} = {c},
+  cell{45}{6} = {c=2}{0.112\linewidth},
+  cell{46}{3} = {c},
+  cell{46}{4} = {c},
+  cell{46}{6} = {c=2}{0.112\linewidth},
+  cell{47}{3} = {c},
+  cell{47}{4} = {c},
+  cell{47}{6} = {c=2}{0.112\linewidth},
+  cell{48}{3} = {c},
+  cell{48}{4} = {c},
+  cell{48}{6} = {c=2}{0.112\linewidth},
+  cell{49}{3} = {c},
+  cell{49}{4} = {c},
+  cell{49}{6} = {c=2}{0.112\linewidth},
+  cell{50}{3} = {c},
+  cell{50}{4} = {c},
+  cell{50}{6} = {c=2}{0.112\linewidth},
+  cell{51}{3} = {c},
+  cell{51}{4} = {c},
+  cell{51}{6} = {c=2}{0.112\linewidth},
+  cell{52}{3} = {c},
+  cell{52}{4} = {c},
+  cell{52}{6} = {c=2}{0.112\linewidth},
+  cell{53}{3} = {c},
+  cell{53}{4} = {c},
+  cell{53}{6} = {c=2}{0.112\linewidth},
+  cell{54}{3} = {c},
+  cell{54}{4} = {c},
+  cell{54}{6} = {c=2}{0.112\linewidth},
+  cell{55}{3} = {c},
+  cell{55}{4} = {c},
+  cell{55}{6} = {c=2}{0.112\linewidth},
+  cell{56}{3} = {c},
+  cell{56}{4} = {c},
+  cell{56}{6} = {c=2}{0.112\linewidth},
+  cell{57}{3} = {c},
+  cell{57}{4} = {c},
+  cell{57}{6} = {c=2}{0.112\linewidth},
+  cell{58}{3} = {c},
+  cell{58}{4} = {c},
+  cell{58}{6} = {c=2}{0.112\linewidth},
+  cell{59}{3} = {c},
+  cell{59}{4} = {c},
+  cell{59}{6} = {c=2}{0.112\linewidth},
+  cell{60}{3} = {c},
+  cell{60}{4} = {c},
+  cell{60}{6} = {c=2}{0.112\linewidth},
+  cell{61}{3} = {c},
+  cell{61}{4} = {c},
+  cell{61}{6} = {c=2}{0.112\linewidth},
+  cell{62}{3} = {c},
+  cell{62}{4} = {c},
+  cell{62}{6} = {c=2}{0.112\linewidth},
+  cell{63}{3} = {c},
+  cell{63}{4} = {c},
+  cell{63}{6} = {c=2}{0.112\linewidth},
+  cell{64}{3} = {c},
+  cell{64}{4} = {c},
+  cell{64}{6} = {c=2}{0.112\linewidth},
+  cell{65}{3} = {c},
+  cell{65}{4} = {c},
+  cell{65}{6} = {c=2}{0.112\linewidth},
+  cell{66}{3} = {c},
+  cell{66}{4} = {c},
+  cell{66}{6} = {c=2}{0.112\linewidth},
+  cell{67}{3} = {c},
+  cell{67}{4} = {c},
+  cell{67}{6} = {c=2}{0.112\linewidth},
+  cell{68}{3} = {c},
+  cell{68}{4} = {c},
+  cell{68}{6} = {c=2}{0.112\linewidth},
+  cell{69}{3} = {c},
+  cell{69}{4} = {c},
+  cell{69}{6} = {c=2}{0.112\linewidth},
+  cell{70}{3} = {c},
+  cell{70}{4} = {c},
+  cell{70}{6} = {c=2}{0.112\linewidth},
+  cell{71}{3} = {c},
+  cell{71}{4} = {c},
+  cell{71}{6} = {c=2}{0.112\linewidth},
+  cell{72}{3} = {c},
+  cell{72}{4} = {c},
+  cell{72}{6} = {c=2}{0.112\linewidth},
+  cell{73}{3} = {c},
+  cell{73}{4} = {c},
+  cell{73}{6} = {c=2}{0.112\linewidth},
+  cell{74}{3} = {c},
+  cell{74}{4} = {c},
+  cell{74}{6} = {c=2}{0.112\linewidth},
+  cell{75}{3} = {c},
+  cell{75}{4} = {c},
+  cell{75}{6} = {c=2}{0.112\linewidth},
+  cell{76}{3} = {c},
+  cell{76}{4} = {c},
+  cell{76}{6} = {c=2}{0.112\linewidth},
+  cell{77}{3} = {c},
+  cell{77}{4} = {c},
+  cell{77}{6} = {c=2}{0.112\linewidth},
+  cell{78}{3} = {c},
+  cell{78}{4} = {c},
+  cell{78}{6} = {c=2}{0.112\linewidth},
+  cell{79}{3} = {c},
+  cell{79}{4} = {c},
+  cell{79}{6} = {c=2}{0.112\linewidth},
+  cell{80}{3} = {c},
+  cell{80}{4} = {c},
+  cell{80}{6} = {c=2}{0.112\linewidth},
+  cell{81}{3} = {c},
+  cell{81}{4} = {c},
+  cell{81}{6} = {c=2}{0.112\linewidth},
+  cell{82}{3} = {c},
+  cell{82}{4} = {c},
+  cell{82}{6} = {c=2}{0.112\linewidth},
+  cell{83}{3} = {c},
+  cell{83}{4} = {c},
+  cell{83}{6} = {c=2}{0.112\linewidth},
+  cell{84}{3} = {c},
+  cell{84}{4} = {c},
+  cell{84}{6} = {c=2}{0.112\linewidth},
+  cell{85}{3} = {c},
+  cell{85}{4} = {c},
+  cell{85}{6} = {c=2}{0.112\linewidth},
+  cell{86}{3} = {c},
+  cell{86}{4} = {c},
+  cell{86}{6} = {c=2}{0.112\linewidth},
+  cell{87}{3} = {c},
+  cell{87}{4} = {c},
+  cell{87}{6} = {c=2}{0.112\linewidth},
+  cell{88}{3} = {c},
+  cell{88}{4} = {c},
+  cell{88}{6} = {c=2}{0.112\linewidth},
+  cell{89}{3} = {c},
+  cell{89}{4} = {c},
+  cell{89}{6} = {c=2}{0.112\linewidth},
+  cell{90}{3} = {c},
+  cell{90}{4} = {c},
+  cell{90}{6} = {c=2}{0.112\linewidth},
+  hline{1,92} = {-}{0.08em},
+  hline{2,8,20,44,55,81,91} = {-}{},
+  hline{3-7,9-19,21-43,45-54,56-80,82-90} = {2-4}{Alto},
 }
-\textbf{Characteristic} & \textbf{Overall} & \textbf{Confirmed cases time series} & \textbf{Wastewater}\\
- & N = 11\textsuperscript{\textit{1}} & N = 6\textsuperscript{\textit{1}} & N = 5\textsuperscript{\textit{1}}\\
-\textbf{ Primary purpose} &  &  & \\
-~ ~Case management & 1 (9.1\%) & 1 (17\%) & 0 (0\%)\\
-~ ~Clinical management & 5 (45\%) & 5 (83\%) & 0 (0\%)\\
-~ ~Pathogen surveillance & 1 (9.1\%) & 0 (0\%) & 1 (20\%)\\
-~ ~Presence/absence and monitoring prevalence in a community & 1 (9.1\%) & 0 (0\%) & 1 (20\%)\\
-~ ~Surveillance & 2 (18\%) & 0 (0\%) & 2 (40\%)\\
-~ ~Trend monitoring, detection of variants, variant proportions & 1 (9.1\%) & 0 (0\%) & 1 (20\%)\\
-\textbf{Target population} &  &  & \\
-~ ~All the population & 1 (9.1\%) & 1 (17\%) & 0 (0\%)\\
-~ ~Geographic structure & 2 (18\%) & 0 (0\%) & 2 (40\%)\\
-~ ~Whole population & 7 (64\%) & 5 (83\%) & 2 (40\%)\\
-~ ~Whole population, sometimes specific e.g., to student or military populations & 1 (9.1\%) & 0 (0\%) & 1 (20\%)\\
-\textbf{Data aggregation} &  &  & \\
-~ ~Aggregated & 7 (64\%) & 2 (33\%) & 5 (100\%)\\
-~ ~Individual & 4 (36\%) & 4 (67\%) & 0 (0\%)\\
-\textbf{Collection frequency} &  &  & \\
-~ ~Continuously & 2 (18\%) & 1 (17\%) & 1 (20\%)\\
-~ ~Daily & 4 (36\%) & 4 (67\%) & 0 (0\%)\\
-~ ~Multiple times a week & 3 (27\%) & 0 (0\%) & 3 (60\%)\\
-~ ~Weekly & 2 (18\%) & 1 (17\%) & 1 (20\%)\\
-\textbf{Reporting frequency} &  &  & \\
-~ ~Daily & 3 (27\%) & 3 (50\%) & 0 (0\%)\\
-~ ~Multiple times a week & 2 (18\%) & 0 (0\%) & 2 (40\%)\\
-~ ~Weekly & 6 (55\%) & 3 (50\%) & 3 (60\%)\\
-\textsuperscript{\textit{1}}n (\%) &  &  & 
-\end{tblr}
-\end{table}
+\textbf{Core characteristic} & \textbf{Sub-characteristic} & {\textbf{Confirmed cases time series}\\N = 6\textit{\textsuperscript{1}}} & {\textbf{Wastewater}\\N = 5\textit{\textsuperscript{1}}} & {\textbf{Deaths}\\N=?~} & {\textbf{Transmission paires~}\\N=?\textbf{}} & \\
+{\textbf{Basic}\\\textbf{~meta-data}} & \textbf{Study design} &  &  &  &  & \\
+ & ~~~~Routine surveillance & 6 (100\%) & 3 (60\%) &  &  & \\
+ & ~~~~Sentinel surveillance & 0 (0\%) & 2 (40\%) &  &  & \\
+ & \textbf{Primary purpose} &  &  &  &  & \\
+ & ~~~~Clinical management & 5 (83\%) & 0 (0\%) &  &  & \\
+ & ~~~Other & 1(17\%) & 5 (10\%) &  &  & \\
+\textbf{\textbf{Scope}} & \textbf{Target population} &  &  &  &  & \\
+ & ~~~~Geographic structure & 0 (0\%) & 2 (40\%) &  &  & \\
+ & ~~~~Whole population & 6 (100\%) & 3 (60\%) &  &  & \\
+ & \textbf{Stratification/covariates (except spatial-temporal see Resolution section)} &  &  &  &  & \\
+ & ~~~~Demographic & 1 (17\%) & 0 (0\%) &  &  & \\
+ & ~~~~Demographic, Clinical & 3 (50\%) & 0 (0\%) &  &  & \\
+ & ~~~~None & 2 (33\%) & 5 (100\%) &  &  & \\
+ & \textbf{Collection type} &  &  &  &  & \\
+ & ~~~~Routine & 6 (100\%) & 5 (100\%) &  &  & \\
+ & \textbf{If triggered, potential triggers} &  &  &  &  & \\
+ & ~~~~New variant/pathogen detected & 1 (100\%) & 0 (NA\%) &  &  & \\
+ & ~~~~Unknown & 5 & 5 &  &  & \\
+\textbf{Resolution} & \textbf{Data aggregation} &  &  &  &  & \\
+ & ~~~~Aggregated & 2 (33\%) & 5 (100\%) &  &  & \\
+ & ~~~~Individual & 4 (67\%) & 0 (0\%) &  &  & \\
+ & \textbf{Temporal data} &  &  &  &  & \\
+ & ~~~~Yes & 6 (100\%) & 5 (100\%) &  &  & \\
+ & \textbf{Collection frequency} &  &  &  &  & \\
+ & ~~~~Continuously & 1 (17\%) & 1 (20\%) &  &  & \\
+ & ~~~~Daily & 4 (67\%) & 0 (0\%) &  &  & \\
+ & ~~~~Multiple times a week & 0 (0\%) & 3 (60\%) &  &  & \\
+ & ~~~~Weekly & 1 (17\%) & 1 (20\%) &  &  & \\
+ & \textbf{Reporting frequency} &  &  &  &  & \\
+ & ~~~~Daily & 3 (50\%) & 0 (0\%) &  &  & \\
+ & ~~~~Multiple times a week & 0 (0\%) & 2 (40\%) &  &  & \\
+ & ~~~~Weekly & 3 (50\%) & 3 (60\%) &  &  & \\
+ & \textbf{Time period covered} &  &  &  &  & \\
+ & ~~~~All the time & 0 (0\%) & 1 (20\%) &  &  & \\
+ & ~~~~Continuous & 6 (100\%) & 3 (60\%) &  &  & \\
+ & ~~~~Endemic & 0 (0\%) & 1 (20\%) &  &  & \\
+ & \textbf{Spatial data} & 3 (50\%) & 5 (100\%) &  &  & \\
+ & \textbf{Spatial resolution} &  &  &  &  & \\
+ & ~~~~Local & 1 (17\%) & 5 (100\%) &  &  & \\
+ & ~~~~National & 2 (33\%) & 0 (0\%) &  &  & \\
+ & ~~~~Regional & 3 (50\%) & 0 (0\%) &  &  & \\
+ & \textbf{Geographic coverage} & Figure XX &  &  &  & \\
+\textbf{Data quality} & \textbf{Quality of case definitions} & Figure XX &  &  &  & \\
+ & \textbf{Test sensitivity} & Figure XX &  &  &  & \\
+ & \textbf{Test specificity} & Figure XX &  &  &  & \\
+ & \textbf{Potential for unexplained variability} & Figure XX &  &  &  & \\
+ & \textbf{Reporting delay} & Figure XX &  &  &  & \\
+ & \textbf{Outages} & Figure XX &  &  &  & \\
+ & \textbf{Censoring} & Figure XX &  &  &  & \\
+ & \textbf{Truncation} & Figure XX &  &  &  & \\
+ & \textbf{Selection (ie unrepresentative relative to target population), including ascertainment bias/underreporting} & Figure XX &  &  &  & \\
+ & \textbf{Time-varying (\textcolor[rgb]{0.125,0.129,0.141}{Potential for biases to vary over time)}} & Figure XX &  &  &  & \\
+ & \textbf{Direction of bias} & Figure XX &  &  &  & \\
+\textbf{Data utility} & \textbf{Quantities informed [Basic reproduction number]} &  &  &  &  & \\
+ & ~~~~Direct & 0 (0\%) & 1 (20\%) &  &  & \\
+ & ~~~~Indirect & 5 (83\%) & 0 (0\%) &  &  & \\
+ & ~~~~Not informed & 1 (17\%) & 4 (80\%) &  &  & \\
+ & \textbf{Quantities informed [Time-varying reproduction number]} &  &  &  &  & \\
+ & ~~~~Direct & 4 (67\%) & 1 (20\%) &  &  & \\
+ & ~~~~Indirect & 2 (33\%) & 4 (80\%) &  &  & \\
+ & \textbf{Quantities informed [Time-varying / basic reproduction number ratio]} &  &  &  &  & \\
+ & ~~~~Direct & 0 (0\%) & 1 (20\%) &  &  & \\
+ & ~~~~Indirect & 5 (83\%) & 0 (0\%) &  &  & \\
+ & ~~~~Not informed & 1 (17\%) & 4 (80\%) &  &  & \\
+ & \textbf{Quantities informed [Incidence]} &  &  &  &  & \\
+ & ~~~~Direct & 3 (50\%) & 0 (0\%) &  &  & \\
+ & ~~~~Indirect & 3 (50\%) & 4 (80\%) &  &  & \\
+ & ~~~~Not informed & 0 (0\%) & 1 (20\%) &  &  & \\
+ & \textbf{Quantities informed [Prevalence]} &  &  &  &  & \\
+ & ~~~~Direct & 2 (33\%) & 0 (0\%) &  &  & \\
+ & ~~~~Indirect & 2 (33\%) & 5 (100\%) &  &  & \\
+ & ~~~~Not informed & 2 (33\%) & 0 (0\%) &  &  & \\
+ & \textbf{Quantities informed [Heterogeneity in transmission (e.g. superspreading)]} &  &  &  &  & \\
+ & ~~~~Indirect & 4 (67\%) & 0 (0\%) &  &  & \\
+ & ~~~~Not informed & 2 (33\%) & 5 (100\%) &  &  & \\
+ & \textbf{Quantities informed [Drivers of transmission]} &  &  &  &  & \\
+ & ~~~~Indirect & 3 (50\%) & 0 (0\%) &  &  & \\
+ & ~~~~Not informed & 3 (50\%) & 5 (100\%) &  &  & \\
+ & \textbf{Relationship of target population to general population} & Figure XX &  &  &  & \\
+\textbf{\textbf{Practical considerations}} & \textbf{Scalability} &  &  &  &  & \\
+ & ~~~~Independent & 0 (0\%) & 4 (80\%) &  &  & \\
+ & ~~~~Linearly & 4 (67\%) & 0 (0\%) &  &  & \\
+ & ~~~~Sub-exponentially & 2 (33\%) & 1 (20\%) &  &  & \\
+ & \textbf{Sustainability} & Figure XX &  &  &  & \\
+ & \textbf{Cost} & Figure XX &  &  &  & \\
+ & \textbf{Accessibility} & Figure XX &  &  &  & \\
+ & \textbf{Linkage potential} & Figure XX &  &  &  & \\
+ & \textbf{Data format} & Figure XX &  &  &  & \\
+ & \textbf{How generalisable are these findings for other pathogens?} & Figure XX &  &  &  & \\
+ & \textit{\textsuperscript{1}}~n (\%) &  &  &  &  & 
+\end{longtblr}}
+
+%
 \begin{figure}[H] 
 \includegraphics[width=1\linewidth]{figures/survey_responses.png}
 \centering
@@ -710,7 +992,7 @@ where $N_{s,t}$ is the number of people infected on day $s$ and reported as a ca
 \begin{equation}
     N_{s,t} \sim \mathrm{TruncatedMultinomial}\left( I_s, \alpha_{t-s}\right) 
 \end{equation}
-and $\alpha_s$ is the proportion of infections that are reported as a case on the $s^\mathrm{th}$ day after infection ($s=0,1,\ldots$). 
+and $\alpha_j$ is the proportion of infections that are reported as a case $j$ days after infection ($j=0,1,\ldots$). 
 
 
 \item \textbf{Data integration choices}: As there is only one data source in this case study, no decisions about what and how to integrate multiple sources are needed. The choice of fitting method may depend on considerations such as analytical tractability of the combined process and observation model, computational complexity and speed of computation relative to the time available, and identifiability issues. 
@@ -760,7 +1042,7 @@ The target estimand for this case study is the same as in case study 0 ($R_t$). 
 
 \textbf{Workflow Demonstration:}
 \begin{enumerate}
-    \item \textbf{Process DAG development:} The number of deaths $D_t$ on day $t$ depends on the time series of infections up to day $t$, the infection-fatality ratio $p_d$, and the distribution $v_s$ of time ($s$) from infection to death. This can be represented in the process DAG (Figure \ref{fig:case_study_visual}) and by the following convolution equation:
+    \item \textbf{Process DAG development:} The number of deaths $D_t$ on day $t$ depends on the time series of infections up to day $t$, the infection-fatality ratio $p_d$, and the distribution $v_s$ of time ($s$) from infection to death. This can be represented in the process DAG (Figure \ref{fig:CS3_DAG}a) and by the following convolution equation:
     \begin{equation} \label{eq:deaths}
         D_t \sim \mathrm{Poiss}\left(p_d \sum_{s=1}^\infty I_{t-s}v_s \right)
     \end{equation}
@@ -799,14 +1081,14 @@ The target estimand for this case study is the same as in the previous case stud
 \textbf{Workflow Demonstration:}
 \begin{enumerate}
     \item \textbf{Process DAG development:} 
-    Suppose that the average concentration $W_t$ of pathogen RNA/DNA in wastewater on day $t$ depends on the time series of infections up to day $t$ and the average amount of pathogen RNA/DNA that an individual sheds into wastewater $s$ days after being infected ($s=1,2,\ldots$). This can be represented in the process DAG (Figure X) and by the following equation for $W_t$:
+    Suppose that the average concentration $W_t$ of pathogen RNA/DNA in wastewater on day $t$ depends on the time series of infections up to day $t$ and the average amount of pathogen RNA/DNA that an individual sheds into wastewater $s$ days after being infected ($s=1,2,\ldots$). This can be represented in the process DAG (Figure \ref{fig:CS3_DAG}a) and by the following equation for $W_t$:
     \begin{equation} \label{eq:wastewater}
-        W_t \sim \Gamma\left( \frac{\alpha}{N_\mathrm{pop}}\sum_{s=1}^\infty I_{t-s}u_s, b   \right)
+        W_t \sim \Gamma\left( \frac{C}{N_\mathrm{pop}}\sum_{s=1}^\infty I_{t-s}u_s, b   \right)
     \end{equation}
-    where $\alpha>0$ is a constant representing the average total amount of pathogen RNA/DNA that an infected individual sheds over the course of their infection, $N_\mathrm{pop}$ is the population size, $u_s$ is the average shedding rate $s$ days after infection normalised such that $\sum_{s=1}^\infty u_s=1$, and $\Gamma(\mu,b)$ denotes a gamma distribution with mean $\mu$ and shape $b$. This was similar to the wastewater model used by \cite{watson2024jointly}; other choices of continuous non-negative-valued distributions are possible for $W_t$ such as a log-normal distribution.
+    where $C>0$ is a constant representing the average total amount of pathogen RNA/DNA that an infected individual sheds over the course of their infection, $N_\mathrm{pop}$ is the population size, $u_s$ is the average shedding rate $s$ days after infection normalised such that $\sum_{s=1}^\infty u_s=1$, and $\Gamma(\mu,b)$ denotes a gamma distribution with mean $\mu$ and shape $b$. This was similar to the wastewater model used by \cite{watson2024jointly}; other choices of continuous non-negative-valued distributions are possible for $W_t$ such as a log-normal distribution.
 
     Eq. \eqref{eq:wastewater} would be combined with one of Eqs. \eqref{eq:infections_P1}--\eqref{eq:infections_P3} for infections and with Eq. \eqref{eq:deaths} for deaths.
-    \item \textbf{Data source mapping:} Wastewater data offers population-level information (broad scope) independent of testing biases and changes in testing rates, with moderate timeliness, requiring environmental expertise and subject to high levels of unexplained variability. It could also be affected by unknown changes in the average shedding rate $\alpha$ over time and has relatively poor resolution (limited spatial resolution and no information about age or other demographic variables). 
+    \item \textbf{Data source mapping:} Wastewater data offers population-level information (broad scope) independent of testing biases and changes in testing rates, with moderate timeliness, requiring environmental expertise and subject to high levels of unexplained variability. It could also be affected by unknown changes in the average shedding rate $C$ over time and has relatively poor resolution (limited spatial resolution and no information about age or other demographic variables). 
     \item \textbf{Observation DAG construction:} 
    Wastewater samples are typically collected at some cadence from one or more sampling sites, and the concentration of pathogen RNA in the samples is quantified via PCR testing. 
    The existence of multiple sites with different catchments populations and non-contemporaneous sampling frequencies complicates the interpretation of quantitative wastewater data, which can be modelled at varying levels of complexity.  
@@ -821,7 +1103,7 @@ The target estimand for this case study is the same as in the previous case stud
     \item \textbf{Fitting choices:} ABC-SMC for wastewater sub-model due to likelihood intractability, reflecting available environmental modelling expertise; NUTS for case/death models. For a joint model, a method like particle MCMC would likely be needed due to the state-space complexity.
 \end{enumerate}
 
-\textbf{Key insight:} Wastewater data enables trend estimation independent of shifts in testing patterns, but requires assumptions about the shedding, environmental and sampling processes. A modular approach facilitates conflict detection between data sources. The average shedding rate $\alpha$ is typically unknown and non-identifiable from available data. Similar to the unknown case ascertainment rate in case study 0, estimates of $R_t$ will be insensitive to the value of $\alpha$ provided it does not change over time. However, changes in the average shedding rate due to, for example, pathogenic evolution or changes in population immunity, would invalidate this simple model and require a more nuanced approach.  
+\textbf{Key insight:} Wastewater data enables trend estimation independent of shifts in testing patterns, but requires assumptions about the shedding, environmental and sampling processes. A modular approach facilitates conflict detection between data sources. The average shedding rate $C$ is typically unknown and non-identifiable from available data. Similar to the unknown case ascertainment rate in case study 0, estimates of $R_t$ will be insensitive to the value of $C$ provided it does not change over time. However, changes in the average shedding rate due to, for example, pathogenic evolution or changes in population immunity, would invalidate this simple model and require a more nuanced approach.  
 
 
 
@@ -836,26 +1118,40 @@ The research question for this case study is what is the time-varying reproducti
     \begin{equation} \label{eq:individual_level}
     N_{i,t} \sim \mathrm{Poiss} \left( Y_i R_t w_{t-T_i} \right)
     \end{equation}
-    where $T_i$ is the infection time of individual $i$ and $Y_i$ is a continuous, non-negative random variable with mean $1$, representing the relative transmission rate of individual $i$ (which may capture a combination of biological and social factors). This formulation provides a way to explicitly simulate the full epidemic transmission tree.  In the special case where $Var(Y)=0$ (i.e. there is no individual-level heterogeneity), the total number of new infections on day $t$ ($I_t$) reduces to Eq. \eqref{eq:infections_P2}.  For a case with given values of $Y_i$ and $T_i$, the total number of secondary cases, $Z_i=\sum_t N_{i,t}$, is
-    \begin{equation}
-       Z_i \ | \ (Y_i, T_i) \sim \mathrm{Poiss}\left( Y_i \tilde{R}_{T_i}\right)
-    \end{equation}
-    where $\tilde{R}_t= \sum_s R_{t+s} w_s$ is the effective reproduction number averaged over the infectious period of an individual who was infected on day $t$. If $Y$ has a gamma distribution, i.e. $Y_i\sim \Gamma(1,k)$ for some dispersion parameter $k$, then the number of secondary cases caused by a randomly selected individual infected on day $T_i$ is \citep{lloyd2005superspreading}
+    where $T_i$ is the infection time of individual $i$ and $Y_i$ is a continuous, non-negative random variable with mean $1$, representing the relative transmission rate of individual $i$ (which may capture a combination of biological and social factors). This formulation provides a way to explicitly simulate the full epidemic transmission tree.  In the special case where $Var(Y)=0$ (i.e. there is no individual-level heterogeneity), the total number of new infections on day $t$ ($I_t$) reduces to Eq. \eqref{eq:infections_P2}. 
+    %For a case with given values of $Y_i$ and $T_i$, the total number of secondary cases, $Z_i=\sum_t N_{i,t}$, is
+    %\begin{equation}
+    %   Z_i \ | \ (Y_i, T_i) \sim \mathrm{Poiss}\left( Y_i \tilde{R}_{T_i}\right)
+    %\end{equation}
+    %where $\tilde{R}_t= \sum_s R_{t+s} w_s$ is the effective reproduction number averaged over the infectious period of an individual who was infected on day $t$. 
+    If $Y\sim \Gamma(1,k)$ for some dispersion parameter $k$, then the number of secondary cases caused by an individual who was infetced at a given time $T_i=t$ is \citep{lloyd2005superspreading}
      \begin{equation} \label{eq:offspring_dist}
-        Z_i \ | \ T_i \sim \mathrm{NegBin}\left( \tilde{R}_{T_i}, k\right)
+        Z_i \ | \ (T_i=t) \sim \mathrm{NegBin}\left( \tilde{R}_{t}, k\right)
     \end{equation}   
+    where $\tilde{R}_t= \sum_s R_{t+s} w_s$ is the effective reproduction number averaged over the infectious period of an individual who was infected on day $t$.
     Note that this model assumes that the relative infectiousness profile over time $w_s$ is fixed and identical for all individuals. This is a reasonable starting assumption, but it may be important to relax this in some situations, for example to model the impact of quarantine and isolation measures on individuals identified by contact tracing.
     \item \textbf{Data source mapping:} Case studies 0, 1 and 2 only consider aggregate-level data on daily counts or wastewater measurements. This type of data typically only allows estimation of average transmission, i.e. $R_t$. In contrast, contact tracing records identify transmission pairs, which contain information about heterogeneity in transmission patterns, contingent on contact tracing system quality. The smaller the dispersion parameter $k$, the more variance would be expected in the distribution of the number of secondary infections per index case.
-    \item \textbf{Observation DAG construction:} Suppose that for some subset of reported cases $i$, the number of observed secondary cases $\hat{Z}_i$ associated with that index case is recorded. For simplicity, we assume that the index cases for whom this data is available are a randomly chosen subset of all reported cases, and each secondary infection independently has fixed probability $p_l$ of being linked to the index case. We assume that all linked secondary cases are associated with the correct index case (i.e. we ignore any misclassification and uncertainty about who infected whom). If we ignore delay from infection to reporting (i.e. observation model $O_{101}$ for infections) then the observed values of $\hat{Z}_i$ for cases reported on day $t$ are independent draws from
-    \begin{equation} \label{eq:Zhat}
-    \hat{Z}_i \sim \mathrm{NegBin}\left(p_l \tilde{R}_t, t\right)
-    \end{equation}
-    In practice, it would usually be important to account for delays from infection to observation (i.e. observation model $O_{111}$ for infections). This would complicate the model considerably as it requires knowledge of the distribution of time of infection conditional of time of report (which is not the same as the distribution of time of report conditional on time of infection, and in general will depend on the reproduction number $R_t$).
-    \item \textbf{Data integration choices:} A hierarchical model linking individual transmission events to population-level reproduction number would be a suitable framework.
+    \item \textbf{Observation DAG construction:} Suppose that for some subset of reported cases $i$, the number of observed secondary cases $\hat{Z}_i$ associated with that index case is recorded. For simplicity, we assume that the index cases for whom this data is available are a randomly chosen subset of all reported cases, and each secondary infection independently has fixed probability $p_l$ of being linked to the index case. We assume that all linked secondary cases are associated with the correct index case (i.e. we ignore any misclassification and uncertainty about who infected whom). 
+
+   Then the probability that an index case reported on day $\tau_i$ has $\hat{Z}_i$ linked secondary cases can be calculated by conditioning on the unobserved time of infection $T_i$:
+   \begin{equation}
+       P(\hat{Z}_i=z \ | \ \tau_i=t) = \sum_{s=1}^{t} F_{NB}(z; p_l\tilde{R}_s,k) P(T_i=s | \tau_i=t)
+   \end{equation}
+where $F_{NB}(.;\mu,k)$ is the probability mass function for a negative binomial distribution with mean $\mu$ and dispersion $k$, and $R_i$ is the reporting time for case $i$.  The conditional probability in this equation can be calculated via Bayes' theorem to give
+   \begin{equation} \label{eq:Zhat}
+       P(\hat{Z}_i=z \ | \ \tau_i=t) = \frac{\sum_{s=1}^{t} F_{NB}(z; p_l\tilde{R}_s,k) \alpha_{t-s} I_s}{\sum_{s=1}^{t}\alpha_{t-s} I_s}  
+   \end{equation}
+ where $\alpha_j$ is the proportion of infections that are reported as a case $j$ days after infection ($j=0,1,\ldots$).
+    % If we ignore delay from infection to reporting (i.e. observation model $O_{101}$ for infections) then the observed values of $\hat{Z}_i$ for cases reported on day $t$ are independent draws from
+    % \begin{equation} \label{eq:Zhat}
+    % \hat{Z}_i \sim \mathrm{NegBin}\left(p_l \tilde{R}_t, k\right)
+    % \end{equation}
+    % In practice, it would usually be important to account for delays from infection to observation (i.e. observation model $O_{111}$ for infections). This would complicate the model considerably as it requires knowledge of the distribution of time of infection conditional of time of report (which is not the same as the distribution of time of report conditional on time of infection, and in general will depend on the reproduction number $R_t$).
+    % \item \textbf{Data integration choices:} A hierarchical model linking individual transmission events to population-level reproduction number would be a suitable framework.
     \item \textbf{Fitting choices:} NUTS with data augmentation for unobserved transmissions, chosen for efficient handling of discrete latent variables. Alternative a method such as particle marginal Metropolis Hastings could be used to used to estimate the time-varying reproduction number $R_t$ and the fixed parameter $k$ in a hierarchical manner (but may be computationally slow). 
 \end{enumerate}
 
-\textbf{Key Insight:} Individual-level data enables direct overdispersion estimation without distributional assumptions but requires contact tracing completeness assumptions. This shows how data granularity can fundamentally change model structure and inference requirements. However, it should be noted that the observed variable in Eq. \eqref{eq:Zhat} is unlikely to be available in real time: in practice, information about the number of secondary cases will take time to collect. This means the model is unlikely to be suitable for real-time inference. 
+\textbf{Key Insight:} Individual-level data enables direct overdispersion estimation without distributional assumptions but requires contact tracing completeness assumptions. This shows how data granularity can fundamentally change model structure and inference requirements. However, it should be noted that the observed variable $\hat{Z}_i$ in Eq. \eqref{eq:Zhat} may not be available in real time as information about linked secondary cases will take time to collect. Furthermore, the distribution of  $\hat{Z}_i$ depends on future values of the latent variable $R_t$ and this means the model is not suitable for real-time inference. 
 
 \begin{figure}
 \centering
