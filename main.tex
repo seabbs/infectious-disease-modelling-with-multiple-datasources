@@ -33,7 +33,7 @@
 \author[8]{@invited-survey-respondees}
 \author[9]{Mircea T. Sofonea}
 \author[10, 11]{Pierre Nouvellet}
-\author[12]{Michael Plank*}
+\author[12]{Michael Plank$^*$}
 \author[11]{Anne Cori$^*$}
 \author[13]{Anne Presanis$^*$}
 
@@ -250,7 +250,11 @@ When conflict arises, use prior sensitivity analysis to quantify how much priors
 This conflict analysis connects directly to the value of information assessments that prioritise data collection efforts \citep{jackson2019value}.
 Criticise fitted models through posterior predictive validation, simulating new data to test whether models reproduce key features across all integrated sources.
 Apply cross-validation strategies, particularly leave-one-out and time-aware validation, to assess predictive performance while respecting temporal data structure.
+When multiple plausible model specifications exist, use Leave-One-Out Cross-Validation (LOO-CV), Watanabe-Akaike Information Criterion (WAIC), Continuous Ranked Probability Score (CRPS), or other methods to compare predictive accuracy \citep{vehtari2017practical,yao2018using,bosse2023scoring} combined with visual posterior predictive checks.
+High Pareto-k values from LOO-CV identify influential observations requiring careful modelling.
+For infectious disease models, consider scoring transformations such as the log when using CRPS \citep{bosse2023scoring}.
 Conduct sensitivity analyses by examining how conclusions change across prior specifications, likelihood assumptions, and data inclusion decisions.
+Prioritise calibration followed by sharpness: models should produce statistically consistent predictions with the minimal required uncertainty \citep{gneiting2007strictly}.
 Using simulated scenarios to validate parameter recovery provides valuable insights into model performance \citep{bouman2024bayesian}, though ideally simulation-based calibration for each submodel would verify that inference algorithms can recover true parameters from simulated data, as this provides stronger validation than posterior predictive checks alone \citep{talts2018validating}.
 For comprehensive implementation guidance, see \citep{gelman2020bayesian}.
 Model specification and validation have a critical feedback loop with DAG structure and data integration choices.
@@ -357,12 +361,13 @@ whether $ p(Y | \theta)$ is analytically or numerically computable, intractable 
 A wide range of computational strategies exists for infectious disease model inference, with numerous methods and variants available for each broad class of approach.
 We recommend structuring inference and computation decisions through four key considerations: assessing model complexity, selecting appropriate inference methods, implementing the chosen approach, and evaluating diagnostics (Figure \ref{fig:fitting}).
 In addition, inference and computation choices involve critical feedback loops within the broader workflow: computational constraints may require approximating or restructuring the process and observation DAGs developed in earlier stages, whilst computational limitations or available expertise may favour modular rather than joint integration approaches, necessitating a return to data integration decisions.
+Inference diagnostics may also reveal model specification issues necessitating a return to model specification and validation (Section \ref{sec:spec-validate}).
 This section provides an overview of these considerations with detailed technical discussion and practical guidance for navigating the many available options.
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{figures/subpanel_fitting choices.drawio.pdf}
-    \caption{\textbf{Inference and computation choices workflow for integrating multiple data sources in infectious disease modelling.} The workflow contains four interconnected components: Model Complexity Assessment (7.1) evaluates dimensionality, hierarchical structure, likelihood tractability, and computational constraints; Inference Method Selection (7.2) chooses between likelihood-free approaches and likelihood-based methods; Diagnostics (7.3) involve convergence checks, sensitivity analysis, and computational trade-offs; and Implementation Considerations (7.4) address software choices and compatibility requirements. The interconnected arrows indicate that these components inform each other iteratively, allowing researchers to optimize the balance between model complexity, computational feasibility, and inferential accuracy when integrating multiple data sources. Also, the workflow includes key feedback mechanisms: inference and computation constraints may require approximating or restructuring the process DAG, leading back to stage 2 Process DAG Development; alternatively, computational constraints or available expertise may favour modular over joint integration approaches, requiring a return to stage 6 Data Integration Choices. }
+    \caption{\textbf{Inference and computation choices workflow for integrating multiple data sources in infectious disease modelling.} The workflow contains four interconnected components: Model Complexity Assessment (7.1) evaluates dimensionality, hierarchical structure, likelihood tractability, and computational constraints; Inference Method Selection (7.2) chooses between likelihood-free approaches and likelihood-based methods; Diagnostics (7.3) involve convergence checks, sensitivity analysis, and computational trade-offs; and Implementation Considerations (7.4) address software choices and compatibility requirements. The interconnected arrows indicate that these components inform each other iteratively, allowing researchers to optimize the balance between model complexity, computational feasibility, and inferential accuracy when integrating multiple data sources. The workflow includes key feedback mechanisms: inference and computation constraints may require approximating or restructuring the process DAG, leading back to stage 2 Process DAG Development; computational constraints or available expertise may favour modular over joint integration approaches, requiring a return to stage 6 Data Integration Choices; diagnostic failures may indicate model specification issues requiring return to stage 5 Model Specification and Validation. }
     \label{fig:fitting}
 \end{figure}
 
@@ -595,6 +600,9 @@ Heavy reliance on posterior predictive checks and external validation becomes ne
 
 INLA provides model-specific diagnostic checks including residual analysis for latent Gaussian models.
 Marginal likelihood approximations enable model comparison but do not diagnose convergence issues.
+
+Diagnostic failures may indicate model specification issues requiring return to validation procedures (Section \ref{sec:spec-validate}).
+For example, when using NUTS, divergent transitions suggest posterior geometry problems requiring structural model changes.
 
 \subsection{Outbreak Evolution and Workflow Iteration}
 % Lead Sam Abbott
