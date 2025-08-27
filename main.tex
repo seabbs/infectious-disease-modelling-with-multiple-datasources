@@ -236,13 +236,13 @@ Note that assuming fixed parameter values, common in mechanistic modelling liter
 Temporal resolution affects what variation can be identified rather than what can be modelled: you can always build a daily-scale model, but weekly surveillance data will usually inform weekly or longer-term patterns, not daily fluctuations.
 Additional DAG iteration typically occurs at key workflow stages, such as during model specification when identifiability issues emerge, during validation when misalignment between model structure and data patterns is exposed, during data integration, or due to practical or theoretical considerations related to model fitting (Figure~\ref{fig:workflow}) \citep{corbella2022inferring}.
 Each iteration should address specific problems rather than making arbitrary changes.
-Document why changes were made, preserving the rationale for future model extensions when better data becomes available,  more domain knowledge, or computational methods improve.
+Document why changes were made, preserving the rationale for future model extensions when better data or   more domain knowledge becomes available, or when computational methods improve.
 
 \subsection{Model Specification and Validation}\label{sec:spec-validate}
 
 Start by validating models in small subcomponents first, then explore combinations to identify integration challenges early.
 As already outlined, specify priors using domain knowledge where available through informative priors; otherwise, use weakly informative priors that regularise without dominating the likelihood \citep{gelman2020bayesian}.
-Validate using prior predictive checks, which simulate data from the prior to ensure model behaviour aligns with epidemiological plausibility before seeing data.
+Validate using prior predictive checks \citep{yang2025detecting}, which simulate data from the prior to ensure model behaviour aligns with epidemiological plausibility before seeing data.
 Assess parameter identifiability by examining whether data sources provide sufficient information to uniquely estimate target parameters; joint modelling often resolves identifiability issues that plague pipeline approaches \citep{lison2024generative, russell2024combined}.
 For some models, formal structural identifiability approaches may be used to indicate where additional data or prior information is needed.
 Detect conflict between data sources, where different streams imply incompatible parameter values under the current model.
