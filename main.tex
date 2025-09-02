@@ -107,9 +107,9 @@ By focusing on this common estimation task, we provide practitioners with a conc
 
 There is an increasing number of data sources being used for infectious disease surveillance and modelling, including case notifications, hospitalisations, viral load measurements from clinical samples, and wastewater samples. While each of these data sources offers unique advantages, such as timeliness, population coverage, and direct information on some quantities, they also come with distinct limitations, including reporting delays,  measurement noise, or lack of representativeness. There is currently no standardised approach to assess and compare these data sources in terms of their strengths and weaknesses, hindering our ability to compare, integrate, and prioritise data streams effectively. 
 
-We propose six overarching characteristics with which to evaluate different data sources in a common framework (Figure \ref{data_characteristics}).  These characteristics are: (1) \textit{metadata}  that encapsulates  foundational information about each data stream; (2) the \textit{scope} of a data source, i.e. its representative breadth and epidemiological relevance; (3) \textit{resolution} that describes the granularity and level of detail captured by a data source; (4) \textit{data quality} that encompasses the reliability, accuracy and completeness of the measurements within a data stream; (5) \textit{data utility} that refers to the practical applicability of a data source in informing epidemiological metrics and supporting public-health decision making; and (6)\textit{ practical considerations} that addresses the feasibility of using a data stream in modelling and surveillance contexts. We define additional potential criteria for each of these characteristics in the Supplementary Materials. 
+Inspired by the principles outlined in the WHO guidelines for integrated surveillance of respiratory pathogens with pandemic potential, which emphasise the importance of standardised, multi-purpose surveillance systems that also support public health responses and modelling \citep{world2024implementing}, we propose six overarching characteristics with which to evaluate different data sources in a common framework (Figure \ref{data_characteristics}).  These characteristics are: (1) \textit{metadata}  that encapsulates foundational information about each data stream; (2) the \textit{scope} of a data source, i.e. its representative breadth and epidemiological relevance; (3) \textit{resolution} that describes the granularity and level of detail captured by a data source; (4) \textit{data quality} that encompasses the reliability, accuracy and completeness of the measurements within a data stream; (5) \textit{data utility} that refers to the practical applicability of a data source in informing epidemiological metrics and supporting public-health decision making; and (6)\textit{ practical considerations} that addresses the feasibility of using a data stream in modelling and surveillance contexts. We define additional potential criteria for each of these characteristics in the Supplementary Materials. 
 
-We propose that these six characteristics be used as a checklist to guide the systematic assessment of a data stream's strengths and weaknesses. While the precise structure, relevance, and sub-attributes of each component may vary depending on the specific surveillance  and modelling objectives, the key objective of this checklist is to promote structured, transparent thinking. We suggest first assessing our checklist within your collaboration or team,  and then modifying it to better align with your own research question. Once happy with the checklist review, each dataset available to you in turn, ideally independently and collate the responses. We then suggest summarising these responses, as demonstrated in our case study, and referring back to them through the remainder of the workflow.
+We propose that these six characteristics be used as a checklist to guide the systematic assessment of a data stream's strengths and weaknesses. While the precise structure, relevance, and sub-attributes of each component may vary depending on the specific surveillance and modelling objectives, the key objective of this checklist is to promote structured, transparent thinking. We suggest first assessing our checklist within your collaboration or team,  and then modifying it to better align with your own research question. Once happy with the checklist review, each dataset available to you in turn, ideally independently and collate the responses. We then suggest summarising these responses, as demonstrated in our case study, and referring back to them through the remainder of the workflow.
 
 
 \begin{figure}[H] 
@@ -121,6 +121,7 @@ We propose that these six characteristics be used as a checklist to guide the sy
 
 
 \section{Workflow}
+\label{sec:workflow}
 % Lead: Sam Abbott
 
 \subsection{Overview}
@@ -134,6 +135,39 @@ We propose that these six characteristics be used as a checklist to guide the sy
     \label{fig:workflow}
 \end{figure}
 
+% Things to confirm before updating the main workflow
+
+% key steps:
+% 1 - Research Question and Target esimands
+% 2 - Process DAG Development
+% 3 - Data Source Selection
+% 4 - Observation DAG Construction
+% 5 - Modularise DAGs
+% 6 - Inference and Computation Choices
+% 7 - Model Implementation
+% 8 - Model Specification and Validation
+% 9 - Data Integration Choices
+
+% Feedback loops:
+% 3 - 2: Data characteristics fundamentally alter process DAG Structure
+% 6 - 2: Fitting constraints may require approximating or restructuring the process DAG
+% 6 - 5: Computational constraints may suggest refactoring the underlting model DAGs
+% 6 - 8: Diagnostic failures may indicate model specification issues
+% 6 - 9: Computational constraints or available expertise may favour approximate over exact joint approaches or ensembling approaches
+% 7 - 9: Teams using incompatible programming languages may necessitate modular rather than joint approaches
+% 8 - 2: Identifiability issues may necessitate model simplification or more complexity
+% 8 - 3: Identifiability issues may require more data to fit the model
+% 8 - 4: Identifiability issues may necessitate model simplification
+% 7 - 3: Practical constraints may necessitate modular approaches
+% 9 - 4: Integration complexity may require simplifying observation models
+% 9 - 6: Update inference and computation choices for the newly combined models (solid line)
+% 9 - 8: Conflict between data sources reveals model misspecification
+
+% sub-iterations/cycles:
+% 2 - 3 - 4
+% 5 - 6 - 7 - 8
+% consider describing in figure caption
+
 We recommend following a structured, iterative workflow for multi-data source modelling (Figure~\ref{fig:workflow}). Our suggested workflow extends established Bayesian workflow principles \citep{gelman2020bayesian} for  the specific challenges of multi-source infectious disease modelling.
 We advocate this approach because it makes modelling choices transparent, assumptions explicit, and provides principled tools for assessing model adequacy regardless of whether final inference is Bayesian or frequentist.
 The workflow should be implemented through multiple iterations, starting with high-level considerations and becoming more detailed with each pass, as some steps require later workflow components (e.g., posterior prediction requires inference and computation choices).
@@ -142,43 +176,46 @@ Begin with \textbf{decision making}: clearly define your research question and t
 Next, we suggest using \textbf{directed acyclic graphs (DAG)}  to define your models. However, we depart from standard approaches in that we suggest decoupling the definition of the \textbf{process} and \textbf{observation} models.
 Here the \textbf{process model DAG} represents the underlying epidemiological process, i.e. the transmission and related processes.
 A key part of this workflow is iterating on this representation as understanding develops i.e. during an outbreak.
-The next step is to make use of the data source characterisation from the last section to \textbf{map available \textbf{data sources} }to your process model, such as incidence time series, genomic data, contact tracing, viral load measurements, and serological surveys based on those identified in the previous section.
+The next step is to make use of the data source characterisation from the last section to \textbf{select available data sources} for your process model, such as incidence time series, genomic data, contact tracing, viral load measurements, and serological surveys based on those identified in the previous section.
 Data sources should be selected based on their expected contributions to the research question.
 For each data source, develop an \textbf{observation DAG} linking the underlying process to observed data through measurement models and reporting mechanisms.
 Different data sources may also impact your \textbf{process DAG} assumptions, such as whether you can collapse your representation of the process from individual-level to population-level.
 
-Once you have developed your \textbf{process} and \textbf{observation DAGs}, proceed to \textbf{model specification and validation}, including prior specification, parameter identifiability assessment, and prior predictive checks.
-You then face key decisions on \textbf{data integration choices}: \textbf{``What to combine?''} and \textbf{``How to combine?''}.
+Once you have developed your \textbf{process} and \textbf{observation DAGs}, \textbf{modularise your joint model} into separate sub-models for each data source.
+Once you have modularised your model, it is time to make \textbf{inference and computation choices}, i.e. selecting an inference method based on the model structure, and theoretical and practical considerations for each modular model.
+At this point, it is time for \textbf{Implementation considerations} as you implement your model, ideally following software development best practices in a probabilistic programming language.
+Now we can apply \textbf{model specification and validation} to each module independently, including prior specification, parameter identifiability assessment, and prior and posterior predictive checks.
+After validating individual modules, you then face key decisions on \textbf{data integration choices}: \textbf{``What to combine?''} and \textbf{``How to combine?''}.
 
-If combining multiple sources is not beneficial or feasible, you can proceed to single-source modelling and potentially the combination of estimates, e.g. where multiple models estimate the effective reproduction number from different data sources, and so these estimates can be ensembled.
-If integration is warranted, select among \textbf{data integration} methods. 
-Once your data sources have been integrated, it is time to make \textbf{inference and computation choices}, i.e. selecting an inference method based on the model structure, integration approach, and theoretical and practical considerations. 
-Finally, \textbf{fit your model} and evaluate its performance through posterior predictive validation and sensitivity analysis.
+If combining multiple sources is not beneficial or feasible, you can proceed to the combination of estimates, e.g. where multiple models are used to estimate the effective reproduction number from different data sources, and so these estimates can be ensembled.
+If integration is warranted, select among \textbf{data integration} methods and return to \textbf{inference and computation choices} for the newly combined models.
 
 Throughout this workflow, there is the potential for feedback loops between steps so that model development is rarely a single forward pass (see Figure~\ref{fig:workflow}). 
 Data characteristics can alter process DAG structure: individual-level data requires different representations than population-level data. 
 Identifiability issues discovered during model specification may require simplifying either the process model or observation models. 
-Practical constraints shape integration choices in multiple ways. Teams using incompatible programming languages may necessitate modular rather than joint approaches. 
-Integration complexity itself may require simplifying observation models to maintain computational feasibility. Conflicts between data sources during integration often reveal model misspecification, requiring revision of earlier assumptions. 
-Computational constraints during fitting may require approximating or restructuring the process DAG. Limited computational resources or available expertise may favour modular over joint integration approaches despite the theoretical advantages of joint modelling. 
-For example, suppose you initially design a joint model but find it computationally intractable with available methods. In that case, you might iterate back to choose a modular integration approach, which in turn might influence how you structure your observation DAGs.
+Practical constraints shape integration choices in multiple ways. 
+Teams using incompatible programming languages may necessitate modular rather than joint approaches. 
+Similarly, computational constraints may favour approximate over exact joint approaches or ensembling appraoches.
+Alternatively, they can suggest refactoring the underlying model DAGs.
+Integration complexity itself may require simplifying observation models to maintain computational feasibility. 
+Conflicts between data sources during integration often reveal model misspecification, requiring revision of earlier assumptions.
 
-Practitioners should expect to repeat this workflow as outbreaks evolve.
+In the following sections, we will discuss each of these steps in more detail and provide resources for further learning. We will also demonstrate this workflow in our case studies.
+
+Practitioners should expect to repeat this workflow as outbreaks evolve (see Section \ref{sec:outbreak}).
 Understanding of pathogen characteristics improves over time, research questions shift from immediate response to longer-term planning, and decision-making timescales change from days to months.
 New data sources emerge whilst surveillance systems adapt to changing circumstances.
 This evolution favours modular approaches that enable component reuse rather than bespoke models requiring complete redevelopment when applications change.
-Critical to this workflow is transparent reporting of all decisions and validation procedures, including documentation of iterative workflow passes and decision rationales, enabling both reproduction and adaptation of models for future applications.
-
-In the following sections, we will discuss each of these steps in more detail and provide resources for further learning. We will also demonstrate this workflow in our case studies.
+Critical to this workflow is transparent reporting of all decisions and validation procedures, including documentation of iterative workflow passes and decision rationales, enabling both reproduction and adaptation of models for future applications  (see Section \ref{sec:reporting}).
 
 \subsection{Research Question and Target Estimands}
 
 Determining the research question shapes the entire modelling workflow, from data source selection through integration choices to validation strategies.
-Start by engaging with policymakers and/or stakeholders to understand which epidemiological parameters matter for their decisions: some need simple short-term case forecasts for hospital planning, others require transmission dynamics understanding for intervention design \citep{marshall2024when}.
-Often, multiple outcomes are desired that require balancing trade-offs: short-term forecasts for operational planning alongside $R_t$ estimates for public communication and interpretability.
-The aim is to translate policy needs into specific target estimands by trying to understand how parameters inform decisions \citep{nicholson2022interoperability}.
+Start by engaging with policymakers and/or stakeholders to understand which epidemiological parameters matter for their decisions: some need simple short-term admissions forecasts for hospital planning, others require transmission dynamics understanding for intervention design \citep{marshall2024when}.
+Often, multiple outcomes are desired that require balancing trade-offs: short-term forecasts for operational planning alongside effective reproduction number ($R_t$) estimates for public communication and interpretability.
+The aim is to translate policy needs into specific target estimands by understanding how parameters inform decisions \citep{nicholson2022interoperability, gip-2024-ru}.
 For example, policymakers might need to know if transmission is increasing rather than precise values, or whether superspreading drives transmission, to choose between population-wide versus targeted interventions.
-Try to define scope explicitly, including what the analysis cannot address: a national $R_t$ estimate cannot easily reveal local outbreak dynamics, aggregate case data might not be able to identify transmission chains, and surveillance might not be able to detect mild infections.
+Try to define the scope explicitly, including what the analysis cannot address: a national $R_t$ estimate cannot easily reveal local outbreak dynamics, aggregate case data may not be able to identify transmission chains, and surveillance may not be able to detect mild infections.
 These limitations shape stakeholder expectations and prevent misuse of results.
 Research questions evolve throughout outbreaks as understanding improves and policy needs shift.
 Early outbreak questions often focus on growth rates and severity using limited case data.
@@ -191,33 +228,28 @@ A directed acyclic graph (DAG) represents causal relationships between variables
 This formalism helps identify confounders, mediators, and colliders that affect parameter estimation from observational data.
 For infectious disease modelling, we recommend constructing DAGs that capture biological mechanisms: susceptible populations, transmission events, infection progression, recovery or death, and intervention effects \citep{deangelis2018analysing}.
 Rather than starting from scratch, adapt established epidemiological models for similar pathogens or transmission routes, modifying components as outbreak-specific data emerges \citep{gelman2020bayesian}.
-Begin with simple representations of core transmission dynamics, then iteratively refine as understanding improves during an outbreak.
+Model development can begin simply and add complexity, or start comprehensive and simplify to essential components \citep{gelman2020bayesian}.
+We recommend starting with a simple representations of core transmission dynamics, then iteratively refining as understanding improves as as neeeded by other parts of the workflow.
 Early outbreak DAGs might represent homogeneous mixing, while later versions incorporate age structure, spatial heterogeneity, or variant dynamics as data reveals their importance.
 Key biological mechanisms drive DAG structure: incubation periods create delays between infection and infectiousness, viral load dynamics affect transmission probability, and immune waning influences reinfection risk.
 We suggest separating process DAGs from observation DAGs to distinguish true epidemiological processes from how we measure them.
 This separation enables modular model development where process components can be reused across different surveillance contexts \citep{nicholson2022interoperability}.
 
-\subsection{Data Source Mapping}
+\subsection{Data Source Selection}
 
-Data source mapping connects available surveillance streams to epidemiological processes using the characteristics framework from Section~\ref{sec:datareview}.
-After this systematic cataloguing of the available data,  it is then important to relate the strengths and weaknesses of each available data source to the target estimands.
+Data source selection connects available surveillance streams to epidemiological processes using the characteristics framework from Section~\ref{sec:datareview}.
 Link data sources to process components by identifying what epidemiological quantities each stream measures. 
 For example, cases reflect infection incidence with reporting delays and ascertainment bias, hospitalisations capture severe outcomes with admission thresholds, and wastewater indicates population-level viral circulation independent of healthcare-seeking.
+In principle, integrating multiple data sources should enhance the identifiability and precision of parameter estimates \citep{deangelis2018analysing, lison2024generative, russell2024combined, birrell2025real}. In practice, however, data integration may pose challenges. 
+These include inconsistencies due to unaccounted biases \citep{presanis2013conflict,knock2021key, Ward2024-sp, corbella2022inferring}; computational complexity \citep{corbella2022inferring}; and real-time pressures during an outbreak emergency \citep{mccaw2023role}.
+We therefore recommend starting with minimum data requirements for target estimands, then expanding systematically.
 Evaluate complementarity by examining whether sources provide independent signals or reinforce the same information.
 For example, wastewater can potentially provide early warning of outbreaks, while clinical surveillance provides individual-level severity data.
-Identify redundancy where multiple sources inform the same parameter, which might improve precision at the cost of model complexity.
-Start with minimum data requirements for target estimands, then expand systematically.
-Each additional source increases complexity and development time, so prioritise based on expected information gain relative to implementation cost \citep{jackson2019value,heath2024value}.
-Document these mapping decisions explicitly as they shape all downstream workflow choices from observation DAG construction through integration methods.
+Identify redundancy where multiple sources inform the same parameter, which might improve precision, consistent with meta-analytic principles \citep{deangelis2018analysing,borenstein2021introduction}, at the cost of model complexity.
 
-In principle, integrating multiple data sources should enhance the identifiability and precision of parameter estimates \citep{deangelis2018analysing, lison2024generative, russell2024combined, birrell2025real}. Even when data streams are redundant (informing the same quantity), their combination can improve precision, consistent with meta-analytic principles \citep{deangelis2018analysing,borenstein2021introduction}. 
-
-In practice, however, data integration may pose challenges. These include inconsistencies due to unaccounted biases \citep{presanis2013conflict,knock2021key, Ward2024-sp, corbella2022inferring}; computational complexity \citep{corbella2022inferring}; and real-time pressures during an outbreak emergency \citep{mccaw2023role}.
-
-Evaluating the strengths and limitations of different data sources, as described in Section \ref{sec:datareview}, can and should be done during inter-epidemic periods. This evaluation, alongside the workflow of specifying process and observation DAGs (Section \ref{sec:process} and \ref{sec:observation}, helps assess whether estimands of interest are identifiable from the available data. Value-of-information methods \citep{jackson2019value,heath2024value} can formally guide whether new or additional data would meaningfully improve precision. However, for complex models especially, identifiability may only become evident after fitting an initial version.
-
-A modular model building approach \citep{deangelis2018analysing,goudie2019joining,gelman2020bayesian,nicholson2022interoperability} is generally recommended, guided by the principle of parsimony (``Occam's razor''). 
-Starting with simple sub-models makes it easier to diagnose issues such as poor fit, model misspecification or convergence issues. Complexity can then be added incrementally, only as far as needed. Sequentially combining sub-models also facilitates the detection of inconsistencies or conflicts between them \citep{presanis2013conflict,manderson2023combining}. Modular approaches also offer computational advantages over joint modelling. 
+Prioritise data sources based on expected information gain relative to implementation cost.
+Value-of-information methods \citep{jackson2019value,heath2024value} can formally guide whether additional data would meaningfully improve precision.
+However, for complex models especially, identifiability may only become evident after fitting an initial version.
 
 \subsection{Observation DAG Construction} \label{sec:observation}
 
@@ -226,19 +258,19 @@ Build these DAGs by working backwards from measured values through all intermedi
 Each step introduces delays, biases, or missing data mechanisms that affect inference.
 Treat observation components as modular and replaceable: initial Poisson noise models can become negative binomial, simple delays can incorporate weekly patterns \citep{gelman2020bayesian}.
 This flexibility reduces initial specification burden whilst enabling systematic refinement.
-The level of detail depends on research questions and later workflow choices.
+As the process DAG we recommend starting simply for each observation DAG and iterating on it to add complexity as required by later stages of the workflow and the research question.
 Estimating population-level transmission requires simpler observation models than understanding variant-specific dynamics or age-stratified patterns.
 Individual-level data enables different observation models compared to aggregated reports.
-Model reporting and other delays explicitly as they create temporal misalignment between transmission events, disease sequelae and observations \citep{seaman2022nowcasting}.
+It is usually important to model reporting and other delays explicitly as they create temporal misalignment between transmission events, disease sequelae and observations \citep{seaman2022nowcasting}.
 Distinguish between missing data mechanisms since random missingness and systematic under-ascertainment require different handling \citep{sherratt2021exploring}.
 Account for time-varying observation probabilities from testing capacity, healthcare seeking or surveillance intensity changes.
-Account for hierarchical structure and population heterogeneity when multiple data sources capture different demographic subgroups.
+Account for hierarchical structure and population heterogeneity whenever demographic subgroups are present in the data or required by the research question.
 Multiple observation DAGs for the same underlying process enable validation by checking whether different data streams imply consistent transmission dynamics when properly integrated.
 
 \subsection{Iterate on the model DAGs}
 
 After mapping data sources and constructing your observations DAGs, revisit your process and observations DAGs to ensure alignment between what you want to model and what your data can support.
-Model development can begin simple and add complexity, or start comprehensive and simplify to essential components \citep{gelman2020bayesian}.
+Model development can begin simply and add complexity, or start comprehensive and simplify to essential components \citep{gelman2020bayesian}.
 This step of the workflow aims to create a single joint DAG composed of your process and observations DAGs.
 Data availability can drive both increases and decreases in model complexity.
 Contact tracing data with identified transmission pairs enables shifting from population-level compartmental models to individual-based representations that capture heterogeneous mixing patterns.
@@ -249,7 +281,230 @@ Note that assuming fixed parameter values, common in mechanistic modelling liter
 Temporal resolution affects what variation can be identified rather than what can be modelled: you can always build a daily-scale model, but weekly surveillance data will usually inform weekly or longer-term patterns, not daily fluctuations.
 Additional DAG iteration typically occurs at key workflow stages, such as during model specification when identifiability issues emerge, during validation when misalignment between model structure and data patterns is exposed, during data integration, or due to practical or theoretical considerations related to model fitting (Figure~\ref{fig:workflow}) \citep{corbella2022inferring}.
 Each iteration should address specific problems rather than making arbitrary changes.
-Document why changes were made, preserving the rationale for future model extensions when better data or   more domain knowledge becomes available, or when computational methods improve.
+Document why changes were made, preserving the rationale for future model extensions when better data or more domain knowledge becomes available, or when computational methods improve.
+It may be the case that you are unable to use domain knowledge or reasoning to produce a single valid DAG and instead have several candidates for either or both the process and observations DAGs. 
+This can often be the case when several independent teams are working on a similar problem but can also occur when mechanisms are not well-known or the data-generating process is poorly reported.
+If this is the case, proceed through the remainder of the workflow with each of these candidates, comparing them in \ref{sec:spec-validate} and potentially integrating them in \ref{sec:integration}.
+
+\subsection{Modularise Your DAGs} \label{sec:modularise}
+
+After selecting data sources and developing and iterating on your DAGs, decompose your proposed model into modular sub-models.
+Each sub-model should be as simple as possible, ideally including the process DAG and a single observation DAG, and therefore depend on a single data source.
+This may mean making additional simplifying assumptions which will be relaxed during the data integration step.
+
+We start with simple sub-models as this makes it easier to diagnose issues such as poor fit, model misspecification or convergence issues more easily.
+Add complexity incrementally, only as far as needed.
+This modularisation facilitates detection of inconsistencies or conflicts between data sources \citep{presanis2013conflict,manderson2023combining} and offers computational advantages over joint modelling \citep{deangelis2018analysing,goudie2019joining,gelman2020bayesian,nicholson2022interoperability}.
+
+Apply the following workflow stages (Inference and Computation Choices, Implementation Considerations, Model Specification and Validation) to each module independently.
+After validating individual modules, proceed to Data Integration Choices (Section \ref{sec:integration}) to determine how to combine them.
+The integrated model may then require additional cycles through the workflow.
+
+\subsection{Inference and Computation Choices}\label{sec:fitting}
+% Lead: Xiahui and Dhorasso with support from Sam Abbott
+
+Inference for infectious disease models involves estimating parameters $\theta$ from observed data $Y$.
+ These data often arise from a probabilistic model with a likelihood function $p(Y |
+  \theta)$ that links parameters to data through transmission dynamics (process DAG, Section \ref{sec:process}) and observation mechanisms (observation DAG, Section \ref{sec:observation}).
+Bayesian inference, our recommended approach, updates prior beliefs $p(\theta)$ to obtain posterior distributions $p(\theta | Y) \propto p(Y|\theta) p(\theta)$, providing principled uncertainty quantification regardless of fitting method.
+Inference requires balancing model complexity, computational feasibility, likelihood tractability, and available expertise.
+We structure inference and computation decisions through four stages: model complexity, selecting inference methods, implementation, and diagnostics (Figure \ref{fig:fitting}). 
+These choices create feedback loops within the workflow where computational constraints may require approximating or restructuring earlier DAG specifications.
+This section provides an overview of these considerations.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figures/subpanel_fitting choices.drawio.pdf}
+    \caption{\textbf{Inference and computation choices workflow for integrating multiple data sources in infectious disease modelling.} The workflow contains four interconnected components: Model Complexity Assessment (7.1) evaluates dimensionality, hierarchical structure, likelihood tractability, and computational constraints; Inference Method Selection (7.2) chooses between likelihood-free approaches and likelihood-based methods; Implementation Considerations (7.3) address software choices and compatibility requirements; and Diagnostics (7.4) involve convergence checks, sensitivity analysis, and computational trade-offs. The interconnected arrows indicate that these components inform each other iteratively, allowing researchers to optimize the balance between model complexity, computational feasibility, and inferential accuracy when integrating multiple data sources. The workflow includes key feedback mechanisms: inference and computation constraints may require approximating or restructuring the process DAG, leading back to stage 2 Process DAG Development; computational constraints or available expertise may favour modular over joint integration approaches, requiring a return to stage 6 Data Integration Choices; diagnostic failures may indicate model specification issues requiring return to stage 5 Model Specification and Validation. }
+    \label{fig:fitting}
+\end{figure}
+
+\subsubsection{Model Complexity Assessment}
+
+Before determining the inference approach, it is important to assess the complexity of the model.
+Parameter dimensionality and structure are key to method selection as low-dimensional problems with fewer than 10 parameters require different approaches than problems with hundreds or thousands of parameters (see "Handles high-dim. params.?" in Table \ref{tab:methods_comparison}).
+Similarly, strongly correlated parameters, discrete parameter spaces, or mixed continuous-discrete problems each impact which methods can be used or how they are implemented.
+You should also consider the number of latent states such as unobserved infection times, individual-level disease states, or spatially varying transmission rates.
+When there are many latent states relative to observed data, computational feasibility becomes a constraint that rules out certain approaches.
+The tractability of the likelihood determines which methods can be applied.
+Key questions include whether the likelihood $p(Y | \theta)$ can be written analytically, evaluated numerically at reasonable cost, or differentiated with respect to parameters.
+Models with stochastic differential equations or discrete event processes often lack tractable likelihoods.
+This rules out methods that require likelihood evaluation or gradients.
+
+\subsubsection{Inference Method Selection}
+
+Numerous inference methods and algorithmic variants exist within each broad class of approach, each with distinct computational characteristics and practical trade-offs.
+Selecting an appropriate method involves balancing considerations of computational efficiency, statistical rigour, data availability, interpretability, and model complexity.
+Rather than adopting a universal approach, the choice should be tailored to the specific modelling context and inferential goals.
+The following gives guidance to selecting a method, but does not cover all settings.
+
+Gradient-based Markov Chain Monte Carlo (MCMC) approaches represent our preferred methods when applicable due to their combination of efficiency, reliability, and ease of use \citep{gilks1995markov, lekone2006statistical}.
+MCMC methods generate samples from the posterior distribution by constructing a Markov chain that converges to the target distribution, providing a flexible framework for Bayesian inference when analytical solutions are unavailable.
+Hamiltonian Monte Carlo (HMC) leverages gradient information for efficient MCMC exploration of differentiable likelihoods, with its adaptive variant No-U-Turn Sampler (NUTS) representing our default recommendation for models with continuous parameters \citep{duane1987hybrid, hoffman2014no, andrade2020evaluation}.
+These methods provide excellent diagnostics and automatic tuning, reducing the expertise barrier for reliable implementation.
+When implementing gradient-based methods, automatic differentiation backend selection matters: forward-mode differentiation suits models with few parameters (typically fewer than 10), whilst reverse-mode differentiation scales better for high-dimensional parameter spaces.
+Practitioners should test available automatic differentiation options when possible, with systems like Turing.jl and PyMC providing backend flexibility.
+When full uncertainty quantification is less critical, Variational Inference (VI) approximates the posterior by optimising tractable surrogate distributions, offering fast approximation with modern variants like Pathfinder \citep{blei2017variational, chatzilena2019contemporary}.
+
+Sampling-based approaches become necessary when gradients are unavailable.
+Standard Markov Chain Monte Carlo (MCMC) methods including Metropolis-Hastings and Gibbs sampling handle discrete or mixed parameter spaces \citep{hastings1970monte, geman1984stochastic, gilks1995markov}.
+For discrete parameters, consider whether marginalisation is possible before resorting to sampling, as analytical integration can significantly improve efficiency and mixing.
+Parallel tempering extends these methods to multimodal posteriors by running multiple chains at different temperatures, with modern implementations available in packages like Pigeons.jl \citep{surjanovic2023pigeons}.
+These approaches require greater tuning than gradient-based methods and provide weaker diagnostics. Furthermore, for models in which the latent state dimension grows over time, as in state-space models, MCMC becomes increasingly inefficient.
+
+Sequential Monte Carlo (SMC) methods, or particle filters, offer a natural alternative in such models by approximating the filtering distribution of latent states using weighted particles. They enable online Bayesian updating as new observations arrive, making them well-suited for real-time epidemic tracking \citep{doucet2001introduction, birrell2020efficient, storvik2023sequential}. However, SMC alone is less efficient for parameter inference. Particle MCMC (PMCMC) addresses this limitation by combining SMC with MCMC to enable joint inference of states and parameters \citep{andrieu2010particle, endo2019introduction}. Key limitations of particle-based methods include particle degeneracy (where few particles carry most weight), memory scaling challenges with long time series, and complex resampling tuning requirements. Table \ref{tab:methods_comparison} summarizes these relative strengths and limitations.
+ 
+Approximate Bayesian inference methods provide efficient alternatives for specific model structures.
+Integrated Nested Laplace Approximation (INLA) offers a computationally efficient method for approximating posterior marginals in latent Gaussian models, making it particularly effective for spatiotemporal disease models with spatial correlation structures \citep{rue2017bayesian}.
+This method excels when models can be reformulated with latent Gaussian components but struggles with non-Gaussian latent structures.
+Nested Laplace approximations can be integrated within other sampling schemes, allowing INLA to handle subcomponents of larger models efficiently.
+
+Deterministic approaches focus on point estimation rather than uncertainty quantification.
+Maximum Likelihood Estimation (MLE) provides point estimates for model parameters, particularly useful for simple models requiring only parameter estimates rather than full uncertainty quantification \citep{myung2003tutorial, baltazar2024maximum}.
+Profile likelihood methods extend MLE by examining the likelihood surface for individual parameters whilst optimising over others, providing confidence intervals without full posterior sampling \citep{tonsing2018profile, plank2024structured}.
+Whilst we do not generally recommend these approaches for primary analysis, they can prove useful for model validation, parameter initialisation, or exploring model behaviour when more complex methods encounter difficulties.
+
+Likelihood-free approaches serve as methods of last resort due to their computational demands and limited diagnostic capabilities.
+These simulation-based methods bypass likelihood evaluation entirely, instead using model simulations to approximate the posterior distribution.
+Approximate Bayesian Computation (ABC) approximates the posterior distribution by accepting parameter values that generate simulated data close to the observed data under a predefined distance metric, whilst synthetic likelihood methods approximate the likelihood by assuming Gaussian distributions for summary statistics \citep{beaumont2002approximate, wood2010statistical, price2018bayesian}.
+Whilst these methods suffer from limited diagnostics and high computational cost, they provide essential flexibility for complex models where other approaches fail.
+
+\begin{landscape}
+\begin{table}[ht]
+\renewcommand{\arraystretch}{1.2}
+\centering
+\caption{\textbf{Comparison of Likelihood-Based and Likelihood-Free Fitting Methods.} 
+This table focuses on foundational algorithms. More recent methodological advancements that build upon these classical approaches are discussed in Section 4.9 of the main text. ``PPL'' stands for Probabilistic Programming Languages. For this review, PPL examples include Stan, PyMC, JAGS, NIMBLE, Turing.jl, etc.}
+\label{tab:methods_comparison}
+\small
+\begin{tabular}{@{}p{3.5cm}p{1.5cm}p{1.5cm}p{1.5cm}p{1.5cm}p{1.5cm}p{1.5cm}p{1.5cm}p{1.5cm}@{}}
+\toprule
+\multirow{2}{*}{\textbf{Feature}} & \multicolumn{6}{c}{\textbf{Likelihood-Based}} & \multicolumn{2}{c}{\textbf{Likelihood-Free}} \\
+\cmidrule(lr){2-7} \cmidrule(lr){8-9}
+ & MLE & MCMC & SMC & PMCMC & INLA & VI & ABC & BSL \\
+\midrule
+\textbf{Theoretical Considerations} & & & & & & & & \\
+\midrule
+Requires likelihood? & Yes & Yes & Yes & Yes & Yes & Yes & No & No \\
+Handles high-dim. params.? & Poor & Moderate & Moderate & Moderate & Good & Good & Moderate & Moderate \\
+Convergence guarantees & Asymptotic & Asymptotic & Asymptotic & Asymptotic & Approx. & Approx. & Approx. & Approx. \\
+Distributional flexibility & Low & High & High & High & Medium & Medium & High & Medium \\
+Approximation error & Exact (asymp.) & Exact (asymp.) & Particle-based & Exact (asymp.) & Deterministic & Variational & Simulation & Simulation \\
+\midrule
+\textbf{Practical Considerations} & & & & & & & & \\
+\midrule
+Computational cost & Low & High & Med--High & Very high & Low & Low--Med & High & High \\
+Scalability (big data) & Good & Poor & Moderate & Poor & Good & Good & Moderate & Moderate \\
+Example software & PPL & PPL & LibBi & POMP, NIMBLE & R-INLA & PPL & abctools, EasyABC, ELFI & ELFI \\
+Tuning required? & Minimal & Step size, priors & Resampling & Complex & Minimal & ELBO opt. & Sum. stats., distance, threshold & Sum. stats. \\
+Capable of real-time inference? & Yes & No & Yes & No & Yes & Yes & No & No \\
+Parallelization potential & 
+High & 
+Limited, chain-level, GPU possible but hard & 
+High, particle-level, GPU possible & 
+Limited, particle-level, GPU possible for simple models & 
+Low, matrix operation hard to parallelise & 
+Medium, gradient parallelisation; GPU possible & 
+High, simulations parallelisable; GPU possible & 
+Medium, GPU possible \\
+Diagnostics & Likelihood ratio & $\hat{R}$, ESS, Trace& ESS & $\hat{R}$, ESS,Trace & Residuals & ELBO, PPC & Acc.~rate, PPC & Acc.~rate, PPC \\
+Best use case & Simple models & General Bayesian inference & Real-time inference & State-space models & Latent Gaussian models & Fast approximation & Intractable likelihood & Intractable likelihood + summary stats \\
+\bottomrule
+\end{tabular}
+\end{table}
+\end{landscape}
+
+% Table \ref{tab:methods_comparison} provides detailed comparison across multiple criteria to support these decisions.
+
+\paragraph{Hybrid and Nested Approaches}
+
+Modern probabilistic programming languages enable sophisticated combinations of inference methods.
+INLA approximations can be nested within NUTS, using efficient spatial approximations while sampling other parameters.
+Languages like Turing.jl support mixed samplers, applying HMC to continuous parameters whilst using Gibbs for discrete components \citet{fjelde2025turing}.
+SMC methods can incorporate HMC kernels for parameter moves, leveraging particle filtering for states and gradient-based sampling for parameters \citet{buchholz2021adaptive, devlin2024no, rosato2024enhanced}.
+These hybrid approaches capitalise on the strengths of multiple methods.
+
+When complex methods fail to initialise properly within prior bounds, simpler methods can provide starting values for more sophisticated approaches.
+Variational Inference often proves effective for initialisation due to its speed and robustness, whilst MLE can provide reasonable point estimates.
+However, initialisation difficulties may indicate unrealistic prior specifications, suggesting model validation should be revisited before proceeding with complex inference.
+
+\subsubsection{Implementation considerations}
+
+Implementation requires balancing computational cost against inferential quality.
+Method selection from Table \ref{tab:methods_comparison} should consider both model complexity and available computational resources.
+
+Bayesian inference platforms such as Stan, JAGS, NIMBLE, PyMC, Turing.jl, and NumPyro are widely used for likelihood-based approaches \citep{carpenter2017stan,abril2023pymc, ge2018turing,fjelde2025turing, phan2019composable}. Stan is good for high-dimensional problems through efficient HMC algorithms, while JAGS and NIMBLE offer flexibility for inference for model structures that may not well-suited to gradient-based methods. For models requiring rapid inference with large datasets, INLA and VI are good alternatives. 
+
+% INLA implementations are available in R-INLA package \citep{martins2013bayesian}, Stan, and TMB (Template Model Builder) \citep{osgood2023statistical}, while VI methods are supported across multiple platforms including PyMC, Turing.jl, Stan, and NumPyro. 
+
+Additionally, tools such as LibBi support SMC-based inference for state-space models and can scale to high-dimensional problems using GPU and parallel computing \citep{murray2015bayesian}. For likelihood-free methods, the decision typically centers on computational scalability. Simple ABC and BSL implementations are sufficient for low-to-moderate-dimensional problems and are supported in packages/ softwares like EasyABC, abc, abctools, and ELFI\citep{jabot2013easy,csillery2012abc,nunes2015abctools, lintusaari2018elfi}. However, more complex scenarios may require specialized tools that support parallel and GPU computing.
+
+The tuning burden varies substantially across inference methods, influencing both implementation time and reliability (see ``Tuning required?'' row in Table \ref{tab:methods_comparison}) \citep{funk2020choices}.
+HMC and NUTS require minimal manual tuning due to automatic step size adaptation and mass matrix estimation, making them accessible to practitioners with limited MCMC experience.
+Standard MCMC methods demand careful tuning of proposal distributions, step sizes, and mixing parameters, often requiring extensive pilot runs and convergence diagnostics.
+Particle methods introduce additional complexity through particle count selection, resampling thresholds, and proposal kernel tuning.
+ABC approaches require the most extensive tuning, involving summary statistic selection, distance metric choice, and tolerance threshold optimisation, often necessitating substantial methodological expertise.
+INLA and VI require less runtime tuning but may need model reformulation to fit within their respective frameworks.
+
+Parallelisation can determine whether methods can scale to population-level inference or handle real-time analysis during outbreaks.
+Methods differ substantially in their parallelisation capabilities (Table \ref{tab:methods_comparison}).
+MCMC methods face inherent parallelisation challenges due to their sequential chain structure.
+Multi-chain parallelisation provides the primary scaling mechanism.
+Parallel tempering exploits multi-core architectures through temperature-parallel chains \citep{surjanovic2023pigeons}.
+Some implementations support within-chain parallelisation for gradient calculations (Stan and Turing.jl) or matrix operations (GPU acceleration).
+VI scales well through mini-batch parallelisation and routinely uses GPU acceleration for large datasets \citep{hoffman2013stochastic, Abbott2021-delta}.
+Sequential and particle methods excel at parallelisation through particle-level parallelism.
+Modern GPUs enable thousands of particles to process simultaneously.
+Memory requirements scale with particle count \citep{henriksen2012parallel}.
+Approximate methods show mixed potential.
+INLA has limited opportunities due to sequential matrix operations, though some implementations exploit parallel linear algebra libraries.
+Nested approximations can parallelise across spatial or temporal components when model structure permits.
+Likelihood-free methods provide parallelisation opportunities for rejection-based ABC.
+Rejection ABC parallelises trivially across CPU clusters and GPU architectures.
+ABC-MCMC retains the sequential constraints of MCMC methods.
+Memory requirements can become substantial for large simulated datasets \citep{kulkarni2022hardware}.
+Synthetic likelihood approaches enable GPU acceleration for density estimation.
+Deterministic approaches parallelise most effectively.
+MLE is highly parallelisable across data points on both CPUs and GPUs.
+Profile likelihood calculations naturally parallelise across parameter values.
+
+\subsubsection{Diagnostics}
+
+The quality and availability of diagnostic tools varies substantially across inference methods, representing a key factor in method selection (see Table \ref{tab:methods_comparison} for method-specific diagnostics).
+HMC and NUTS provide the gold standard with divergence warnings, BFMI, energy plots, and traditional MCMC diagnostics like $\hat{R}$ and ESS, making them easier to use reliably, particularly for practitioners without extensive computational expertise.
+Standard MCMC and parallel tempering offer moderate diagnostic capabilities through traditional convergence statistics and trace plots, with parallel tempering adding temperature swap rates to monitor multimodal exploration.
+SMC and PMCMC methods rely on particle-specific metrics including effective sample size (ESS) and weight degeneracy to track sequential performance and detect particle impoverishment. 
+In contrast, Variational Inference provides only ELBO convergence monitoring (which does not guarantee accurate posterior approximation), whilst ABC methods offer minimal diagnostics through acceptance rates alone, making both heavily dependent on posterior predictive checks (PPC) for validation.
+Diagnostic failures across any method indicate potential model specification issues requiring systematic validation procedures (Section \ref{sec:spec-validate}), with specific patterns like divergent transitions in NUTS suggesting posterior geometry problems requiring structural model changes.
+
+\subsection{Model Implementation}\label{sec:implementation}
+
+\subsubsection{Setting Up Your Implementation Environment}
+
+For implementing your models, we recommend using a probabilistic programming language (PPL).
+PPLs and their ecosystems make many tasks in model specification and validation more straightforward (Section \ref{sec:spec-validate}).
+The precise choice often depends on the fitting approach selected in the subsequent section (Section \ref{sec:fitting}) and in some cases using a PPL may not be possible.
+Generally, using the same implementation approach for all model components will require the least amount of effort.
+
+Generative PPLs where you can sample from and compute gradients for the same model specification are particularly valuable.
+Turing.jl, PyMC, and NumPyro provide this capability \citep{ge2018turing,fjelde2025turing,abril2023pymc,phan2019composable}, enabling simulation-based validation approaches without separate data generators.
+Stan offers the most mature diagnostic and validation tools \citep{carpenter2017stan} but requires separate simulation code.
+JAGS and NIMBLE offer flexibility for model structures that may not be well-suited to gradient-based methods \citep{plummer2003jags,valpine2017programming}.
+Turing.jl is likely the most composable option \citep{ge2018turing}, which proves useful when building models from modules.
+Speed is difficult to assess and is often model and context-specific, though generally Stan and NumPyro are the most efficient options when applicable \citep{carpenter2017stan,phan2019composable}.
+Selecting a flexible implementation approach is important for evolving settings (Section \ref{sec:outbreak}).
+
+Making use of standard software development practices is likely to improve all aspects of your workflow \citep{gelman2020bayesian}.
+These include: unit testing to verify model components, continuous integration to catch errors early, version control to track model evolution, and comprehensive test coverage for data processing and diagnostics.
+
+\subsubsection{Building Modular DAG Components}
+
+Translate your modularised DAGs (Section \ref{sec:modularise}) into separate code modules.
+Structure observation models as interchangeable components connecting to process models through defined interfaces (e.g., both case and wastewater modules interface through infection incidence).
+Document interfaces explicitly to enable component reuse across teams.
+
+Maintain consistent parameter naming between mathematical formulation and code when possible.
+Start with minimal implementations, adding complexity only as validation confirms necessity.
 
 \subsection{Model Specification and Validation}\label{sec:spec-validate}
 
@@ -259,17 +514,16 @@ Start by validating models in small subcomponents first, then explore combinatio
 \subsubsection{Prior Specification and Prior Predictive Checks}
 
 Specify priors using domain knowledge where available through informative priors; otherwise, use weakly informative priors that regularise without dominating the likelihood.
-Prior predictive checks simulate data from the prior to ensure model behaviour aligns with epidemiological plausibility before seeing data; and to assess prior-data conflict \citep{yang2025detecting}.
+Prior predictive checks simulate data from the prior to ensure model behaviour aligns with epidemiological plausibility before seeing data and to detect prior-data conflict \citep{Box1980,yang2025detecting}.
 These checks can reveal several issues requiring model modification: unrealistic parameter ranges may indicate need for different priors or model constraints; implausible epidemic dynamics may suggest DAG structural changes; computational issues during simulation may indicate need for model approximations or reparameterisation.
-When prior predictive checks reveal problems, return to DAG development (Sections \ref{sec:process} and \ref{sec:observation}) to simplify models, add model components, increase complexity through hierarchical structure, or implement approximations for computational tractability.
-Prior specification problems may also indicate need for additional data sources or expert consultation to inform appropriate prior distributions.
+Results of prior predictive checks may indicate a need to either: revisit prior specification, e.g. to obtain additional data sources, previous estimates or expert consultation to inform appropriate prior distributions; or return to DAG development (Sections \ref{sec:process} and \ref{sec:observation}) to simplify models, add model components, increase complexity through hierarchical structure, or implement approximations for computational tractability.
 
 \subsubsection{Model Fitting and Computational Validation}
 
 After resolving issues raised by prior-predictive checks, fit the model using methods from Section \ref{sec:fitting}.
 Validate computational aspects, such as convergence and algorithm performance, through diagnostic checks, synthetic data simulation, and simulation-based calibration where feasible.
 Using simulated scenarios to validate parameter recovery provides valuable insights into model performance \citep{bouman2024bayesian}, whilst simulation-based calibration for each submodel provides stronger validation by verifying that inference algorithms can recover true parameters from simulated data \citep{talts2018validating}.
-Address computational issues systematically: simplify model structure, assess data conflict, or increase prior informativeness if convergence fails; examine submodels in detail if joint fitting proves intractable; reparameterise models if mixing is poor; plot intermediate quantities like effective reproduction numbers to identify problematic components; run on data subsets or reduce iterations to speed up iteration; check for multimodality using multiple chains or parallel tempering \citep{gelman2020bayesian}.
+Address computational issues systematically: simplify model structure or increase prior informativeness if convergence fails; examine submodels in detail if joint fitting proves intractable; reparameterise models if mixing is poor; plot intermediate quantities like effective reproduction numbers to identify problematic components; run on data subsets or reduce iterations to speed up iteration; check for multimodality using multiple chains or parallel tempering \citep{gelman2020bayesian}.
 Remember that the goal is to make predictions or learn about epidemiological processes, not merely achieve convergence of an arbitrary model. 
 If computational validation succeeds, provisionally accept the model for posterior validation.
 Persistent computational issues require returning to model specification or considering alternative integration approaches (Section \ref{sec:integration}).
@@ -282,18 +536,17 @@ Apply cross-validation strategies, particularly leave-one-out and time-aware val
 Examine influence of individual data points and prior specifications through sensitivity analysis.
 
 Assess parameter identifiability by examining whether data sources provide sufficient information to uniquely estimate target parameters; joint modelling often resolves identifiability issues that plague pipeline approaches \citep{lison2024generative, russell2024combined}.
-For some models, formal structural identifiability approaches may be used to indicate where additional data or prior information is needed.
+For some models, formal structural identifiability approaches \citep{jackson2019value,heath2024value} may be used to indicate where additional data or prior information is needed.
 Implement poststratification as needed to correct for population representativeness issues.
 
-Detect conflict between data sources, where different streams imply incompatible parameter values under the current model.
-When conflict arises, use prior sensitivity analysis to quantify how much priors must change to accommodate observed data, revealing potential model misspecification or data quality issues \citep{roos2015sensitivity,nott2021approximation,kallioinen2021detecting}.
-This conflict analysis connects directly to value of information assessments that prioritise data collection efforts \citep{jackson2019value}.
+Conflict arises when data sources and/or prior information provide inconsistent evidence on model parameters.
+We detect conflict between data sources when different streams imply incompatible parameter values under the current model.
+Conflicts may arise between prior assumptions and data (``prior-data conflict''), between different data sources, or even within a data source but between different units of data \citep{presanis2013conflict,yang2025detecting}.
+These conflicts typically manifest as lack of identifiability (with convergence problems as a symptom) or lack of fit to one or more data sources \citep{presanis2013conflict,deangelis2018analysing}. Detection methods based on generalising cross-validatory posterior-/mixed-predictive checks to any latent node in a DAG \citep{presanis2013conflict,yang2025detecting} usually also measure the extent of conflict. We can use complementary  prior sensitivity analysis to quantify how much priors must change to accommodate observed data, revealing potential model misspecification or data quality issues \citep{Roos2015,Kallioinen2024,yang2025detecting}.
 
-Detecting and resolving conflicting evidence about underlying latent processes is essential to ensure coherent inference and robustly informed decisions \citep{presanis2013conflict,sherratt2021exploring}. Such conflicts may arise between prior assumptions and data (``prior-data conflict''), between different partitions of a joint model into submodels, or even within a data source but between different units of data \citep{presanis2013conflict,yang2025detecting}.
-
-If data sources and/or prior information provide inconsistent evidence on a parameter, this conflict usually manifests either as a lack of identifiability, a symptom of which may be lack of convergence of an MCMC algorithm or equivalent; or as lack of fit to one or more data sources \citep{presanis2013conflict,deangelis2018analysing}. Resulting estimates may therefore be more uncertain than if each data source were modelled independently. Such conflicts are typically the result of model misspecification: some observational bias that has not been accounted for in the observation model (e.g. under-reporting or selection bias); or some approximation in the process model that fails to explain the variation in the data (e.g. a fixed under-reporting proportion); or an unrealistic prior specification (e.g. an infection-fatality risk based on a previous pathogen which is not that similar to a newly emerging one).  
-
-Diagnostic tools to detect conflicts in evidence synthesis models include prior-, mixed- and posterior-predictive checks, the latter often in a cross-validatory setting to avoid conservatism due to double use of the data \citep[][and references therein]{presanis2013conflict,yang2025detecting}; and extensions of these to latent levels of a hierarchical model \citep{yang2025detecting}. Once conflicts have been identified, they need to be resolved, through careful consideration of unaccounted biases or overly restrictive model assumptions (e.g. equi-dispersion) that may underlie the conflicts. Adjustments to the model structure may be needed, starting another cycle of the model development and criticism process. These adjustments might include loosening prior assumptions, weighting approaches to account for selection biases, and other bias modelling approaches \citep{deangelis2018analysing}.
+We resolve conflicts through careful consideration of unaccounted biases or overly restrictive model assumptions.
+Adjust model structure as needed, including loosening prior assumptions, implementing weighting approaches for selection biases, and other bias modelling approaches \citep{deangelis2018analysing}.
+This starts another cycle of the model development and criticism process.
 
 If posterior validation reveals model inadequacies, return to DAG development to modify model structure, add complexity, or implement different approximations.
 
@@ -305,37 +558,40 @@ For infectious disease models, consider scoring transformations such as the log 
 Maximise sharpness subject to calibration: models should produce statistically consistent predictions whilst minimising required uncertainty \citep{gneiting2007strictly}.
 Model comparison serves as the final validation step, ensuring that chosen specifications provide optimal predictive performance whilst maintaining epidemiological interpretability.
 
-This approach creates multiple feedback loops with earlier workflow stages: prior predictive issues modify DAGs and data integration choices; computational problems may require approximations or different integration methods; posterior validation failures necessitate structural model changes.
-For comprehensive implementation guidance, see \citep{gelman2020bayesian}.
-
 \subsection{Data Integration Choices}\label{sec:integration}
 % Lead: Anne Presanis
-Decisions about data integration are inherently context-dependent, but can be guided by the decision tree in Figure \ref{fig:integration}. When combining independent model outputs from different groups, the choice of ensembling or meta-analytic approach should align with the research objective (e.g. estimation or prediction), influencing how estimates or predictions are weighted (e.g. by precision or prediction accuracy). In contrast, when integrating sub-models, the approach will depend on whether existing sub-models have already been fitted or if the models are being developed de novo.
 
-We recommend joint modelling, perhaps implemented via Markov melding or its approximations and making use of cut distributions if needed, when computationally and practically feasible. This type of integration enables coherent uncertainty quantification and avoids the definitional ambiguities that affect output-level combinations \citep{manley2024combining, brockhaus2023why}.
-Ensemble methods remain valuable when joint modelling proves impossible due to computational constraints, data access limitations, or institutional boundaries between research teams.
-When employing ensembles, careful attention to ensuring all models target the same estimand, resolving temporal alignment, and documenting methodological assumptions becomes essential for meaningful combination. The following sections have additional detail.
+Decisions about data integration are inherently context-dependent, but can be guided by the decision tree in Figure \ref{fig:integration}. We recommend combining the modularised models sequentially and repeating the validation processes outlined in \ref{sec:spec-validate} for each newly combined module, repeating this process until the full model has been implemented and validated.
+We further recommend using joint modelling of these modules where possible, taking advantage of Markov melding \citep{goudie2019joining} or its approximations where possible and computationally required,  and making use of cut distributions \citep{plummer2015cuts} if needed (Section \ref{sec:joint}). 
+This joint modelling approach offers a coherent framework for integrating such sources simultaneously, in the spirit of Bayesian hierarchical models \citep{gelman2020bayesian}, with suitable uncertainty quantification and avoiding the definitional ambiguities that affect output-level combinations \citep{manley2024combining, brockhaus2023why}. 
 
-In addition to prior-data conflict and submodel conflict, different data sources may also conflict. This should be assessed by repeating the model validation and specification process as discussed in \ref{sec:spec-validate} \citep{presanis2013conflict,sherratt2021exploring} once the data integation process has been decided up.
+Ensemble methods (Section \ref{sec:ensembling}) are valuable when joint modelling proves impossible due to computational constraints, data access limitations, or institutional boundaries between research teams.
+When employing ensembles, careful attention to ensuring all models target the same estimand, resolving temporal alignment, and documenting methodological assumptions becomes essential for meaningful combination. 
 
-\subsubsection{Integration Methods}
+When combining independent model outputs from different groups, the choice of ensembling or meta-analytic approach should align with the research objective (e.g. estimation or prediction), influencing how estimates or predictions are weighted (e.g. by precision or prediction accuracy). In contrast, when integrating sub-models, the approach will depend on whether existing sub-models have already been fitted or if the models are being developed de novo.
 
-\paragraph{Full joint modelling}
+In addition to prior-data conflict and submodel conflict, different data sources may also conflict. These types of conflict should be assessed during the model validation and specification process, as discussed in \ref{sec:spec-validate} \citep{presanis2013conflict,sherratt2021exploring,yang2025detecting}, once the data integration process has been decided upon.
 
-Specifying a full joint model of multiple data sources and the underlying processes generating them offers a coherent framework for integrating such sources simultaneously, in the spirit of Bayesian hierarchical models \citep{gelman2020bayesian}. This approach is especially suited when there are complex dependencies between data sources \citep{corbella2022inferring}, perhaps conditional on the parameters of the underlying process model, such that identification of all parameters is compromised when some data are left out. However, joint models can be computationally intensive and challenging to fit, especially in high-dimensional or real-time settings. Care is needed to ensure complex dependencies are appropriately modelled and that observational biases, such as selection biases, are adequately accounted for in the model, to avoid conflict between data sources \citep{presanis2013conflict,corbella2022inferring}. 
+The following sections have additional detail on integration approaches.
 
-\paragraph{Techniques for combining modular models}
+\subsubsection{Full joint modelling}\label{sec:joint}
 
-\textbf{Markov melding} Techniques like Markov melding \citep{goudie2019joining} allow posterior samples from one sub-model to serve as a proposal distribution for the next, potentially in a sequential chain of models \citep{manderson2023combining}. Similar sequential strategies, using the posterior from one sub-model as the prior (rather than proposal) for another, have a long history \citep{west1997bayesian}, closely related to Sequential Monte Carlo algorithms \citep{doucet2001introduction} (see Section \ref{sec:fitting}).
+A fully joint modelling approach is especially suited when there are complex dependencies between data sources \citep{corbella2022inferring}, perhaps conditional on the parameters of the underlying process model, such that identification of all parameters is compromised when some data are left out. However, joint models can be computationally intensive and challenging to fit, especially in high-dimensional or real-time settings. Care is needed to ensure complex dependencies are appropriately modelled and that observational biases, such as selection biases, are adequately accounted for in the model, to avoid conflict between data sources \citep{presanis2013conflict,corbella2022inferring}. 
 
-\textbf{Approximations of Markov melding} While the theory and some applications of Markov melding are well-established \citep{goudie2019joining,nicholson2022interoperability,manderson2023combining}, practical implementation remains challenging. Limitations include the availability of user-friendly Bayesian software and methods for assessing sub-model compatibility (REF). As a result, approximate methods are often used. A common approach is the one used in standard meta-analysis \citep{borenstein2021introduction} to combine previous estimates using a normal approximation. A Stage 1 point estimate, $\hat{y}_1$, and its corresponding standard error or posterior standard deviation $\hat{\sigma}^2_1$, can be incorporated in a Stage 2 model as a likelihood term, on an appropriate scale:
+\subsubsection{Markov melding} Techniques like Markov melding \citep{goudie2019joining} allow posterior samples from one sub-model to serve as a proposal distribution for the next, potentially in a sequential chain of models \citep{manderson2023combining}. Similar sequential strategies, using the posterior from one sub-model as the prior (rather than proposal) for another, have a long history \citep{west1997bayesian}, closely related to Sequential Monte Carlo algorithms \citep{doucet2001introduction} (see Section \ref{sec:fitting}).
+
+\subsubsection{Approximations of Markov melding} While the theory and some applications of Markov melding are well-established \citep{goudie2019joining,nicholson2022interoperability,manderson2023combining}, practical implementation remains challenging. Limitations include the availability of user-friendly Bayesian software and methods for assessing sub-model compatibility and combining them \citep{yang2025detecting}. As a result, approximate methods are often used. A common approach is the one used in standard meta-analysis \citep{borenstein2021introduction} to combine previous estimates using a normal approximation. A Stage 1 point estimate, $\hat{y}_1$, and its corresponding standard error or posterior standard deviation $\hat{\sigma}^2_1$, can be incorporated in a Stage 2 model as a likelihood term, on an appropriate scale:
 $$
 \hat{y}_1 \sim N(\theta, \hat{\sigma}^2_1)
 $$ for some parameter $\theta$ in the Stage 2 model informed by the Stage 1 estimate. This approach has been shown to be an approximation to Markov melding with ``product of experts'' pooling \citep{goudie2019joining}.
 
-Modular approaches also support selective trust in sub-models. ``Cutting'' feedback -- i.e. preventing less reliable sub-models from influencing more trusted ones while allowing the reverse -- enables nuanced evidence synthesis \citep{plummer2015cuts,carmona2022scalable,yu2023variational,liu2025general}.
+\subsubsection{Cut posteriors}
 
-\paragraph{Ensembling independent models:} When multiple models target the same estimand, ensemble methods such as Bayesian stacking \citep{yao2018using}, model averaging \citep{hoeting1999bayesian}, or meta-analytical pooling \citep{jackson2011multivariate} can be used to combine estimates.
+Modular approaches also support judgements of selective trust in sub-models, as indicated by the name ``modularisation'' in the first appearance of a ``cut'' posterior in the literature \citep{LiuEtAl2009}. This approach `cuts' feedback from one module to another, i.e. preventing less reliable sub-models from influencing more trusted ones while allowing the reverse, providing robustness against sub-model misspecification \citep{plummer2015cuts,carmona2022scalable,yu2023variational}. \citet{liu2025general} provide a general framework for deciding how to partition and restrict information flow between sub-models. As with Markov melding, however, practical implementation remains a challenge, since it involves a potentially computationally expensive multiple imputation approach for each MCMC sample \citep{plummer2015cuts}.
+
+\subsubsection{Ensembling independent models}\label{sec:ensembling}
+
+When multiple models target the same estimand, ensemble methods such as Bayesian stacking \citep{yao2018using}, model averaging \citep{hoeting1999bayesian}, or meta-analytical pooling \citep{jackson2011multivariate} can be used to combine estimates.
 This is similar to comparing models as discussed in \ref{sec:spec-validate} .
 These differ from approaches like Markov melding in that they combine independent model outputs rather than partitioning a joint model into connected sub-models.
 The choice of ensemble strategy should reflect the research objective.
@@ -350,12 +606,6 @@ This can lead to estimates that are less timely and/or less precise, with lower 
 Combining outputs at the prediction level discards information about data conflicts and model disagreements that would be preserved in joint modelling approaches.
 Weighted ensemble methods often show limited improvement over simple aggregation in nowcasting applications \citep{sherratt2021exploring}, partly because the black-box nature of many models obscures why predictions differ.
 
-\subsubsection{Conflict Detection and Resolution}
-
-
-
-
-
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{figures/integration choices decision tree.drawio.pdf}
@@ -363,257 +613,9 @@ Weighted ensemble methods often show limited improvement over simple aggregation
     \label{fig:integration}
 \end{figure}
 
-\subsection{Inference and Computation Choices}\label{sec:fitting}
-% Lead: Xiahui and Dhorasso with support from Anne Presanis
+\section{Workflow Management}
 
-Inference for infectious disease models typically involves estimating a set of parameters $\theta$ from observed data $Y$, which may include case counts, hospitalisations, deaths, wastewater surveillance or other epidemiological measurements. These data are assumed to arise from a probabilistic model characterised by a likelihood function $p(Y | \theta)$ that links the parameters to the data through both an underlying transmission dynamics (represented by the process DAG (Section \ref{sec:process}) in our workflow) and a noisy observation mechanism (captured by the observation DAG (Section \ref{sec:observation})).  The choice of inferential approach depends on the tractability of the likelihood: 
-whether $ p(Y | \theta)$ is analytically or numerically computable, intractable and requiring approximation, or entirely  unavailable (necessitating likelihood-free, simulation-based methods). 
-
-A wide range of computational strategies exists for infectious disease model inference, with numerous methods and variants available for each broad class of approach.
-We recommend structuring inference and computation decisions through four key considerations: assessing model complexity, selecting appropriate inference methods, implementing the chosen approach, and evaluating diagnostics (Figure \ref{fig:fitting}).
-In addition, inference and computation choices involve critical feedback loops within the broader workflow: computational constraints may require approximating or restructuring the process and observation DAGs developed in earlier stages, whilst computational limitations or available expertise may favour modular rather than joint integration approaches, necessitating a return to data integration decisions.
-Inference diagnostics may also reveal model specification issues necessitating a return to model specification and validation (Section \ref{sec:spec-validate}).
-This section provides an overview of these considerations with detailed technical discussion and practical guidance for navigating the many available options.
-
-% Inference for infectious disease models typically involves estimating a set of parameters $\theta$ from observed data $Y$, which may include case counts, hospitalisations, deaths, wastewater surveillance or other epidemiological measurements. These data are assumed to arise from a probabilistic model characterised by a likelihood function $p(Y | \theta)$ that links the parameters to the data through both an underlying transmission dynamics (represented by the process DAG (Section \ref{sec:process}) in our workflow) and a noisy observation mechanism (captured by the observation DAG (Section \ref{sec:observation})). However, choosing an appropriate inferential approach becomes increasingly complex when integrating multiple data sources, as researchers must balance model complexity, computational feasibility, likelihood tractability, and available expertise, decisions that are often interdependent and may require iterative refinement.
-
-% The fitting choices workflow (Figure \ref{fig:fitting}) illustrates the systematic decision-making process required when selecting appropriate inference methods for integrating multiple data sources in infectious disease modelling. The workflow contains four interconnected components. Model Complexity Assessment evaluates key factors such as dimensionality, hierarchical structure, likelihood tractability, and computational constraints to determine the feasibility of different fitting approaches. This assessment directly informs the critical choice between two primary methodological pathways: likelihood-based methods (when the likelihood function $ p(Y | \theta)$ is analytically or computationally tractable) and likelihood-free methods (when the likelihood is intractable or unavailable), each requiring detailed consideration of their advantages, limitations, and implementation challenges. Throughout the fitting process, Diagnostics procedures provide essential feedback on model performance and computational efficiency: convergence checks verify that parameter estimates have stabilized across chains or iterations, sensitivity analysis assesses robustness to prior specifications and different model assumptions, and evaluation of computational trade-offs balance between inferential accuracy and feasibility constraints. Implementation Considerations address the real-world challenges, including making decisions around software selection and managing compatibility requirements across different computational environments. The workflow's iterative nature is particularly important in practice, as computational limitations or fitting difficulties may require researchers to revisit earlier decisions about model structure (returning to Process DAG development) or integration strategy (reconsidering Data Integration Choices).
-
-% The following subsections provide detailed guidance on navigating these methodological choices in practice. We begin with likelihood-based methods (Section \ref{sec:like-base}), then turn to likelihood-free approaches (Section \ref{sec:like-free}), discussing when these methods become necessary and how to implement them effectively. Since practical implementation often determines modelling strategies, we first address implementation considerations (Section \ref{sec:implement}), exploring concrete challenges such as software environment compatibility, computing resource constraints. Based on this consideration, we discuss the selection of the appropriate inference approach (Section \ref{sec:select-tool}), highlighting how different computational frameworks align with model complexity, data integration demands, and methodological choices.
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=\textwidth]{figures/subpanel_fitting choices.drawio.pdf}
-    \caption{\textbf{Inference and computation choices workflow for integrating multiple data sources in infectious disease modelling.} The workflow contains four interconnected components: Model Complexity Assessment (7.1) evaluates dimensionality, hierarchical structure, likelihood tractability, and computational constraints; Inference Method Selection (7.2) chooses between likelihood-free approaches and likelihood-based methods; Diagnostics (7.3) involve convergence checks, sensitivity analysis, and computational trade-offs; and Implementation Considerations (7.4) address software choices and compatibility requirements. The interconnected arrows indicate that these components inform each other iteratively, allowing researchers to optimize the balance between model complexity, computational feasibility, and inferential accuracy when integrating multiple data sources. The workflow includes key feedback mechanisms: inference and computation constraints may require approximating or restructuring the process DAG, leading back to stage 2 Process DAG Development; computational constraints or available expertise may favour modular over joint integration approaches, requiring a return to stage 6 Data Integration Choices; diagnostic failures may indicate model specification issues requiring return to stage 5 Model Specification and Validation. }
-    \label{fig:fitting}
-\end{figure}
-
-
-% \subsubsection{Likelihood-based methods}
-% Likelihood-based inference encompasses frequentist and Bayesian approaches. Classical frequentist methods such as maximum likelihood estimation (MLE)\citep{myung2003tutorial, baltazar2024maximum} and profile likelihood \citep{tonsing2018profile, plank2024structured} provide well-established tools for parameter estimation. However, here we focus mainly on Bayesian methods due to their flexibility in handling uncertainty and incorporating various sources of information.
-
-% Bayesian inference updates prior beliefs $ p(\theta)$ in light of observed data to obtain a posterior distribution $p(\theta | Y) \propto p(Y|\theta) \,p(\theta)$. For simple models with exponential family likelihoods, conjugate priors allow closed-form posterior solutions \citep{gelman1995bayesian,  cori2013new}. However, many infectious disease models involve complexities that preclude exact inference.
-
-% When the likelihood can be evaluated (up to a constant) but closed-form posteriors are unavailable, sampling-based methods, especially Markov Chain Monte Carlo (MCMC) remain the gold standard \citep{gilks1995markov, lekone2006statistical}. Common algorithms include Metropolis–Hastings \citep{hastings1970monte} and Gibbs sampling \citep{geman1984stochastic}. For latent variable models, data-augmented MCMC introduces auxiliary states to jointly infer parameters and hidden variables \citep{o1999bayesian}. More efficient techniques, such as Hamiltonian Monte Carlo (HMC) for differentiable likelihoods \citep{duane1987hybrid} and its adaptive variant No-U-Turn Sampler (NUTS) \citep{hoffman2014no, andrade2020evaluation}, leverage gradient information for faster convergence and automatic tuning. 
-
-% Alternatives to MCMC include Variational Inference (VI), which approximates the posterior by optimizing a tractable surrogate distribution, offering scalability at the cost of some bias \citep{blei2017variational, chatzilena2019contemporary}. Similarly, the Integrated Nested Laplace Approximation (INLA) 
-% offers a computationally efficient method for approximating posterior marginals in latent Gaussian models, without relying on sampling-based methods \citep{rue2017bayesian}.
-
-% In state-space models with high-dimensional latent state structures, the likelihood maybe intractable due to the need to marginalise over latent states. Sequential Monte Carlo (SMC) methods, or particle filters, approximate the posterior using weighted particles and yield unbiased likelihood estimates \citep{doucet2001introduction}. These can be embedded within MCMC to form particle MCMC (PMCMC) \citep{andrieu2010particle, endo2019introduction} , enabling joint parameter and latent state inference. Sequential Monte Carlo Squared (SMC$^2$) \citep{chopin2013smc2} extends this to fully sequential Bayesian updating as new data are accumulated.
-
-% \subsubsection{Likelihood-Free Methods}
-
-% Likelihood-based methods are powerful for parameter inference but rely on evaluating the likelihood function, which is sometimes infeasible for complex infectious disease models. Likelihood-free methods circumvent this by simulating from the model instead.
-
-% Approximate Bayesian Computation is a popular likelihood-free method that approximates the posterior distribution by accepting parameter values that generate simulated data close to the observed data under a predefined distance metric \citep{rubin1984bayesianly, tavare1997inferring, beaumont2002approximate}. While conceptually simple, the classical ABC rejection sampling is inefficient in high-dimensional settings, prompting the development of more advanced variants. 
-
-% ABC-MCMC combines ABC with MCMC to improve sampling efficiency, especially for peaked or correlated posteriors \citep{marjoram2003markov, wegmann2009efficient, kypraios2017tutorial}. However, its performance is sensitive to the choice of tolerance thresholds and proposal distributions.
-
-% ABC-SMC further enhances efficiency by iteratively refining  tolerances and proposal distributions, adaptively focusing computational effort on high-probability regions and handling multi-modal posteriors more effectively \citep{sisson2007sequential, toni2009approximate, beaumont2009adaptive, drovandi2011likelihood}. 
-
-% When exact likelihoods are unavailable but the model can be simulated repeatedly, synthetic likelihood methods provide an alternative by approximating the likelihood via assuming Gaussian distributions for summary statistics \citep{wood2010statistical, price2018bayesian}. 
-
-% \subsubsection{Selecting the Right Tool}
-
-% Selecting an appropriate inference method involves balancing trade-offs between computational efficiency, statistical rigor, data availability, interpretability, and model complexity \citep{funk2020choices}. Rather than adopting a universal approach, the choice should be tailored to the specific modelling context and inferential goals. 
-
-% For evolving epidemics, a key consideration is the dynamic nature of epidemic processes and data streams. As transmission rates and intervention effects change over time, and new data arrive continuously, methods that support sequential data updates, such as SMC, are generally preferred for real-time epidemic tracking \citep{birrell2020efficient, storvik2023sequential}. In contrast, MCMC-based methods, while statistically robust, are typically better suited for retrospective analyses, due to their reliance on complete datasets, high computational demands for reanalysis, and computational intensity in high-dimensional parameter spaces. 
-
-% When computational resources are constrained, for example during real-time outbreak monitoring or when analyzing large datasets, approximate methods like VI or ABC-SMC might offer scalable alternatives \citep{chatzilena2019contemporary, engebretsen2023real}. VI is highly scalable and typically much faster than MCMC, although it trades accuracy for speed and may not always be suitable where posterior uncertainty is important. Likelihood-free methods, while offering flexibility for complex models, tend to be computationally expensive because of repeated model simulation.
-
-% Beyond computational efficiency, statistical accuracy is influenced by algorithmic choices including priors distributions, tuning parameters, tolerance thresholds, and the number of particles or iterations. Full-likelihoods methods typically yield better estimator performance, subject to likelihood tractability and proper specification, whereas likelihood-free approaches often prioritise flexibility and scalability over precision \cite{alahmadi2020comparison}. 
-
-% Interpretability and ease of implementation also play a role. Certain methods integrate smoothly with probabilistic programming environments, while others may require further tuning and computational expertise. Ultimately, method selection should follow a systematic decision process that considers modeling goals, urgency or latency constraints, system complexity, and available computational resources. 
-
-% Regardless of the approach chosen, model checking, sensitivity analysis, and validation are essential to ensure that inferences are not only statistically valid but also scientifically meaningful and actionable.
-
-% NOTE: The following content on generative model validation should be relocated to model validation section:
-% - Content about using fully generative PPLs for simulation-based calibration
-% - Discussion of sampling from models without separate generators
-% [TO BE MOVED: "Using a fully generative probabilistic programming language like Turing.jl or NumPyro makes model validation such as simulation-based calibration easier, as one can easily sample from the model without writing separate model generators required when using other approaches."]
-
-\subsubsection{Model Complexity Assessment}
-
-Inference for infectious disease models typically involves estimating a set of parameters $\theta$ from observed data $Y$, which may include case counts, hospitalisations, deaths, wastewater surveillance or other epidemiological measurements.
-These data are assumed to arise from a probabilistic model characterised by a likelihood function $p(Y | \theta)$ that links the parameters to the data through both an underlying transmission dynamics (represented by the process DAG in our workflow) and a noisy observation mechanism (captured by the observation DAG).
-Bayesian inference updates prior beliefs $p(\theta)$ in light of observed data to obtain a posterior distribution $p(\theta | Y) \propto p(Y|\theta) \,p(\theta)$, providing a principled framework for uncertainty quantification even when using non-Bayesian fitting methods.
-
-Parameter dimensionality and structure represent key characteristics to assess.
-Low-dimensional problems (fewer than 10 parameters) differ fundamentally from high-dimensional parameter spaces (hundreds or thousands of parameters), with method performance varying substantially across this dimension (see ``Handles high-dim. params.?'' in Table \ref{tab:methods_comparison}).
-Parameter structure also matters: strongly correlated parameters, discrete parameter spaces, or mixed continuous-discrete problems each present distinct challenges.
-
-Likelihood tractability determines which broad classes of methods are feasible.
-Key questions include: Can the likelihood $p(Y | \theta)$ be written down analytically?
-If not analytical, can it be evaluated numerically with reasonable computational cost?
-Can the likelihood be differentiated with respect to parameters?
-Many infectious disease models involve complexities such as stochastic differential equations or discrete event processes that affect tractability.
-
-The presence and scale of latent states represents another structural consideration.
-Models may include unobserved infection times, individual-level disease states, or spatially varying transmission rates.
-The dimensionality of these latent structures relative to observed data affects computational feasibility.
-
-Computational budget constraints frame practical considerations.
-Real-time outbreak analysis demands different approaches than retrospective studies, with some methods supporting real-time inference whilst others require complete datasets (see ``Capable of real-time inference?'' in Table \ref{tab:methods_comparison}).
-Available computational resources, from laptops to high-performance clusters, set practical limits.
-
-\subsubsection{Inference Method Selection}
-
-Numerous inference methods and algorithmic variants exist within each broad class of approach, each with distinct computational characteristics and practical trade-offs.
-Selecting an appropriate method involves balancing considerations of computational efficiency, statistical rigour, data availability, interpretability, and model complexity.
-Rather than adopting a universal approach, the choice should be tailored to the specific modelling context and inferential goals.
-The following provides guidance for navigating these many options.
-
-Gradient-based Markov Chain Monte Carlo (MCMC) approaches represent our preferred methods when applicable due to their combination of efficiency, reliability, and ease of use.
-MCMC methods generate samples from the posterior distribution by constructing a Markov chain that converges to the target distribution, providing a flexible framework for Bayesian inference when analytical solutions are unavailable.
-Hamiltonian Monte Carlo (HMC) leverages gradient information for efficient MCMC exploration of differentiable likelihoods, with its adaptive variant No-U-Turn Sampler (NUTS) representing our default recommendation for models with continuous parameters \citep{duane1987hybrid, hoffman2014no, andrade2020evaluation}.
-These methods provide excellent diagnostics and automatic tuning, reducing the expertise barrier for reliable implementation.
-When implementing gradient-based methods, automatic differentiation backend selection matters: forward-mode differentiation suits models with few parameters (typically fewer than 10), whilst reverse-mode differentiation scales better for high-dimensional parameter spaces.
-Practitioners should test available autodiff options when possible, with systems like Turing.jl and PyMC providing backend flexibility.
-When full uncertainty quantification is less critical, Variational Inference (VI) approximates the posterior by optimising tractable surrogate distributions, offering fast approximation with modern variants like Pathfinder \citep{blei2017variational, chatzilena2019contemporary}.
-
-Sampling-based approaches become necessary when gradients are unavailable.
-Standard Markov Chain Monte Carlo (MCMC) methods including Metropolis-Hastings and Gibbs sampling handle discrete or mixed parameter spaces \citep{hastings1970monte, geman1984stochastic, gilks1995markov}.
-For discrete parameters, consider whether marginalisation is possible before resorting to sampling, as analytical integration can significantly improve efficiency and mixing.
-Parallel tempering extends these methods to multimodal posteriors by running multiple chains at different temperatures, with modern implementations available in packages like Pigeons.jl \citep{surjanovic2023pigeons}.
-These approaches require greater tuning than gradient-based methods and provide weaker diagnostics.
-
-Sequential Monte Carlo (SMC) methods, or particle filters, approximate the posterior using weighted particles and enable online state estimation with strong real-time capabilities \citep{doucet2001introduction},  making them particularly valuable for real-time epidemic tracking
-where new data arrive continuously \citep{birrell2020efficient, storvik2023sequential}.
-Particle MCMC (PMCMC) embeds SMC within MCMC to enable joint parameter–state inference \citep{andrieu2010particle, endo2019introduction}.
-Important limitations include particle degeneracy (when few particles carry most weight), memory scaling challenges with long time series, and complex resampling tuning.
-Table \ref{tab:methods_comparison} shows their moderate performance with high-dimensional parameters despite strength in latent state estimation.
-
-Likelihood-free approaches serve as methods of last resort due to their computational demands and limited diagnostic capabilities.
-These simulation-based methods bypass likelihood evaluation entirely, instead using model simulations to approximate the posterior distribution.
-Approximate Bayesian Computation (ABC) approximates the posterior distribution by accepting parameter values that generate simulated data close to the observed data under a predefined distance metric, whilst synthetic likelihood methods approximate the likelihood by assuming Gaussian distributions for summary statistics \citep{beaumont2002approximate, wood2010statistical, price2018bayesian}.
-Whilst these methods suffer from limited diagnostics and high computational cost, they provide essential flexibility for complex models where other approaches fail.
-
-Approximate Bayesian methods provide efficient alternatives for specific model structures.
-Integrated Nested Laplace Approximation (INLA) offers a computationally efficient method for approximating posterior marginals in latent Gaussian models, making it particularly effective for spatiotemporal disease models with spatial correlation structures \citep{rue2017bayesian}.
-This method excels when models can be reformulated with latent Gaussian components but struggles with non-Gaussian latent structures.
-Nested Laplace approximations can be integrated within other sampling schemes, allowing INLA to handle subcomponents of larger models efficiently.
-
-Deterministic approaches focus on point estimation rather than uncertainty quantification.
-Maximum Likelihood Estimation (MLE) provides point estimates for model parameters, particularly useful for simple models requiring only parameter estimates rather than full uncertainty quantification \citep{myung2003tutorial, baltazar2024maximum}.
-Profile likelihood methods extend MLE by examining the likelihood surface for individual parameters whilst optimising over others, providing confidence intervals without full posterior sampling \citep{tonsing2018profile, plank2024structured}.
-Whilst we do not generally recommend these approaches for primary analysis, they can prove useful for model validation, parameter initialisation, or exploring model behaviour when more complex methods encounter difficulties.
-
-\begin{landscape}
-\begin{table}[ht]
-\renewcommand{\arraystretch}{1.2}
-\centering
-\caption{\textbf{Comparison of Likelihood-Based and Likelihood-Free Fitting Methods.} 
-This table focuses on foundational algorithms. More recent methodological advancements that build upon these classical approaches are discussed in Section 4.9 of the main text. ``PPL'' stands for Probabilistic Programming Languages. For this review, PPL examples include Stan, PyMC, JAGS, NIMBLE, Turing. jl, etc.}
-\label{tab:methods_comparison}
-\small
-\begin{tabular}{@{}p{3.2cm}p{1.5cm}p{1.5cm}p{1.5cm}p{1.5cm}p{1.5cm}p{1.5cm}p{1.5cm}p{1.5cm}@{}}
-\toprule
-\multirow{2}{*}{\textbf{Feature}} & \multicolumn{6}{c}{\textbf{Likelihood-Based}} & \multicolumn{2}{c}{\textbf{Likelihood-Free}} \\
-\cmidrule(lr){2-7} \cmidrule(lr){8-9}
- & MLE & MCMC & PMCMC & SMC & INLA & VI & ABC & BSL \\
-\midrule
-\textbf{Theoretical Considerations} & & & & & & & & \\
-\midrule
-Requires likelihood? & Yes & Yes & Yes & Yes & Yes & Yes & No & No \\
-Handles high-dim. params.? & Poor & Moderate & Moderate & Moderate & Good & Good & Moderate & Moderate \\
-Convergence guarantees & Asymptotic & Asymptotic & Asymptotic & Asymptotic & Approx. & Approx. & Approx. & Approx. \\
-Distributional flexibility & Low & High & High & High & Medium & Medium & High & Medium \\
-Approximation error & Exact (asymp.) & Exact (asymp.) & Exact (asymp.) & Particle-based & Deterministic & Variational & Simulation & Simulation \\
-\midrule
-\textbf{Practical Considerations} & & & & & & & & \\
-\midrule
-Computational cost & Low & High & Very high & Med--High & Low & Low--Med & High & High \\
-Scalability (big data) & Good & Poor & Poor & Moderate & Good & Good & Moderate & Moderate \\
-Example software & PPL & PPL & POMP, NIMBLE & LibBi & R-INLA & PPL &abctools, EasyABC, ELFI & ELFI \\
-Tuning required? & Minimal & Step size, priors & Complex & Resampling & Minimal & ELBO opt. & Sum. stats., distance, threshold & Sum. stats. \\
-Capable of real-time inference? & Yes & No & No & Yes & Yes & Yes & No & No \\
-Parallelization potential & 
-High & 
-Limited, chain-level, GPU possible but hard & 
-Limited, particle-level, GPU possible for simple models & 
-High, particle-level, GPU possible & 
-Low, matrix operation hard to parallelise & 
-Medium, gradient parallelisation; GPU possible & 
-High, simulations parallelisable; GPU possible & 
-Medium, GPU possible \\
-Best use case & Simple models & General Bayesian inference & State-space models & Real-time inference & Latent Gaussian models & Fast approximation & Intractable likelihood & Intractable likelihood + summary stats \\
-\bottomrule
-\end{tabular}
-\end{table}
-\end{landscape}
-
-Table \ref{tab:methods_comparison} provides detailed comparison across multiple criteria to support these decisions.
-
-\paragraph{Hybrid and Nested Approaches}
-
-Modern probabilistic programming languages enable sophisticated combinations of inference methods.
-INLA approximations can be nested within NUTS, using efficient spatial approximations while sampling other parameters.
-Languages like Turing.jl support mixed samplers, applying HMC to continuous parameters whilst using Gibbs for discrete components.
-SMC methods can incorporate HMC kernels for parameter moves, leveraging particle filtering for states and gradient-based sampling for parameters.
-These hybrid approaches capitalise on the strengths of multiple methods.
-
-When complex methods fail to initialise properly within prior bounds, simpler methods can provide starting values for more sophisticated approaches.
-Variational Inference often proves effective for initialisation due to its speed and robustness, whilst MLE can provide reasonable point estimates.
-However, initialisation difficulties may indicate unrealistic prior specifications, suggesting model validation should be revisited before proceeding with complex inference.
-
-\subsubsection{Implementation considerations}
-
-A wide range of software tools is available to support the implementation of both likelihood-based and likelihood-free methods in infectious disease modeling (Table \ref{tab:methods_comparison} provides specific software examples for each method). Bayesian inference platforms such as Stan, JAGS and NIMBLE are widely used for likelihood-based approaches, offering flexibility in model specification and efficient MCMC algorithms \citep{carpenter2017stan,abril2023pymc}. For more complex or high-dimensional models, Python based PyMC and Julia-based Turing.jl provide probabilistic programming environments with good performance \citep{abril2023pymc,ge2018turing,fjelde2025turing}. For more scalable alternatives to MCMC, INLA is implemented in the R-INLA package \citep{martins2013bayesian} and is particularly efficient for latent Gaussian models, including spatiotemporal structures commonly used in disease mapping and surveillance. VI is also available in PyMC and Turing.jl. These implementations allow rapid inference for large datasets or real-time modelling applications.  Additionally, tools such as LibBi support SMC-based inference for state-space models and can scale to high-dimensional problems using GPU and parallel computing \citep{murray2015bayesian}. For likelihood-free methods, ABC is supported in packages like EasyABC, abc, abctools \citep{jabot2013easy,csillery2012abc,nunes2015abctools}.
-
-The tuning burden varies substantially across inference methods, influencing both implementation time and reliability (see ``Tuning required?'' row in Table \ref{tab:methods_comparison}) \citep{funk2020choices}.
-HMC and NUTS require minimal manual tuning due to automatic step size adaptation and mass matrix estimation, making them accessible to practitioners with limited MCMC experience.
-Standard MCMC methods demand careful tuning of proposal distributions, step sizes, and mixing parameters, often requiring extensive pilot runs and convergence diagnostics.
-Particle methods introduce additional complexity through particle count selection, resampling thresholds, and proposal kernel tuning.
-ABC approaches require the most extensive tuning, involving summary statistic selection, distance metric choice, and tolerance threshold optimisation, often necessitating substantial methodological expertise.
-INLA and VI require less runtime tuning but may need model reformulation to fit within their respective frameworks.
-
-Parallelisation becomes essential for large-scale epidemiological studies, where high-performance computing resources are often required to handle complex models and extensive datasets.
-MCMC methods (including HMC, NUTS, Metropolis-Hastings, and Gibbs sampling) face inherent parallelisation challenges due to their sequential chain structure, though multi-chain parallelisation provides the primary scaling mechanism and parallel tempering naturally exploits multi-core architectures through temperature-parallel chains \citep{surjanovic2023pigeons}; some implementations support within-chain parallelisation for specific operations (Stan and Turing.jl for gradient calculations, GPU acceleration for matrix operations), though memory access patterns and conditional branching make GPU implementations challenging.
-VI scales exceptionally well through mini-batch parallelisation and routinely uses GPU acceleration for large datasets \citep{hoffman2013stochastic, bingham2019pyro}.
-Sequential and particle methods excel at parallelisation through particle-level parallelism across CPU cores or GPU threads, with modern GPU architectures enabling thousands of particles to process simultaneously, though memory requirements scale with particle count \citep{henriksen2012parallel}.
-Approximate methods show mixed potential: INLA has limited opportunities due to sequential matrix operations, though some implementations exploit parallel linear algebra libraries and nested approximations can parallelise across spatial or temporal components when model structure permits.
-Likelihood-free methods provide excellent opportunities as ABC simulations parallelise trivially across CPU clusters and GPU architectures, though memory requirements can become substantial for large simulated datasets \citep{kulkarni2022hardware}, whilst synthetic likelihood approaches enable GPU acceleration for density estimation.
-Deterministic approaches parallelise most effectively, with MLE highly parallelisable across data points on both multi-core CPUs and GPUs, and profile likelihood calculations naturally parallelising across parameter values.
-When selecting methods for high-performance computing environments, practitioners should weigh these parallelisation capabilities (detailed in Table \ref{tab:methods_comparison}) against memory constraints, available hardware, and computational demands specific to their epidemiological applications.
-
-
-\subsubsection{Diagnostics}
-
-The quality and availability of diagnostic tools varies substantially across inference methods, representing a key factor in method selection.
-Methods with better diagnostics are easier to use reliably, particularly for practitioners without extensive computational expertise.
-
-HMC and NUTS provide the gold standard for diagnostic information.
-Divergences indicate when the sampler fails to explore the posterior accurately, whilst the Bayesian Fraction of Missing Information (BFMI) diagnoses inefficient exploration of the typical set.
-Traditional MCMC diagnostics including $\hat{R}$ and effective sample size (ESS) complement these HMC-specific metrics.
-Energy plots and treedepth warnings provide additional insight into sampler performance.
-
-Standard MCMC methods rely on traditional diagnostics including trace plots and $\hat{R}$ statistics.
-Whilst useful, these provide less reliable indications of convergence than HMC diagnostics.
-Visual inspection of trace plots remains important but can miss subtle convergence failures.
-
-Parallel tempering adds temperature swap acceptance rates as key diagnostics.
-Poor mixing between temperatures indicates inadequate exploration of multimodal posteriors.
-Standard MCMC diagnostics apply to each temperature chain.
-
-SMC and PMCMC methods use effective sample size of particles as the primary diagnostic.
-Particle weight degeneracy indicates when resampling becomes necessary.
-Sequential diagnostics track particle diversity over time, crucial for long time series.
-
-Variational Inference provides limited diagnostic information through ELBO convergence monitoring.
-However, ELBO convergence does not guarantee accurate posterior approximation.
-Posterior predictive checks become essential for validation given limited intrinsic diagnostics.
-
-ABC methods offer minimal diagnostic capabilities.
-Acceptance rates and summary statistic distributions provide limited insight into approximation quality.
-Heavy reliance on posterior predictive checks and external validation becomes necessary.
-
-INLA provides model-specific diagnostic checks including residual analysis for latent Gaussian models.
-Marginal likelihood approximations enable model comparison but do not diagnose convergence issues.
-
-Diagnostic failures may indicate model specification issues requiring return to validation procedures (Section \ref{sec:spec-validate}).
-For example, when using NUTS, divergent transitions suggest posterior geometry problems requiring structural model changes.
-
-\subsection{Outbreak Evolution and Workflow Iteration}
+\subsection{Outbreak Evolution and Workflow Iteration}  \label{sec:outbreak}
 % Lead Sam Abbott
 Two types of changes during outbreaks require revisiting this workflow.
 First, new information emerges about pathogen characteristics, surveillance capabilities, and population dynamics that may necessitate updating model assumptions and data integration choices \citep{mccaw2023role}.
@@ -630,10 +632,10 @@ Establishing regular review points to assess whether workflow iteration is neede
 Each iteration should document what has changed, why updates are necessary, and how new approaches build upon previous work.
 Having this documentation supports both real-time decision-making and retrospective evaluation of analytical approaches.
 
-\subsection{Workflow Reporting}
+\subsection{Reporting} \label{sec:reporting}
 % Lead Sam Abbott
 Complex multi-source models require clear documentation to enable evaluation and reproduction.
-Without structured reporting, even well-designed workflows are difficult to assess or improve upon.
+Without structured reporting, even well-designed workflows are challenging to assess or improve.
 
 Visual schematics should communicate model architecture.
 Process and observation DAGs should be reported separately, with integration methods explicitly diagrammed if multi-step methods are used.
@@ -642,9 +644,6 @@ For example, Ward et al.'s analysis of COVID-19 hospitalisation and fatality ris
 Validation procedures should be documented comprehensively: prior and posterior predictive checks, conflict detection, and sensitivity analyses.
 Abbott et al.'s COVID-19 Delta variant analysis demonstrates reporting with code, data and posterior predictions, though it lacks prior predictive checks and integration conflict discussion \citep{Abbott2021-delta}.
 Readers cannot fully assess model performance without diagnostic outputs, as illustrated by recent preprints where validation procedures are unreported \citep{Fyles2024-qz}.
-
-Complex multi-source models are fundamentally software development projects requiring professional engineering practices \citep{gelman2020bayesian}.
-We recommend standard software development practices: unit testing to verify model components, continuous integration to catch errors early, and comprehensive test coverage for data processing and diagnostics. These practices become essential as models grow in complexity, preventing errors that could undermine public health decisions.
 
 Code should be shared alongside results because it enables verification and accelerates progress.
 For example, Abbott et al.'s prevalence estimation work has complete GitHub code, with clear links to model verification utilities, alongside the write-up \citep{Abbott2022-prevalence}.
@@ -668,26 +667,17 @@ Progressive disclosure of development history builds confidence in analytical ap
 
 \subsection{Overview}
 
-We demonstrate our iterative workflow through four progressive case studies, each building complexity whilst showing different integration choices and methodological considerations.
-All case studies share a common estimand -- the time-varying reproduction number ($R_t$) -- while the final case study has the overdispersion parameter ($k$) as an additional estimand. 
-Each case study follows our workflow framework, demonstrating how adding more data sources enables analyses to answer questions that would otherwise require strong assumptions.
+We demonstrate our iterative workflow through four progressive case study schematics each building complexity whilst showing different integration choices and methodological considerations.
+All case studies share a common estimand -- the time-varying reproduction number ($R_t$) -- while the final case study has the overdispersion parameter ($k$) as an additional estimand.
 
-The progression between case studies illustrates key principles relating to characterisation of different data sources. Case study 0 uses a single data source, reported case counts. Case study 1 combines case data with data on deaths, enabling some of the limitations of each single data source to be overcome. Case study 2 adds wastewater data as a third data source that is independent of testing patterns and biases. Case studies 0, 1 and 2 all deal with aggregated data that cannot provide information about individual variability. Case study 3 combines case count data with individual-level data on transmission pairs to enable direct overdispersion estimation without distributional assumptions.
+The progression between case studies illustrates key principles relating to the characterisation of different data sources. Case study 0 uses a single data source, reported case counts. Case study 1 combines case data with data on deaths, enabling some of the limitations of each single data source to be overcome. Case study 2 adds wastewater data as a third data source that is independent of testing patterns and biases. Case studies 0, 1 and 2 all deal with aggregated data that cannot provide information about individual variability. Case study 3 combines case count data with individual-level data on transmission pairs to enable direct overdispersion estimation without distributional assumptions.
+To support these case studies we first give an example of our suggested data review approach.
 
+\subsection{Data Sources and Characteristics}
 
-TODO: need to add something on data source mapping which all the case studies will draw from: what data are available that may inform Rt and superspreading estimates? (Can draw from the survey and Anne C's slides at CIRM). What are their pluses and minuses (if we cannot do the full mapping from survey we can still discuss - otherwise refer to that section).
+We designed and completed a questionnaire based on the key data characteristics we suggested (Section \ref{sec:datareview}). We developed targeted questions aligned with each characteristic to facilitate systematic and accessible characterisation. These questions (see Supplementary Material S2) were designed to support both qualitative and quantitative evaluation across data sources. Following the development of this questionnaire, the authors completed it for a range of data sources (Supplementary Material S2). Here, for ease of interpretation, we focus on the data sources used in our case studies: time series of confirmed cases, wastewater surveillance data, deaths, and transmission-paired observations.
 
-\subsection{Data survey}
-
-We refer back to the data sources and workflow frameworks introduced in Sections XXX and YYY. This section presents a case study illustrating the application of our proposed evaluation framework. 
-
-As the authors comprise individuals from diverse disciplinary backgrounds with experience working across a wide range of data types, we designed a questionnaire informed by a broad spectrum of perspectives. Building on the checklist of data characteristics proposed to assess the strengths and weaknesses of data streams, we developed targeted questions aligned with each characteristic to facilitate systematic and accessible characterisation. These questions (see Supplementary Material XXX) were designed to support both qualitative and quantitative evaluation across data sources. Following the development of this questionnaire, both the authors and[??] completed it for a range of data sources.
-
-Next, we identified a focused set of data sources and their core characteristics, which are considered in the subsequent case studies. These sources include time series of confirmed cases, wastewater surveillance data, deaths[mortality records?], and transmission-paired observations. The relevant categorical variables for each data stream, derived from questionnaire responses targeting each core characteristic, are summarised in Table \ref{tab:survey_results}. Quantitative assessments, collected using a 1-5 scale, are illustrated in Figure \ref{survey_responses}.  
-
-These survey responses revealed substantial variation across participants when answering the same questions for a given data source, reflecting the influence of differences in subjective interpretation, context, and experience. For example, while confirmed time-series were uniformly described as routinely collected and targeted for the whole population, responses diverged on aspects such as stratification, reporting frequency, and the epidemiological quantities informed (Table \ref{tab:survey_results} and Supplementary Material XX). Such discrepancies result in differing characterisation of the same data stream, leading to divergent assessment of its overall core characteristics. This variation highlights the importance of acknowledging context-specific practices and perceptions when evaluating data sources, Nevertheless, the six core characteristics--- metadata, scope, resolution, data quality, data utility, and practical considerations---provide a systematic framework that can be used as a systematic checklist to guide structured evaluations of the data sources, enabling context-sensitive assessments of their strengths and limitations. 
-
-
+We found that perceived data sources differed across all six characteristics, with substantial variation in responses reflecting differences in subjective interpretation, context, and experience (Figure \ref{survey_responses}, Table \ref{tab:survey_results}). For \textbf{Basic meta-data}, we indicated that 83\% of confirmed case collections served clinical management while all wastewater collections served non-clinical purposes. Under \textbf{Scope}, we thought that confirmed case data usually targeted the whole population (100\%), while we perceived wastewater datasets to be split between geographic structure (40\%) and whole population (60\%). We considered both sources to have high geographic coverage (mean: 4.5 [range: 4-5] for cases; 4 [3-5] for wastewater (where 1 is low and 5 is high)). For \textbf{Resolution}, we reported confirmed case datasets to mix aggregated (33\%) and individual-level data (67\%). In contrast, we saw wastewater data as entirely aggregated (100\%), though our responses diverged on stratification and reporting frequency. We thought all datasets included temporal information, while we reported spatial data in 50\% of case datasets and all wastewater datasets. \textbf{Data quality} assessments suggested we perceived similar test sensitivity (mean: 4 [range: 3-5] for cases; 3.8 [3-5] for wastewater), but we differed in perceived population representativeness (4.3 [3-5] for cases; 3 [1-4] for wastewater). We thought both sources informed key epidemiological quantities with varying directness and notable disagreement under \textbf{Data utility}: we indicated prevalence was directly (33\%), indirectly (33\%), or not informed (33\%) by case data, while we saw wastewater data as indirectly informing prevalence (100\%). Under \textbf{Practical considerations}, we perceived scalability as predominantly linear for both sources (67\% for cases; 80\% for wastewater), but our perceived sustainability differed markedly (1 for all case datasets; 3.3 [2-5] for wastewater), suggesting we saw greater feasibility for long-term wastewater surveillance. This variation highlights the importance of acknowledging context-specific practices when evaluating data sources, while demonstrating that the six core characteristics provide a systematic framework for context-sensitive assessment of their strengths and limitations.
 
 {\Fontvi
 % \usepackage{color}
@@ -696,7 +686,7 @@ These survey responses revealed substantial variation across participants when a
 \definecolor{Alto}{rgb}{0.827,0.827,0.827}
 \begin{longtblr}[
   caption = {Categorical survey responses for confirmed time series (6 responses), wastewater (5 responses), deaths (XX responses), and transmission pairs (XX responses).},
-  label = {tab:survey_results},
+ label = {tab:survey_results},
   entry = none,
 ]{
   width = \linewidth,
@@ -1066,7 +1056,6 @@ One scenario where integration would be required is model ensembling, where mult
     \item Epidemia or EpiMap for NB process – TODO: check what they do!
 \end{itemize}
 
-Other possible choices of fitting methods that could be considered / why not (refer to relevant section in the overall framework description)
  \end{enumerate}
  
 % TODO: add a Figure. This will be A visual of jigsaw puzzle presenting a library of P (process models), O (observation models) and F (fitting methods). In multi-data ones we will need to add an I (integration method) too.
@@ -1184,7 +1173,7 @@ The research question for this case study is what is the time-varying reproducti
     %   Z_i \ | \ (Y_i, T_i) \sim \mathrm{Poiss}\left( Y_i \tilde{R}_{T_i}\right)
     %\end{equation}
     %where $\tilde{R}_t= \sum_s R_{t+s} w_s$ is the effective reproduction number averaged over the infectious period of an individual who was infected on day $t$. 
-    If $Y\sim \Gamma(1,k)$ for some dispersion parameter $k$, then the number of secondary cases caused by an individual who was infetced at a given time $T_i=t$ is \citep{lloyd2005superspreading}
+    If $Y\sim \Gamma(1,k)$ for some dispersion parameter $k$, then the number of secondary cases caused by an individual who was infected at a given time $T_i=t$ is \citep{lloyd2005superspreading}
      \begin{equation} \label{eq:offspring_dist}
         Z_i \ | \ (T_i=t) \sim \mathrm{NegBin}\left( \tilde{R}_{t}, k\right)
     \end{equation}   
@@ -1246,17 +1235,17 @@ During outbreaks and other evolving settings, analysts should regularly review t
 
 Four case studies demonstrate this workflow using progressively more data sources for reproduction number estimation.
 Each progression shows how additional data sources alter both process and observation DAGs whilst requiring new integration and fitting decisions.
-We establish the baseline approach using case data to estimate $R_t$ whilst highlighting assumptions about generation time and reporting fractions.
+We establish the baseline approach using case data to estimate $R_t$ , whilst highlighting assumptions about generation time and reporting fractions.
 Adding death data eliminates some reporting assumptions but shifts dependence to infection-to-death delay assumptions and requires new integration choices.
 Wastewater data provides population-level signals independent of testing biases but requires understanding viral shedding processes and likelihood-free fitting methods.
-Individual-level contact tracing enables direct overdispersion estimation but leads to hierarchical process models and latent variable approaches which can be computationally challenging.
+Individual-level contact tracing enables direct overdispersion estimation but leads to hierarchical process models and latent variable approaches, which can be computationally challenging.
 Each case study also leads to new fitting choices and model validation strategies.
-Throughout we highlight that considering each submodel in isolation is a useful starting point for model development and validation.
+Throughout, we highlight that considering each submodel in isolation is a useful starting point for model development and validation.
 Each case study illustrates real-world trade-offs between model complexity, computational feasibility, and parameter identifiability.
 
 \subsection{Strengths and Limitations/Outstanding Challenges}
 
-A key strength of our suggested workflow is the explicit separation of epidemiological process DAGs from observation DAGs, recognising that these components draw from different domains: epidemiological processes are informed by infectious disease theory whilst observation models reflect data source characteristics and collection mechanisms.
+A key strength of our suggested workflow is the explicit separation of epidemiological process DAGs from observation DAGs, recognising that these components draw from different domains: epidemiological processes are informed by infectious disease theory, whilst observation models reflect data source characteristics and collection mechanisms.
 This separation provides clarity for model development and validation.
 The framework's applicability across diverse contexts, from early outbreak analysis to routine surveillance, offers flexibility for varied epidemiological questions.
 In addition, our suggested data review process provides a structured approach to understanding different epidemiological data sources.
@@ -1287,22 +1276,19 @@ Key workflow elements such as prior predictive checks, systematic model criticis
 Their work exemplifies the gap between implementing good models and following reproducible workflow practices.
 In contrast, our framework provides explicit structured guidance through each workflow stage, with case studies demonstrating not just model implementation but the decision process itself.
 
-Recent advances in machine learning-augmented fitting methods show promise, with neural network-based summary statistic construction \citep{raynal2019abc} and deep learning phylodynamic methods \citep{voznica2022deep}, providing alternatives to traditional likelihood evaluation. However, applying these methodological advances into the structured workflow framework we propose requires consideration of interpretability.
-
 \subsection{Future work}
 
 Future progress requires infrastructure that bridges the gap between methodological best practice and routine implementation.
-Whilst this paper provides a schematic workflow, a practical tutorial demonstrating actual implementation would provide essential guidance for practitioners.
-Composable modelling tools, where individual self contained components can be combined to build more complex models, could enable modular development where domain experts contribute specialised components without rebuilding core functionality.
-However, for such tutorials and tools to be tractable and useful, more work is needed on software composability and standardised interfaces.
-Such tools would need standardised interfaces between model components, epidemiological abstractions for common processes, and support for seamless reconfiguration as data availability evolves.
-
-Key priorities include developing community standards for model specification and validation across multiple data sources.
+Whilst this paper provides a schematic workflow, practical tutorials demonstrating actual implementation would provide essential guidance for practitioners.
+Composable modelling tools, where self-contained components can be combined to build complex models, could enable domain experts to contribute specialised components without rebuilding core functionality.
+Improved tooling for Markov melding and cut fitting approaches would facilitate modular integration, allowing teams to combine submodels without full joint specification.
 Computational scalability remains critical, particularly for joint analysis of individual-level genomic data with population surveillance.
-As emerging data sources from digital health systems and environmental monitoring become available, frameworks must incorporate these streams whilst maintaining interpretability.
-Model validation procedures that can detect conflicts between data sources and assess component compatibility need development beyond current approaches.
-These advances would make rigorous multi-source integration accessible to public health teams without prohibitive resource requirements, enabling the rapid response capabilities that outbreak situations demand.
+Recent advances in machine learning-augmented fitting methods show promise, with neural network-based summary statistic construction \citep{raynal2019abc} and deep learning phylodynamic methods \citep{voznica2022deep} providing alternatives to traditional likelihood evaluation.
 
+However, such tutorials and tools require advances in software composability and standardised interfaces, including community standards for model specification and validation across multiple data sources.
+Applying these advances within our structured workflow framework requires careful consideration of interpretability, particularly as emerging data sources from digital health systems and environmental monitoring become available.
+Model validation procedures need development beyond current approaches to detect conflicts between data sources and assess component compatibility.
+These advances would make rigorous multi-source integration accessible to public health teams without prohibitive resource requirements, enabling the rapid response capabilities that outbreak situations demand.
 
 \section{Conclusions}
 
