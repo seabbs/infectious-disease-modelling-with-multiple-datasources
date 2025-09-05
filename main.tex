@@ -30,12 +30,18 @@
 \author[4]{Dhorasso Junior Temfack Nguefack$^\dagger$}
 \author[5]{Johannes Bracher}
 \author[6]{Felix Günther}
-\author[7]{@invited-survey-respondees}
-\author[8]{Mircea T. Sofonea}
-\author[9, 10]{Pierre Nouvellet}
-\author[11]{Michael Plank$^*$}
-\author[10]{Anne Cori$^*$}
-\author[12]{Anne Presanis$^*$}
+\author[7]{Adrian Lison}
+\author[8]{James Hay}
+\author[9]{Oliver Eales}
+\author[10]{Eben Kenah}
+\author[9]{James McCaw}
+\author[11]{Freya Shearer}
+\author[1]{Sebastian Funk}
+\author[12]{Mircea T. Sofonea}
+\author[13, 14]{Pierre Nouvellet}
+\author[15]{Michael Plank$^*$}
+\author[14]{Anne Cori$^*$}
+\author[16]{Anne Presanis$^*$}
 
 \affil[1]{London School of Hygiene \& Tropical Medicine}
 \affil[2]{University of St Andrews}
@@ -43,13 +49,16 @@
 \affil[4]{Trinity College Dublin}
 \affil[5]{Karlsruhe Institute of Technology}
 \affil[6]{Robert Koch Institute}
-\affil[7]{invited-survey-respondees}
-\affil[8]{University of Montpellier, France}
-\affil[9]{School of Life Sciences, University of Sussex}
-\affil[10]{Imperial College London}
-\affil[11]{University of Canterbury, New Zealand}
-\affil[12]{MRC Biostatistics Unit, University of Cambridge}
-% Note: Author order is provisional and subject to change
+\affil[7]{Computational Evolution, ETH Zurich}
+\affil[8]{Nuffield Department of Medicine, Univeristy of Oxford}
+\affil[9]{School of Mathematics and Statistics, University of Melbourne}
+\affil[10]{College of Public Health, Ohio State University}
+\affil[11]{School of Population and Global Health, University of Melbourne}
+\affil[12]{University of Montpellier}
+\affil[13]{School of Life Sciences, University of Sussex}
+\affil[14]{Imperial College London}
+\affil[15]{University of Canterbury}
+\affil[16]{MRC Biostatistics Unit, University of Cambridge}
 
 \renewcommand{\thefootnote}{\fnsymbol{footnote}}
 \footnotetext[1]{$^\dagger$Equal contribution}
@@ -150,17 +159,19 @@ We propose that these six characteristics be used as a checklist to guide the sy
 
 % Feedback loops:
 % 3 - 2: Data characteristics fundamentally alter process DAG Structure
+% 4 - 2: add more dynamic
+% 6 - 1: Computational constraints may suggest refactoring the underlting model DAGs
 % 6 - 2: Fitting constraints may require approximating or restructuring the process DAG
-% 6 - 5: Computational constraints may suggest refactoring the underlting model DAGs
-% 6 - 8: Diagnostic failures may indicate model specification issues
+% 6 - 3: Diagnostic failures may indicate model specification issues caused by data selection
 % 6 - 9: Computational constraints or available expertise may favour approximate over exact joint approaches or ensembling approaches
-% 7 - 9: Teams using incompatible programming languages may necessitate modular rather than joint approaches
 % 8 - 2: Identifiability issues may necessitate model simplification or more complexity
 % 8 - 3: Identifiability issues may require more data to fit the model
 % 8 - 4: Identifiability issues may necessitate model simplification
+% 8 - 8: 
 % 7 - 3: Practical constraints may necessitate modular approaches
 % 9 - 4: Integration complexity may require simplifying observation models
 % 9 - 6: Update inference and computation choices for the newly combined models (solid line)
+% 9 - 7: Teams using incompatible programming languages may necessitate modular rather than joint approaches
 % 9 - 8: Conflict between data sources reveals model misspecification
 
 % sub-iterations/cycles:
@@ -229,7 +240,7 @@ This formalism helps identify confounders, mediators, and colliders that affect 
 For infectious disease modelling, we recommend constructing DAGs that capture biological mechanisms: susceptible populations, transmission events, infection progression, recovery or death, and intervention effects \citep{deangelis2018analysing}.
 Rather than starting from scratch, adapt established epidemiological models for similar pathogens or transmission routes, modifying components as outbreak-specific data emerges \citep{gelman2020bayesian}.
 Model development can begin simply and add complexity, or start comprehensive and simplify to essential components \citep{gelman2020bayesian}.
-We recommend starting with a simple representations of core transmission dynamics, then iteratively refining as understanding improves as as neeeded by other parts of the workflow.
+We recommend starting with a simple representation of core transmission dynamics, then iteratively refining as understanding improves as as needed by other parts of the workflow.
 Early outbreak DAGs might represent homogeneous mixing, while later versions incorporate age structure, spatial heterogeneity, or variant dynamics as data reveals their importance.
 Key biological mechanisms drive DAG structure: incubation periods create delays between infection and infectiousness, viral load dynamics affect transmission probability, and immune waning influences reinfection risk.
 We suggest separating process DAGs from observation DAGs to distinguish true epidemiological processes from how we measure them.
@@ -267,7 +278,7 @@ Account for time-varying observation probabilities from testing capacity, health
 Account for hierarchical structure and population heterogeneity whenever demographic subgroups are present in the data or required by the research question.
 Multiple observation DAGs for the same underlying process enable validation by checking whether different data streams imply consistent transmission dynamics when properly integrated.
 
-\subsection{Iterate on the model DAGs}
+\subsection{Refine on the model DAGs}
 
 After mapping data sources and constructing your observations DAGs, revisit your process and observations DAGs to ensure alignment between what you want to model and what your data can support.
 Model development can begin simply and add complexity, or start comprehensive and simplify to essential components \citep{gelman2020bayesian}.
@@ -340,34 +351,30 @@ The following gives guidance to selecting a method, but does not cover all setti
 
 Gradient-based Markov Chain Monte Carlo (MCMC) approaches represent our preferred methods when applicable due to their combination of efficiency, reliability, and ease of use \citep{gilks1995markov, lekone2006statistical}.
 MCMC methods generate samples from the posterior distribution by constructing a Markov chain that converges to the target distribution, providing a flexible framework for Bayesian inference when analytical solutions are unavailable.
-Hamiltonian Monte Carlo (HMC) leverages gradient information for efficient MCMC exploration of differentiable likelihoods, with its adaptive variant No-U-Turn Sampler (NUTS) representing our default recommendation for models with continuous parameters \citep{duane1987hybrid, hoffman2014no, andrade2020evaluation}.
-These methods provide excellent diagnostics and automatic tuning, reducing the expertise barrier for reliable implementation.
-When implementing gradient-based methods, automatic differentiation backend selection matters: forward-mode differentiation suits models with few parameters (typically fewer than 10), whilst reverse-mode differentiation scales better for high-dimensional parameter spaces.
-Practitioners should test available automatic differentiation options when possible, with systems like Turing.jl and PyMC providing backend flexibility.
+Hamiltonian Monte Carlo (HMC) leverages gradient information for efficient MCMC exploration of differentiable likelihoods, with its adaptive variant No-U-Turn Sampler (NUTS) representing our default recommendation for models with continuous parameters, or where discrete parameters can be marginalised out \citep{duane1987hybrid, hoffman2014no, andrade2020evaluation}.
+When implementing gradient-based methods, the automatic differentiation method can have a substantial impact: forward-mode differentiation suits models with few parameters (typically fewer than 10), whilst reverse-mode differentiation scales better for high-dimensional parameter spaces.
+Practitioners should test available automatic differentiation options when possible.
 When full uncertainty quantification is less critical, Variational Inference (VI) approximates the posterior by optimising tractable surrogate distributions, offering fast approximation with modern variants like Pathfinder \citep{blei2017variational, chatzilena2019contemporary}.
 
 Sampling-based approaches become necessary when gradients are unavailable.
 Standard Markov Chain Monte Carlo (MCMC) methods including Metropolis-Hastings and Gibbs sampling handle discrete or mixed parameter spaces \citep{hastings1970monte, geman1984stochastic, gilks1995markov}.
 For discrete parameters, consider whether marginalisation is possible before resorting to sampling, as analytical integration can significantly improve efficiency and mixing.
 Parallel tempering extends these methods to multimodal posteriors by running multiple chains at different temperatures, with modern implementations available in packages like Pigeons.jl \citep{surjanovic2023pigeons}.
-These approaches require greater tuning than gradient-based methods and provide weaker diagnostics. Furthermore, for models in which the latent state dimension grows over time, as in state-space models, MCMC becomes increasingly inefficient.
+For models in which the latent state dimension grows over time, as in state-space models, MCMC becomes increasingly inefficient.
 
-Sequential Monte Carlo (SMC) methods, or particle filters, offer a natural alternative in such models by approximating the filtering distribution of latent states using weighted particles. They enable online Bayesian updating as new observations arrive, making them well-suited for real-time epidemic tracking \citep{doucet2001introduction, birrell2020efficient, storvik2023sequential}. However, SMC alone is less efficient for parameter inference. Particle MCMC (PMCMC) addresses this limitation by combining SMC with MCMC to enable joint inference of states and parameters \citep{andrieu2010particle, endo2019introduction}. Key limitations of particle-based methods include particle degeneracy (where few particles carry most weight), memory scaling challenges with long time series, and complex resampling tuning requirements. Table \ref{tab:methods_comparison} summarizes these relative strengths and limitations.
+Sequential Monte Carlo (SMC) methods, or particle filters, offer a natural alternative in such models by approximating the filtering distribution of latent states using weighted particles. They enable online Bayesian updating as new observations arrive, making them well-suited for real-time epidemic tracking \citep{doucet2001introduction, birrell2020efficient, storvik2023sequential}. However, SMC alone is less efficient for parameter inference. Particle MCMC (PMCMC) addresses this limitation by combining SMC with MCMC to enable joint inference of states and parameters \citep{andrieu2010particle, endo2019introduction}. Key limitations of particle-based methods include particle degeneracy (where few particles carry most weight), and  memory scaling challenges with long time series. Table \ref{tab:methods_comparison} summarizes these relative strengths and limitations.
  
 Approximate Bayesian inference methods provide efficient alternatives for specific model structures.
 Integrated Nested Laplace Approximation (INLA) offers a computationally efficient method for approximating posterior marginals in latent Gaussian models, making it particularly effective for spatiotemporal disease models with spatial correlation structures \citep{rue2017bayesian}.
 This method excels when models can be reformulated with latent Gaussian components but struggles with non-Gaussian latent structures.
-Nested Laplace approximations can be integrated within other sampling schemes, allowing INLA to handle subcomponents of larger models efficiently.
 
 Deterministic approaches focus on point estimation rather than uncertainty quantification.
-Maximum Likelihood Estimation (MLE) provides point estimates for model parameters, particularly useful for simple models requiring only parameter estimates rather than full uncertainty quantification \citep{myung2003tutorial, baltazar2024maximum}.
+Maximum Likelihood Estimation (MLE) provides point estimates for model parameters, particularly useful for simple models requiring only parameter estimates rather than full uncertainty quantification, or for prototyping \citep{myung2003tutorial, baltazar2024maximum}.
 Profile likelihood methods extend MLE by examining the likelihood surface for individual parameters whilst optimising over others, providing confidence intervals without full posterior sampling \citep{tonsing2018profile, plank2024structured}.
-Whilst we do not generally recommend these approaches for primary analysis, they can prove useful for model validation, parameter initialisation, or exploring model behaviour when more complex methods encounter difficulties.
 
-Likelihood-free approaches serve as methods of last resort due to their computational demands and limited diagnostic capabilities.
+Likelihood-free approaches are methods of last resort due to their computational demands and limited diagnostic capabilities.
 These simulation-based methods bypass likelihood evaluation entirely, instead using model simulations to approximate the posterior distribution.
 Approximate Bayesian Computation (ABC) approximates the posterior distribution by accepting parameter values that generate simulated data close to the observed data under a predefined distance metric, whilst synthetic likelihood methods approximate the likelihood by assuming Gaussian distributions for summary statistics \citep{beaumont2002approximate, wood2010statistical, price2018bayesian}.
-Whilst these methods suffer from limited diagnostics and high computational cost, they provide essential flexibility for complex models where other approaches fail.
 
 \begin{landscape}
 \begin{table}[ht]
@@ -430,21 +437,12 @@ However, initialisation difficulties may indicate unrealistic prior specificatio
 
 \subsubsection{Implementation considerations}
 
-Implementation requires balancing computational cost against inferential quality.
-Method selection from Table \ref{tab:methods_comparison} should consider both model complexity and available computational resources.
-
-Bayesian inference platforms such as Stan, JAGS, NIMBLE, PyMC, Turing.jl, and NumPyro are widely used for likelihood-based approaches \citep{carpenter2017stan,abril2023pymc, ge2018turing,fjelde2025turing, phan2019composable}. Stan is good for high-dimensional problems through efficient HMC algorithms, while JAGS and NIMBLE offer flexibility for inference for model structures that may not well-suited to gradient-based methods. For models requiring rapid inference with large datasets, INLA and VI are good alternatives. 
-
-% INLA implementations are available in R-INLA package \citep{martins2013bayesian}, Stan, and TMB (Template Model Builder) \citep{osgood2023statistical}, while VI methods are supported across multiple platforms including PyMC, Turing.jl, Stan, and NumPyro. 
-
-Additionally, tools such as LibBi support SMC-based inference for state-space models and can scale to high-dimensional problems using GPU and parallel computing \citep{murray2015bayesian}. For likelihood-free methods, the decision typically centers on computational scalability. Simple ABC and BSL implementations are sufficient for low-to-moderate-dimensional problems and are supported in packages/ softwares like EasyABC, abc, abctools, and ELFI\citep{jabot2013easy,csillery2012abc,nunes2015abctools, lintusaari2018elfi}. However, more complex scenarios may require specialized tools that support parallel and GPU computing.
-
-The tuning burden varies substantially across inference methods, influencing both implementation time and reliability (see ``Tuning required?'' row in Table \ref{tab:methods_comparison}) \citep{funk2020choices}.
-HMC and NUTS require minimal manual tuning due to automatic step size adaptation and mass matrix estimation, making them accessible to practitioners with limited MCMC experience.
-Standard MCMC methods demand careful tuning of proposal distributions, step sizes, and mixing parameters, often requiring extensive pilot runs and convergence diagnostics.
-Particle methods introduce additional complexity through particle count selection, resampling thresholds, and proposal kernel tuning.
-ABC approaches require the most extensive tuning, involving summary statistic selection, distance metric choice, and tolerance threshold optimisation, often necessitating substantial methodological expertise.
-INLA and VI require less runtime tuning but may need model reformulation to fit within their respective frameworks.
+We recommend balancing computational cost against inferential quality when implementing your chosen inference method, considering both model complexity and available computational resources (Table \ref{tab:methods_comparison}) \citep{funk2020choices}.
+We recommend prioritising methods with automatic tuning to reduce implementation burden and improve reliability.
+HMC and NUTS require minimal manual intervention through automatic step size adaptation and mass matrix estimation, making them accessible to practitioners with limited MCMC experience.
+Standard MCMC and particle methods demand careful tuning of proposals, particle counts, and resampling thresholds through pilot runs.
+ABC approaches require the most expertise for selecting summary statistics, distance metrics, and tolerance thresholds.
+INLA and VI may require upfront model reformulation to fit their frameworks.
 
 Parallelisation can determine whether methods can scale to population-level inference or handle real-time analysis during outbreaks.
 Methods differ substantially in their parallelisation capabilities (Table \ref{tab:methods_comparison}).
@@ -463,7 +461,6 @@ Likelihood-free methods provide parallelisation opportunities for rejection-base
 Rejection ABC parallelises trivially across CPU clusters and GPU architectures.
 ABC-MCMC retains the sequential constraints of MCMC methods.
 Memory requirements can become substantial for large simulated datasets \citep{kulkarni2022hardware}.
-Synthetic likelihood approaches enable GPU acceleration for density estimation.
 Deterministic approaches parallelise most effectively.
 MLE is highly parallelisable across data points on both CPUs and GPUs.
 Profile likelihood calculations naturally parallelise across parameter values.
@@ -536,7 +533,7 @@ Apply cross-validation strategies, particularly leave-one-out and time-aware val
 Examine influence of individual data points and prior specifications through sensitivity analysis.
 
 Assess parameter identifiability by examining whether data sources provide sufficient information to uniquely estimate target parameters; joint modelling often resolves identifiability issues that plague pipeline approaches \citep{lison2024generative, russell2024combined}.
-For some models, formal structural identifiability approaches \citep{jackson2019value,heath2024value} may be used to indicate where additional data or prior information is needed.
+For some models, structural identifiability approaches \citep{jackson2019value,heath2024value} may be used to indicate where additional data or prior information is needed.
 Implement poststratification as needed to correct for population representativeness issues.
 
 Conflict arises when data sources and/or prior information provide inconsistent evidence on model parameters.
@@ -667,7 +664,7 @@ Progressive disclosure of development history builds confidence in analytical ap
 
 \subsection{Overview}
 
-We demonstrate our iterative workflow through four progressive case study schematics each building complexity whilst showing different integration choices and methodological considerations.
+We demonstrate our iterative workflow through four progressive case study schematics, each building complexity whilst showing different integration choices and methodological considerations.
 All case studies share a common estimand -- the time-varying reproduction number ($R_t$) -- while the final case study has the overdispersion parameter ($k$) as an additional estimand.
 
 The progression between case studies illustrates key principles relating to the characterisation of different data sources. Case study 0 uses a single data source, reported case counts. Case study 1 combines case data with data on deaths, enabling some of the limitations of each single data source to be overcome. Case study 2 adds wastewater data as a third data source that is independent of testing patterns and biases. Case studies 0, 1 and 2 all deal with aggregated data that cannot provide information about individual variability. Case study 3 combines case count data with individual-level data on transmission pairs to enable direct overdispersion estimation without distributional assumptions.
@@ -677,7 +674,7 @@ To support these case studies we first give an example of our suggested data rev
 
 We designed and completed a questionnaire based on the key data characteristics we suggested (Section \ref{sec:datareview}). We developed targeted questions aligned with each characteristic to facilitate systematic and accessible characterisation. These questions (see Supplementary Material S2) were designed to support both qualitative and quantitative evaluation across data sources. Following the development of this questionnaire, the authors completed it for a range of data sources (Supplementary Material S2). Here, for ease of interpretation, we focus on the data sources used in our case studies: time series of confirmed cases, wastewater surveillance data, deaths, and transmission-paired observations.
 
-We found that perceived data sources differed across all six characteristics, with substantial variation in responses reflecting differences in subjective interpretation, context, and experience (Figure \ref{survey_responses}, Table \ref{tab:survey_results}). For \textbf{Basic meta-data}, we indicated that 83\% of confirmed case collections served clinical management while all wastewater collections served non-clinical purposes. Under \textbf{Scope}, we thought that confirmed case data usually targeted the whole population (100\%), while we perceived wastewater datasets to be split between geographic structure (40\%) and whole population (60\%). We considered both sources to have high geographic coverage (mean: 4.5 [range: 4-5] for cases; 4 [3-5] for wastewater (where 1 is low and 5 is high)). For \textbf{Resolution}, we reported confirmed case datasets to mix aggregated (33\%) and individual-level data (67\%). In contrast, we saw wastewater data as entirely aggregated (100\%), though our responses diverged on stratification and reporting frequency. We thought all datasets included temporal information, while we reported spatial data in 50\% of case datasets and all wastewater datasets. \textbf{Data quality} assessments suggested we perceived similar test sensitivity (mean: 4 [range: 3-5] for cases; 3.8 [3-5] for wastewater), but we differed in perceived population representativeness (4.3 [3-5] for cases; 3 [1-4] for wastewater). We thought both sources informed key epidemiological quantities with varying directness and notable disagreement under \textbf{Data utility}: we indicated prevalence was directly (33\%), indirectly (33\%), or not informed (33\%) by case data, while we saw wastewater data as indirectly informing prevalence (100\%). Under \textbf{Practical considerations}, we perceived scalability as predominantly linear for both sources (67\% for cases; 80\% for wastewater), but our perceived sustainability differed markedly (1 for all case datasets; 3.3 [2-5] for wastewater), suggesting we saw greater feasibility for long-term wastewater surveillance. This variation highlights the importance of acknowledging context-specific practices when evaluating data sources, while demonstrating that the six core characteristics provide a systematic framework for context-sensitive assessment of their strengths and limitations.
+We found that perceived data sources differed across all six characteristics, with substantial variation in responses reflecting differences in subjective interpretation, context, and experience (Figure \ref{survey_responses}, Table \ref{tab:survey_results}). For \textbf{Basic metadata}, we indicated that 83\% of confirmed case collections served clinical management, while all wastewater collections served non-clinical purposes. Under \textbf{Scope}, we thought that confirmed case data usually targeted the whole population (100\%), while we perceived wastewater datasets to be split between geographic structure (40\%) and whole population (60\%). We considered both sources to have high geographic coverage (mean: 4.5 [range: 4-5] for cases; 4 [3-5] for wastewater (where 1 is low and 5 is high)). For \textbf{Resolution}, we reported confirmed case datasets to mix aggregated (33\%) and individual-level data (67\%). In contrast, we saw wastewater data as entirely aggregated (100\%), though our responses diverged on stratification and reporting frequency. We thought all datasets included temporal information, while we reported spatial data in 50\% of case datasets and all wastewater datasets. \textbf{Data quality} assessments suggested we perceived similar test sensitivity (mean: 4 [range: 3-5] for cases; 3.8 [3-5] for wastewater), but we differed in perceived population representativeness (4.3 [3-5] for cases; 3 [1-4] for wastewater). We thought both sources informed key epidemiological quantities with varying directness and notable disagreement under \textbf{Data utility}: we indicated prevalence was directly (33\%), indirectly (33\%), or not informed (33\%) by case data, while we saw wastewater data as indirectly informing prevalence (100\%). Under \textbf{Practical considerations}, we perceived scalability as predominantly linear for both sources (67\% for cases; 80\% for wastewater), but our perceived sustainability differed markedly (1 for all case datasets; 3.3 [2-5] for wastewater), suggesting we saw greater feasibility for long-term wastewater surveillance. This variation highlights the importance of acknowledging context-specific practices when evaluating data sources, while demonstrating that the six core characteristics provide a systematic framework for context-sensitive assessment of their strengths and limitations.
 
 {\Fontvi
 % \usepackage{color}
@@ -1100,7 +1097,7 @@ The target estimand for this case study is the same as in case study 0 ($R_t$). 
     Eq. \eqref{eq:deaths} provides a model for the time series of daily deaths $D_t$ conditional on the time series of daily infections $I_t$ and would typically be used in combination with one of Eqs. \eqref{eq:infections_P1}--\eqref{eq:infections_P3} that describe the dynamics of infections to produce a joint model for infections and deaths. 
     \item \textbf{Data source mapping:} Data on deaths typically have longer delays (delay from infection to death and potentially from date of death to date of registration), but lower noise (e.g. due to ``day-of-the-week'' reporting effects), higher ascertainment, and less dependence on testing patterns than case incidence data. Combining deaths data with cases therefore has the potential to overcome some of the limitations present in each single data source. 
     \item \textbf{Observation DAG construction:} Similar to the different choices of observation model for cases described in case study 0 (and still relevant to this case study), the observation model for deaths could include underreporting, reporting delays, and random noise. In jurisdictions with comprehensive death records, it may be reasonable to assume all deaths are reported and there is no additional observation noise, but it may still be important to account for observation delays, for example delay from date of occurrence to date of registration \citep{seaman2022nowcasting}. 
-    This would corresponds to observation model $O_{010}$, with the following equation for observed variable $\hat{D}_t$, representing the number of deaths registered on day $t$:
+    This would correspond to observation model $O_{010}$, represented by the following equation for the observed variable $\hat{D}_t$ (number of deaths registered on day $t$):
 \begin{equation}
     \hat{D}_t = \sum_{s=0}^\infty M_{s,t}
 \end{equation}
