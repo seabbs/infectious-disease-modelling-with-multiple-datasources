@@ -107,7 +107,7 @@ We first outline an approach for characterising epidemiological data source prop
 Our workflow includes defining the research question, development of directed acyclic graph (DAG) representations of process and observation models, integration method selection, with explicit consideration of data conflicts and uncertainty quantification, inference and computation choices, and real-world considerations. Throughout, we identify feedback loops where later decisions impact earlier choices. 
 We provide an overview of approaches for each step as well as practical guidelines for integration choices, validation strategies, and conflict resolution between data sources. 
 As well as outlining this workflow, we also provide guidance for using it in evolving settings such as outbreaks and on good reporting practices.
-Finally, we use four case studies centred on reproduction number estimation to demonstrate this workflow, progressing in complexity from a single-source baseline, through integrating similar data sources, to more complex examples with data of different kinds and scales. 
+Finally, we use four case studies centred on reproduction number estimation to demonstrate this workflow, progressing in complexity from a single-source baseline, through integrating similar data sources, to more complex examples with data of different types and scales. 
 These case studies demonstrate broader principles applicable across infectious disease modelling contexts. 
 By focusing on this common estimation task, we provide practitioners with a concrete foundation for adopting rigorous workflow practices that can then be extended to more complex modelling challenges.
 
@@ -116,9 +116,9 @@ By focusing on this common estimation task, we provide practitioners with a conc
 
 There is an increasing number of data sources being used for infectious disease surveillance and modelling, including case notifications, hospitalisations, viral load measurements from clinical samples, and wastewater samples. While each of these data sources offers unique advantages, such as timeliness, population coverage, and direct information on some quantities, they also come with distinct limitations, including reporting delays,  measurement noise, or lack of representativeness. There is currently no standardised approach to assess and compare these data sources in terms of their strengths and weaknesses, hindering our ability to compare, integrate, and prioritise data streams effectively. 
 
-Inspired by the principles outlined in the WHO guidelines for integrated surveillance of respiratory pathogens with pandemic potential, which emphasise the importance of standardised, multi-purpose surveillance systems that also support public health responses and modelling \citep{world2024implementing}, we propose six overarching characteristics with which to evaluate different data sources in a common framework (Figure \ref{data_characteristics}).  These characteristics are: (1) \textit{metadata}  that encapsulates foundational information about each data stream; (2) the \textit{scope} of a data source, i.e. its representative breadth and epidemiological relevance; (3) \textit{resolution} that describes the granularity and level of detail captured by a data source; (4) \textit{data quality} that encompasses the reliability, accuracy and completeness of the measurements within a data stream; (5) \textit{data utility} that refers to the practical applicability of a data source in informing epidemiological metrics and supporting public-health decision making; and (6)\textit{ practical considerations} that addresses the feasibility of using a data stream in modelling and surveillance contexts. We define additional potential criteria for each of these characteristics in the Supplementary Materials. 
+The WHO guidelines for integrated surveillance of respiratory pathogens with pandemic potential emphasise the importance of standardised, multi-purpose surveillance systems that also support public health responses and modelling \citep{world2024implementing}. Inspired by these, we propose six overarching characteristics with which to evaluate different data sources in a common framework (Figure \ref{data_characteristics}).  These characteristics are: (1) \textit{metadata}  that encapsulates foundational information about each data stream; (2) the \textit{scope} of a data source, i.e. its representative breadth and epidemiological relevance; (3) \textit{resolution} that describes the granularity and level of detail captured by a data source; (4) \textit{data quality} that encompasses the reliability, accuracy and completeness of the measurements within a data stream; (5) \textit{data utility} that refers to the practical applicability of a data source in informing epidemiological metrics and supporting public-health decision making; and (6)\textit{ practical considerations} that addresses the feasibility of using a data stream in modelling and surveillance contexts. We define additional potential criteria for each of these characteristics in the Supplementary Materials. 
 
-We propose that these six characteristics be used as a checklist to guide the systematic assessment of a data stream's strengths and weaknesses. While the precise structure, relevance, and sub-attributes of each component may vary depending on the specific surveillance and modelling objectives, the key objective of this checklist is to promote structured, transparent thinking. We suggest first assessing our checklist within your collaboration or team,  and then modifying it to better align with your own research question. Once happy with the checklist review, each dataset available to you in turn, ideally independently and collate the responses. We then suggest summarising these responses, as demonstrated in our case study, and referring back to them through the remainder of the workflow.
+We propose that these six characteristics be used as a checklist to guide the systematic assessment of a data stream's strengths and weaknesses. While the precise structure, relevance, and sub-attributes of each component may vary depending on the specific surveillance and modelling objectives, the key objective of this checklist is to promote structured, transparent thinking. We suggest first assessing our checklist within your collaboration or team,  and then modifying it to better align with your own research question. Once happy with the checklist, review each dataset available to you in turn, ideally independently and collate the responses. We then suggest summarising these responses, as demonstrated in our case study, and referring back to them through the remainder of the workflow.
 
 
 \begin{figure}[H] 
@@ -136,88 +136,48 @@ We propose that these six characteristics be used as a checklist to guide the sy
 \subsection{Overview}
 
 
-
+\begin{landscape}
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth]{figures/core steps with more details.drawio.pdf}
-    \caption{\textbf{Recommended workflow for integrating multiple data sources in infectious disease modelling.} Begin by defining research questions and target estimands, proceed through iterative development of process and observation DAGs, and follow critical decisions about data integration and inference methods. Key feedback loops from downstream parts of the workflow that impact earlier choices are represented with dashed arrows and boxes.}
+    \includegraphics[width=\textwidth]{figures/restructured_workflow.drawio.pdf}
+    \caption{\textbf{Recommended workflow for integrating multiple data sources in infectious disease modelling.} Key feedback loops from downstream parts of the workflow that impact earlier choices are represented with dashed arrows and boxes.}
     \label{fig:workflow}
 \end{figure}
-
-% Things to confirm before updating the main workflow
-
-% key steps:
-% 1 - Research Question and Target esimands
-% 2 - Process DAG Development
-% 3 - Data Source Selection
-% 4 - Observation DAG Construction
-% 5 - Modularise DAGs
-% 6 - Inference and Computation Choices
-% 7 - Model Implementation
-% 8 - Model Specification and Validation
-% 9 - Data Integration Choices
-
-% Feedback loops:
-% 3 - 2: Data characteristics fundamentally alter process DAG Structure
-% 4 - 2: add more dynamic
-% 6 - 1: Computational constraints may suggest refactoring the underlting model DAGs
-% 6 - 2: Fitting constraints may require approximating or restructuring the process DAG
-% 6 - 3: Diagnostic failures may indicate model specification issues caused by data selection
-% 6 - 9: Computational constraints or available expertise may favour approximate over exact joint approaches or ensembling approaches
-% 8 - 2: Identifiability issues may necessitate model simplification or more complexity
-% 8 - 3: Identifiability issues may require more data to fit the model
-% 8 - 4: Identifiability issues may necessitate model simplification
-% 8 - 8: 
-% 7 - 3: Practical constraints may necessitate modular approaches
-% 9 - 4: Integration complexity may require simplifying observation models
-% 9 - 6: Update inference and computation choices for the newly combined models (solid line)
-% 9 - 7: Teams using incompatible programming languages may necessitate modular rather than joint approaches
-% 9 - 8: Conflict between data sources reveals model misspecification
-
-% sub-iterations/cycles:
-% 2 - 3 - 4
-% 5 - 6 - 7 - 8
-% consider describing in figure caption
+\end{landscape}
 
 We recommend following a structured, iterative workflow for multi-data source modelling (Figure~\ref{fig:workflow}). Our suggested workflow extends established Bayesian workflow principles \citep{gelman2020bayesian} for  the specific challenges of multi-source infectious disease modelling.
 We advocate this approach because it makes modelling choices transparent, assumptions explicit, and provides principled tools for assessing model adequacy regardless of whether final inference is Bayesian or frequentist.
 The workflow should be implemented through multiple iterations, starting with high-level considerations and becoming more detailed with each pass, as some steps require later workflow components (e.g., posterior prediction requires inference and computation choices).
 
 Begin with \textbf{decision making}: clearly define your research question and target estimands (e.g., time-varying reproduction number, overdispersion parameters).
-Next, we suggest using \textbf{directed acyclic graphs (DAG)}  to define your models. However, we depart from standard approaches in that we suggest decoupling the definition of the \textbf{process} and \textbf{observation} models.
+Next, we suggest using \textbf{directed acyclic graphs (DAG)}  to define your model structure. However, we depart from standard approaches in that we suggest decoupling the definition of the \textbf{process} and \textbf{observation} models.
 Here the \textbf{process model DAG} represents the underlying epidemiological process, i.e. the transmission and related processes.
-A key part of this workflow is iterating on this representation as understanding develops i.e. during an outbreak.
+A key part of this workflow is iterating on this representation as understanding develops, i.e. during an outbreak.
 The next step is to make use of the data source characterisation from the last section to \textbf{select available data sources} for your process model, such as incidence time series, genomic data, contact tracing, viral load measurements, and serological surveys based on those identified in the previous section.
 Data sources should be selected based on their expected contributions to the research question.
 For each data source, develop an \textbf{observation DAG} linking the underlying process to observed data through measurement models and reporting mechanisms.
-Different data sources may also impact your \textbf{process DAG} assumptions, such as whether you can collapse your representation of the process from individual-level to population-level.
+Different data sources may also impact your \textbf{process DAG} assumptions, such as whether you can aggregate your representation of the process from individual-level to population-level.
 
-Once you have developed your \textbf{process} and \textbf{observation DAGs}, \textbf{modularise your joint model} into separate sub-models for each data source.
-Once you have modularised your model, it is time to make \textbf{inference and computation choices}, i.e. selecting an inference method based on the model structure, and theoretical and practical considerations for each modular model.
-At this point, it is time for \textbf{Implementation considerations} as you implement your model, ideally following software development best practices in a probabilistic programming language.
-Now we can apply \textbf{model specification and validation} to each module independently, including prior specification, parameter identifiability assessment, and prior and posterior predictive checks.
+Once you have developed your \textbf{process} and \textbf{observation DAGs}, \textbf{modularise your joint model} into separate sub-models for each data source, and make \textbf{inference and computation choices}, i.e. select an inference method based on the model structure, and theoretical and practical considerations for each modular model.
+The next step is \textbf{Implementation considerations}, ideally following software development best practices in a probabilistic programming language.
+Now you can apply \textbf{model specification and validation} to each module independently, including prior specification, parameter identifiability assessment, and prior and posterior predictive checks.
 After validating individual modules, you then face key decisions on \textbf{data integration choices}: \textbf{``What to combine?''} and \textbf{``How to combine?''}.
 
 If combining multiple sources is not beneficial or feasible, you can proceed to the combination of estimates, e.g. where multiple models are used to estimate the effective reproduction number from different data sources, and so these estimates can be ensembled.
-If integration is warranted, select among \textbf{data integration} methods and return to \textbf{inference and computation choices} for the newly combined models.
+If integration is warranted, select a \textbf{data integration} method and return to \textbf{inference and computation choices} for the newly combined models.
 
 Throughout this workflow, there is the potential for feedback loops between steps so that model development is rarely a single forward pass (see Figure~\ref{fig:workflow}). 
 Data characteristics can alter process DAG structure: individual-level data requires different representations than population-level data. 
+Inference and computation constraints may require approximating or restructuring the process DAG.
 Identifiability issues discovered during model specification may require simplifying either the process model or observation models. 
 Practical constraints shape integration choices in multiple ways. 
 Teams using incompatible programming languages may necessitate modular rather than joint approaches. 
 Similarly, computational constraints may favour approximate over exact joint approaches or ensembling appraoches.
-Alternatively, they can suggest refactoring the underlying model DAGs.
+Alternatively, they can suggest refining the underlying model DAGs.
 Integration complexity itself may require simplifying observation models to maintain computational feasibility. 
 Conflicts between data sources during integration often reveal model misspecification, requiring revision of earlier assumptions.
 
-In the following sections, we will discuss each of these steps in more detail and provide resources for further learning. We will also demonstrate this workflow in our case studies.
-
-Practitioners should expect to repeat this workflow as outbreaks evolve (see Section \ref{sec:outbreak}).
-Understanding of pathogen characteristics improves over time, research questions shift from immediate response to longer-term planning, and decision-making timescales change from days to months.
-New data sources emerge whilst surveillance systems adapt to changing circumstances.
-This evolution favours modular approaches that enable component reuse rather than bespoke models requiring complete redevelopment when applications change.
-Critical to this workflow is transparent reporting of all decisions and validation procedures, including documentation of iterative workflow passes and decision rationales, enabling both reproduction and adaptation of models for future applications  (see Section \ref{sec:reporting}).
+In the following sections, we will discuss each of these steps in more detail and provide resources for further learning.
 
 \subsection{Research Question and Target Estimands}
 
@@ -226,7 +186,7 @@ Start by engaging with policymakers and/or stakeholders to understand which epid
 Often, multiple outcomes are desired that require balancing trade-offs: short-term forecasts for operational planning alongside effective reproduction number ($R_t$) estimates for public communication and interpretability.
 The aim is to translate policy needs into specific target estimands by understanding how parameters inform decisions \citep{nicholson2022interoperability, gip-2024-ru}.
 For example, policymakers might need to know if transmission is increasing rather than precise values, or whether superspreading drives transmission, to choose between population-wide versus targeted interventions.
-Try to define the scope explicitly, including what the analysis cannot address: a national $R_t$ estimate cannot easily reveal local outbreak dynamics, aggregate case data may not be able to identify transmission chains, and surveillance may not be able to detect mild infections.
+Try to define the scope explicitly, including what the analysis cannot address: a national $R_t$ estimate cannot easily reveal local outbreak dynamics, aggregate case data cannot identify transmission chains, and surveillance may not be able to detect mild infections.
 These limitations shape stakeholder expectations and prevent misuse of results.
 Research questions evolve throughout outbreaks as understanding improves and policy needs shift.
 Early outbreak questions often focus on growth rates and severity using limited case data.
@@ -240,7 +200,7 @@ This formalism helps identify confounders, mediators, and colliders that affect 
 For infectious disease modelling, we recommend constructing DAGs that capture biological mechanisms: susceptible populations, transmission events, infection progression, recovery or death, and intervention effects \citep{deangelis2018analysing}.
 Rather than starting from scratch, adapt established epidemiological models for similar pathogens or transmission routes, modifying components as outbreak-specific data emerges \citep{gelman2020bayesian}.
 Model development can begin simply and add complexity, or start comprehensive and simplify to essential components \citep{gelman2020bayesian}.
-We recommend starting with a simple representation of core transmission dynamics, then iteratively refining as understanding improves as as needed by other parts of the workflow.
+We recommend starting with a simple representation of core transmission dynamics, then iteratively refining as understanding improves as needed by other parts of the workflow.
 Early outbreak DAGs might represent homogeneous mixing, while later versions incorporate age structure, spatial heterogeneity, or variant dynamics as data reveals their importance.
 Key biological mechanisms drive DAG structure: incubation periods create delays between infection and infectiousness, viral load dynamics affect transmission probability, and immune waning influences reinfection risk.
 We suggest separating process DAGs from observation DAGs to distinguish true epidemiological processes from how we measure them.
@@ -248,12 +208,11 @@ This separation enables modular model development where process components can b
 
 \subsection{Data Source Selection}
 
-Data source selection connects available surveillance streams to epidemiological processes using the characteristics framework from Section~\ref{sec:datareview}.
-Link data sources to process components by identifying what epidemiological quantities each stream measures. 
-For example, cases reflect infection incidence with reporting delays and ascertainment bias, hospitalisations capture severe outcomes with admission thresholds, and wastewater indicates population-level viral circulation independent of healthcare-seeking.
+Now that you have a process DAG and target estimands, it is time to select data sources  from your data review using their characteristics (Section~\ref{sec:datareview}) and by identifying which epidemiological quantities each data source measures. 
+For example, cases reflect infection incidence with reporting delays and ascertainment bias, hospitalisations capture severe outcomes with admission thresholds, and wastewater indicates population-level pathogen shedding independent of healthcare-seeking behaviour.
 In principle, integrating multiple data sources should enhance the identifiability and precision of parameter estimates \citep{deangelis2018analysing, lison2024generative, russell2024combined, birrell2025real}. In practice, however, data integration may pose challenges. 
 These include inconsistencies due to unaccounted biases \citep{presanis2013conflict,knock2021key, Ward2024-sp, corbella2022inferring}; computational complexity \citep{corbella2022inferring}; and real-time pressures during an outbreak emergency \citep{mccaw2023role}.
-We therefore recommend starting with minimum data requirements for target estimands, then expanding systematically.
+We therefore recommend starting with minimum data requirements for target estimands and then expanding systematically.
 Evaluate complementarity by examining whether sources provide independent signals or reinforce the same information.
 For example, wastewater can potentially provide early warning of outbreaks, while clinical surveillance provides individual-level severity data.
 Identify redundancy where multiple sources inform the same parameter, which might improve precision, consistent with meta-analytic principles \citep{deangelis2018analysing,borenstein2021introduction}, at the cost of model complexity.
@@ -269,7 +228,7 @@ Build these DAGs by working backwards from measured values through all intermedi
 Each step introduces delays, biases, or missing data mechanisms that affect inference.
 Treat observation components as modular and replaceable: initial Poisson noise models can become negative binomial, simple delays can incorporate weekly patterns \citep{gelman2020bayesian}.
 This flexibility reduces initial specification burden whilst enabling systematic refinement.
-As the process DAG we recommend starting simply for each observation DAG and iterating on it to add complexity as required by later stages of the workflow and the research question.
+As for the process DAG, we recommend starting simply for each observation DAG and iteratively refining it to add complexity as required by later stages of the workflow and the research question.
 Estimating population-level transmission requires simpler observation models than understanding variant-specific dynamics or age-stratified patterns.
 Individual-level data enables different observation models compared to aggregated reports.
 It is usually important to model reporting and other delays explicitly as they create temporal misalignment between transmission events, disease sequelae and observations \citep{seaman2022nowcasting}.
@@ -278,10 +237,9 @@ Account for time-varying observation probabilities from testing capacity, health
 Account for hierarchical structure and population heterogeneity whenever demographic subgroups are present in the data or required by the research question.
 Multiple observation DAGs for the same underlying process enable validation by checking whether different data streams imply consistent transmission dynamics when properly integrated.
 
-\subsection{Refine on the model DAGs}
+\subsection{Refine the model DAGs}
 
 After mapping data sources and constructing your observations DAGs, revisit your process and observations DAGs to ensure alignment between what you want to model and what your data can support.
-Model development can begin simply and add complexity, or start comprehensive and simplify to essential components \citep{gelman2020bayesian}.
 This step of the workflow aims to create a single joint DAG composed of your process and observations DAGs.
 Data availability can drive both increases and decreases in model complexity.
 Contact tracing data with identified transmission pairs enables shifting from population-level compartmental models to individual-based representations that capture heterogeneous mixing patterns.
@@ -325,15 +283,15 @@ This section provides an overview of these considerations.
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth]{figures/subpanel_fitting choices.drawio.pdf}
-    \caption{\textbf{Inference and computation choices workflow for integrating multiple data sources in infectious disease modelling.} The workflow contains four interconnected components: Model Complexity Assessment (7.1) evaluates dimensionality, hierarchical structure, likelihood tractability, and computational constraints; Inference Method Selection (7.2) chooses between likelihood-free approaches and likelihood-based methods; Implementation Considerations (7.3) address software choices and compatibility requirements; and Diagnostics (7.4) involve convergence checks, sensitivity analysis, and computational trade-offs. The interconnected arrows indicate that these components inform each other iteratively, allowing researchers to optimize the balance between model complexity, computational feasibility, and inferential accuracy when integrating multiple data sources. The workflow includes key feedback mechanisms: inference and computation constraints may require approximating or restructuring the process DAG, leading back to stage 2 Process DAG Development; computational constraints or available expertise may favour modular over joint integration approaches, requiring a return to stage 6 Data Integration Choices; diagnostic failures may indicate model specification issues requiring return to stage 5 Model Specification and Validation. }
+    \includegraphics[width=\textwidth]{figures/restructured_fitting_workflow.drawio.pdf}
+    \caption{\textbf{Inference and computation choices workflow for integrating multiple data sources in infectious disease modelling.} The workflow contains four interconnected components: Model Complexity Assessment (7.1) evaluates dimensionality, hierarchical structure, likelihood tractability, and computational constraints; Inference Method Selection (7.2) chooses between likelihood-free approaches and likelihood-based methods; Implementation Considerations (7.3) address software choices and compatibility requirements; and Diagnostics (7.4) involve convergence checks, sensitivity analysis, and computational trade-offs. The interconnected arrows indicate that these components inform each other iteratively, allowing researchers to optimize the balance between model complexity, computational feasibility, and inferential accuracy when integrating multiple data sources. The workflow includes key feedback mechanisms: inference and computation constraints may require approximating or restructuring the process DAG, leading back to stage 2 Process DAG Development. }
     \label{fig:fitting}
 \end{figure}
 
 \subsubsection{Model Complexity Assessment}
 
 Before determining the inference approach, it is important to assess the complexity of the model.
-Parameter dimensionality and structure are key to method selection as low-dimensional problems with fewer than 10 parameters require different approaches than problems with hundreds or thousands of parameters (see "Handles high-dim. params.?" in Table \ref{tab:methods_comparison}).
+Parameter dimensionality and structure are key to method selection as low-dimensional problems with fewer than 10 parameters require different approaches than problems with hundreds or thousands of parameters (see ``Handles high-dim. params.?'' in Table \ref{tab:methods_comparison}).
 Similarly, strongly correlated parameters, discrete parameter spaces, or mixed continuous-discrete problems each impact which methods can be used or how they are implemented.
 You should also consider the number of latent states such as unobserved infection times, individual-level disease states, or spatially varying transmission rates.
 When there are many latent states relative to observed data, computational feasibility becomes a constraint that rules out certain approaches.
@@ -362,7 +320,7 @@ For discrete parameters, consider whether marginalisation is possible before res
 Parallel tempering extends these methods to multimodal posteriors by running multiple chains at different temperatures, with modern implementations available in packages like Pigeons.jl \citep{surjanovic2023pigeons}.
 For models in which the latent state dimension grows over time, as in state-space models, MCMC becomes increasingly inefficient.
 
-Sequential Monte Carlo (SMC) methods, or particle filters, offer a natural alternative in such models by approximating the filtering distribution of latent states using weighted particles. They enable online Bayesian updating as new observations arrive, making them well-suited for real-time epidemic tracking \citep{doucet2001introduction, birrell2020efficient, storvik2023sequential}. However, SMC alone is less efficient for parameter inference. Particle MCMC (PMCMC) addresses this limitation by combining SMC with MCMC to enable joint inference of states and parameters \citep{andrieu2010particle, endo2019introduction}. Key limitations of particle-based methods include particle degeneracy (where few particles carry most weight), and  memory scaling challenges with long time series. Table \ref{tab:methods_comparison} summarizes these relative strengths and limitations.
+Sequential Monte Carlo (SMC) methods, or particle filters, offer a natural alternative in such models by approximating the filtering distribution of latent states using weighted particles. They enable online Bayesian updating as new observations arrive, making them well-suited for real-time epidemic tracking \citep{doucet2001introduction, birrell2020efficient, storvik2023sequential}. However, SMC alone is less efficient for parameter inference. Particle MCMC (PMCMC) addresses this limitation by combining SMC with MCMC to enable joint inference of states and parameters \citep{andrieu2010particle, endo2019introduction}. Key limitations of particle-based methods include particle degeneracy (where few particles carry most weight) and  memory scaling challenges with long time series. Table \ref{tab:methods_comparison} summarizes these relative strengths and limitations.
  
 Approximate Bayesian inference methods provide efficient alternatives for specific model structures.
 Integrated Nested Laplace Approximation (INLA) offers a computationally efficient method for approximating posterior marginals in latent Gaussian models, making it particularly effective for spatiotemporal disease models with spatial correlation structures \citep{rue2017bayesian}.
@@ -452,7 +410,7 @@ Parallel tempering exploits multi-core architectures through temperature-paralle
 Some implementations support within-chain parallelisation for gradient calculations (Stan and Turing.jl) or matrix operations (GPU acceleration).
 VI scales well through mini-batch parallelisation and routinely uses GPU acceleration for large datasets \citep{hoffman2013stochastic, Abbott2021-delta}.
 Sequential and particle methods excel at parallelisation through particle-level parallelism.
-Modern GPUs enable thousands of particles to process simultaneously.
+Modern GPUs enable thousands of particles to be processed simultaneously.
 Memory requirements scale with particle count \citep{henriksen2012parallel}.
 Approximate methods show mixed potential.
 INLA has limited opportunities due to sequential matrix operations, though some implementations exploit parallel linear algebra libraries.
@@ -467,7 +425,7 @@ Profile likelihood calculations naturally parallelise across parameter values.
 
 \subsubsection{Diagnostics}
 
-The quality and availability of diagnostic tools varies substantially across inference methods, representing a key factor in method selection (see Table \ref{tab:methods_comparison} for method-specific diagnostics).
+The quality and availability of diagnostic tools vary substantially across inference methods, representing a key factor in method selection (see Table \ref{tab:methods_comparison} for method-specific diagnostics).
 HMC and NUTS provide the gold standard with divergence warnings, BFMI, energy plots, and traditional MCMC diagnostics like $\hat{R}$ and ESS, making them easier to use reliably, particularly for practitioners without extensive computational expertise.
 Standard MCMC and parallel tempering offer moderate diagnostic capabilities through traditional convergence statistics and trace plots, with parallel tempering adding temperature swap rates to monitor multimodal exploration.
 SMC and PMCMC methods rely on particle-specific metrics including effective sample size (ESS) and weight degeneracy to track sequential performance and detect particle impoverishment. 
@@ -480,12 +438,12 @@ Diagnostic failures across any method indicate potential model specification iss
 
 For implementing your models, we recommend using a probabilistic programming language (PPL).
 PPLs and their ecosystems make many tasks in model specification and validation more straightforward (Section \ref{sec:spec-validate}).
-The precise choice often depends on the fitting approach selected in the subsequent section (Section \ref{sec:fitting}) and in some cases using a PPL may not be possible.
+The precise choice often depends on the fitting approach selected in the subsequent section (Section \ref{sec:fitting}), and in some cases, using a PPL may not be possible.
 Generally, using the same implementation approach for all model components will require the least amount of effort.
 
 Generative PPLs where you can sample from and compute gradients for the same model specification are particularly valuable.
 Turing.jl, PyMC, and NumPyro provide this capability \citep{ge2018turing,fjelde2025turing,abril2023pymc,phan2019composable}, enabling simulation-based validation approaches without separate data generators.
-Stan offers the most mature diagnostic and validation tools \citep{carpenter2017stan} but requires separate simulation code.
+Stan offers the most mature diagnostic and validation tools \citep{carpenter2017stan} , but requires separate simulation code.
 JAGS and NIMBLE offer flexibility for model structures that may not be well-suited to gradient-based methods \citep{plummer2003jags,valpine2017programming}.
 Turing.jl is likely the most composable option \citep{ge2018turing}, which proves useful when building models from modules.
 Speed is difficult to assess and is often model and context-specific, though generally Stan and NumPyro are the most efficient options when applicable \citep{carpenter2017stan,phan2019composable}.
@@ -511,8 +469,8 @@ Start by validating models in small subcomponents first, then explore combinatio
 \subsubsection{Prior Specification and Prior Predictive Checks}
 
 Specify priors using domain knowledge where available through informative priors; otherwise, use weakly informative priors that regularise without dominating the likelihood.
-Prior predictive checks simulate data from the prior to ensure model behaviour aligns with epidemiological plausibility before seeing data and to detect prior-data conflict \citep{Box1980,yang2025detecting}.
-These checks can reveal several issues requiring model modification: unrealistic parameter ranges may indicate need for different priors or model constraints; implausible epidemic dynamics may suggest DAG structural changes; computational issues during simulation may indicate need for model approximations or reparameterisation.
+Prior predictive checks simulate data from the prior to ensure model behaviour is epidemiologically plausible before seeing data and to detect prior-data conflict \citep{Box1980,yang2025detecting}.
+These checks can reveal several issues requiring model modification: unrealistic parameter ranges may indicate the need for different priors or model constraints; implausible epidemic dynamics may suggest DAG structural changes; computational issues during simulation may indicate need for model approximations or reparameterisation.
 Results of prior predictive checks may indicate a need to either: revisit prior specification, e.g. to obtain additional data sources, previous estimates or expert consultation to inform appropriate prior distributions; or return to DAG development (Sections \ref{sec:process} and \ref{sec:observation}) to simplify models, add model components, increase complexity through hierarchical structure, or implement approximations for computational tractability.
 
 \subsubsection{Model Fitting and Computational Validation}
@@ -567,9 +525,9 @@ When employing ensembles, careful attention to ensuring all models target the sa
 
 When combining independent model outputs from different groups, the choice of ensembling or meta-analytic approach should align with the research objective (e.g. estimation or prediction), influencing how estimates or predictions are weighted (e.g. by precision or prediction accuracy). In contrast, when integrating sub-models, the approach will depend on whether existing sub-models have already been fitted or if the models are being developed de novo.
 
-In addition to prior-data conflict and submodel conflict, different data sources may also conflict. These types of conflict should be assessed during the model validation and specification process, as discussed in \ref{sec:spec-validate} \citep{presanis2013conflict,sherratt2021exploring,yang2025detecting}, once the data integration process has been decided upon.
+In addition to prior-data conflict and submodel conflict, different data sources may also conflict. These types of conflict should be assessed during the model validation and specification process, as discussed in Section \ref{sec:spec-validate} \citep{presanis2013conflict,sherratt2021exploring,yang2025detecting}, once the data integration process has been decided upon.
 
-The following sections have additional detail on integration approaches.
+The following sections have additional details on integration approaches.
 
 \subsubsection{Full joint modelling}\label{sec:joint}
 
@@ -589,12 +547,12 @@ Modular approaches also support judgements of selective trust in sub-models, as 
 \subsubsection{Ensembling independent models}\label{sec:ensembling}
 
 When multiple models target the same estimand, ensemble methods such as Bayesian stacking \citep{yao2018using}, model averaging \citep{hoeting1999bayesian}, or meta-analytical pooling \citep{jackson2011multivariate} can be used to combine estimates.
-This is similar to comparing models as discussed in \ref{sec:spec-validate} .
+This is similar to comparing models as discussed in Section \ref{sec:spec-validate} .
 These differ from approaches like Markov melding in that they combine independent model outputs rather than partitioning a joint model into connected sub-models.
 The choice of ensemble strategy should reflect the research objective.
 For prediction, weighting by out-of-sample accuracy may be appropriate; for estimation, weights might reflect precision or model credibility \citep{yao2018using}.
 Ensemble methods offer practical advantages when joint modelling proves infeasible, enabling collaboration between research teams and potentially improving robustness over single models.
-The European COVID-19 Forecast Hub demonstrated performance gains from simple median aggregation \citep{sherratt2021exploring}, whilst the UK's SPI-M consensus used random-effects meta-analysis to pool Rt estimates from multiple academic groups \citep{manley2024combining}.
+The European COVID-19 Forecast Hub demonstrated performance gains from simple median aggregation \citep{sherratt2021exploring}, whilst the UK's SPI-M consensus used random-effects meta-analysis to pool $R_t$ estimates from multiple academic groups \citep{manley2024combining}.
 
 However, important limitations constrain ensemble approaches for infectious disease modelling.
 When models make different assumptions about latent quantities, apparent heterogeneity may reflect definitional differences rather than true uncertainty about the estimand \citep{brockhaus2023why}.
@@ -617,7 +575,7 @@ Weighted ensemble methods often show limited improvement over simple aggregation
 Two types of changes during outbreaks require revisiting this workflow.
 First, new information emerges about pathogen characteristics, surveillance capabilities, and population dynamics that may necessitate updating model assumptions and data integration choices \citep{mccaw2023role}.
 Second, research questions evolve as outbreak priorities shift from initial detection and characterisation towards intervention evaluation and long-term planning.
-When these changes occur, practitioners should iterate through the workflow, visiting their earlier decisions, rather than developing entirely new models.
+When these changes occur, practitioners should iterate through the workflow, revisiting their earlier decisions, rather than developing entirely new models.
 
 Changes that warrant workflow iteration include: substantial new data sources becoming available (such as genomic surveillance or serological surveys); shifts in research questions that alter target estimands; and improved understanding of pathogen biology that changes process model assumptions \citep{knock2021key}.
 The modular approach we advocate enables practitioners to update specific workflow components whilst preserving elements from previous iterations.
@@ -633,31 +591,16 @@ Having this documentation supports both real-time decision-making and retrospect
 % Lead Sam Abbott
 Complex multi-source models require clear documentation to enable evaluation and reproduction.
 Without structured reporting, even well-designed workflows are challenging to assess or improve.
+Reporting decisions made at each stage of the workflow is essential, including rationales for data source selection, integration method choices, model structure assumptions, and validation procedures undertaken.
+Making analyses public at all stages builds trust, though confidential data requires careful management \citep{Abbott2021-delta, Abbott2022-prevalence}.
 
-Visual schematics should communicate model architecture.
-Process and observation DAGs should be reported separately, with integration methods explicitly diagrammed if multi-step methods are used.
-For example, Ward et al.'s analysis of COVID-19 hospitalisation and fatality risk provides useful visual communication of model relationships but would benefit from process DAGs and code availability \citep{Ward2024-sp}.
+We recommend sharing code and data alongside results because it enables verification, accelerates progress, as it just as much a part of the analysis as the manuscript.
+Not sharing code, sharing it on request \citep{Ward2024-sp}, or only once a paper is in a peer-reviewed journal \citep{Fyles2024-qz} , all create barriers to assessing data integration workflows.
+Where barriers to transparent reporting exist, it is always better to report as much as possible.
+Mathematical specifications, validation code, and synthetic examples all contribute to transparency even when data cannot be shared.
+When data cannot be shared, synthetic data generation helps readers understand model behaviour \citep{Mellor2025-norovirus}.
 
-Validation procedures should be documented comprehensively: prior and posterior predictive checks, conflict detection, and sensitivity analyses.
-Abbott et al.'s COVID-19 Delta variant analysis demonstrates reporting with code, data and posterior predictions, though it lacks prior predictive checks and integration conflict discussion \citep{Abbott2021-delta}.
-Readers cannot fully assess model performance without diagnostic outputs, as illustrated by recent preprints where validation procedures are unreported \citep{Fyles2024-qz}.
-
-Code should be shared alongside results because it enables verification and accelerates progress.
-For example, Abbott et al.'s prevalence estimation work has complete GitHub code, with clear links to model verification utilities, alongside the write-up \citep{Abbott2022-prevalence}.
-Not sharing code, sharing it on request \citep{Ward2024-sp}, or only once a paper is in a peer-reviewed journal \citep{Fyles2024-qz} all create barriers to assess data integration workflows.
-
-When data cannot be shared, synthetic data generation helps readers understand model behaviour.
-For example, Mellor et al.'s norovirus nowcasting study provides training data with statistical noise added to preserve anonymity \citep{Mellor2025-norovirus}.
-Progressive or partial disclosure is preferable to indefinite withholding this can include mathematical specifications, validation code, and synthetic examples.
-
-Throughout our workflow, we emphasise making decisions transparent at each stage.
-These decisions should be reported alongside the results from the work, including rationales for data source selection, integration method choices, model structure assumptions, and validation procedures undertaken.
-This reporting enables both evaluation of current work and informed adaptation for future applications.
-
-Ideally, version control should be used for workflow development with the full git history available to demonstrate how models evolved during development.
-Even more ideally, to gain trust, the full analysis should be public as much as possible at all stages \citep{Abbott2021-delta, Abbott2022-prevalence}.
-However, this may need careful management when working with confidential data sources.
-Progressive disclosure of development history builds confidence in analytical approaches and enables learning from both successes and challenges encountered during model development.
+We also recommend visual schematics of the workflow used and the model architecture. An example of this is Ward et al.'s analysis of COVID-19 hospitalisation and fatality risk, which provides useful visual communication of model relationships but would benefit from process DAGs and code availability \citep{Ward2024-sp}.
 
 \section{Case Studies}
 % Lead: Michael Plank
@@ -668,13 +611,13 @@ We demonstrate our iterative workflow through four progressive case study schema
 All case studies share a common estimand -- the time-varying reproduction number ($R_t$) -- while the final case study has the overdispersion parameter ($k$) as an additional estimand.
 
 The progression between case studies illustrates key principles relating to the characterisation of different data sources. Case study 0 uses a single data source, reported case counts. Case study 1 combines case data with data on deaths, enabling some of the limitations of each single data source to be overcome. Case study 2 adds wastewater data as a third data source that is independent of testing patterns and biases. Case studies 0, 1 and 2 all deal with aggregated data that cannot provide information about individual variability. Case study 3 combines case count data with individual-level data on transmission pairs to enable direct overdispersion estimation without distributional assumptions.
-To support these case studies we first give an example of our suggested data review approach.
+To support these case studies, we first give an example of our suggested data review approach.
 
 \subsection{Data Sources and Characteristics}
 
-We designed and completed a questionnaire based on the key data characteristics we suggested (Section \ref{sec:datareview}). We developed targeted questions aligned with each characteristic to facilitate systematic and accessible characterisation. These questions (see Supplementary Material S2) were designed to support both qualitative and quantitative evaluation across data sources. Following the development of this questionnaire, the authors completed it for a range of data sources (Supplementary Material S2). Here, for ease of interpretation, we focus on the data sources used in our case studies: time series of confirmed cases, wastewater surveillance data, deaths, and transmission-paired observations.
+We designed and completed a questionnaire based on the key data characteristics we suggested (Section \ref{sec:datareview}). We developed targeted questions aligned with each characteristic to facilitate systematic and accessible characterisation. These questions (see Supplementary Material S2) were designed to support both qualitative and quantitative evaluation across data sources. Following the development of this questionnaire, the authors completed it for a range of data sources (Supplementary Material S2). Here, for ease of interpretation, we focus on the data sources used in our case studies: time series of confirmed cases, deaths, wastewater surveillance data, and transmission-paired observations.
 
-We found that perceived data sources differed across all six characteristics, with substantial variation in responses reflecting differences in subjective interpretation, context, and experience (Figure \ref{survey_responses}, Table \ref{tab:survey_results}). For \textbf{Basic metadata}, we indicated that 83\% of confirmed case collections served clinical management, while all wastewater collections served non-clinical purposes. Under \textbf{Scope}, we thought that confirmed case data usually targeted the whole population (100\%), while we perceived wastewater datasets to be split between geographic structure (40\%) and whole population (60\%). We considered both sources to have high geographic coverage (mean: 4.5 [range: 4-5] for cases; 4 [3-5] for wastewater (where 1 is low and 5 is high)). For \textbf{Resolution}, we reported confirmed case datasets to mix aggregated (33\%) and individual-level data (67\%). In contrast, we saw wastewater data as entirely aggregated (100\%), though our responses diverged on stratification and reporting frequency. We thought all datasets included temporal information, while we reported spatial data in 50\% of case datasets and all wastewater datasets. \textbf{Data quality} assessments suggested we perceived similar test sensitivity (mean: 4 [range: 3-5] for cases; 3.8 [3-5] for wastewater), but we differed in perceived population representativeness (4.3 [3-5] for cases; 3 [1-4] for wastewater). We thought both sources informed key epidemiological quantities with varying directness and notable disagreement under \textbf{Data utility}: we indicated prevalence was directly (33\%), indirectly (33\%), or not informed (33\%) by case data, while we saw wastewater data as indirectly informing prevalence (100\%). Under \textbf{Practical considerations}, we perceived scalability as predominantly linear for both sources (67\% for cases; 80\% for wastewater), but our perceived sustainability differed markedly (1 for all case datasets; 3.3 [2-5] for wastewater), suggesting we saw greater feasibility for long-term wastewater surveillance. This variation highlights the importance of acknowledging context-specific practices when evaluating data sources, while demonstrating that the six core characteristics provide a systematic framework for context-sensitive assessment of their strengths and limitations.
+We found that data sources differed across all six characteristics, with substantial variation in responses reflecting differences in subjective interpretation, context, and experience (Figure \ref{survey_responses}, Table \ref{tab:survey_results}). For \textbf{Basic metadata}, we indicated that 83\% of confirmed case collections served clinical management, while all wastewater collections served non-clinical purposes. Under \textbf{Scope}, we thought that confirmed case data usually targeted the whole population (100\%), while we perceived wastewater datasets to be split between geographic structure (40\%) and whole population (60\%). We considered both sources to have high geographic coverage (mean: 4.5 [range: 4-5] for cases; 4 [3-5] for wastewater (where 1 is low and 5 is high)). For \textbf{Resolution}, we reported confirmed case datasets to mix aggregated (33\%) and individual-level data (67\%). In contrast, we saw wastewater data as entirely aggregated (100\%), though our responses diverged on stratification and reporting frequency. We thought all datasets included temporal information, while we reported spatial data in 50\% of case datasets and all wastewater datasets. \textbf{Data quality} assessments suggested we perceived similar test sensitivity (mean: 4 [range: 3-5] for cases; 3.8 [3-5] for wastewater), but we differed in perceived population representativeness (4.3 [3-5] for cases; 3 [1-4] for wastewater). We thought both sources informed key epidemiological quantities with varying directness and notable disagreement under \textbf{Data utility}: we indicated prevalence was directly (33\%), indirectly (33\%), or not informed (33\%) by case data, while we saw wastewater data as indirectly informing prevalence (100\%). Under \textbf{Practical considerations}, we perceived scalability as predominantly linear for both sources (67\% for cases; 80\% for wastewater), but our perceived sustainability differed markedly (1 for all case datasets; 3.3 [2-5] for wastewater), suggesting we saw greater feasibility for long-term wastewater surveillance. This variation highlights the importance of acknowledging context-specific practices when evaluating data sources, while demonstrating that the six core characteristics provide a systematic framework for context-sensitive assessment of their strengths and limitations.
 
 {\Fontvi
 % \usepackage{color}
@@ -998,13 +941,42 @@ We found that perceived data sources differed across all six characteristics, wi
 The research question for this case study (and case studies 1 and 2) is: what is the time-varying reproduction number $R_t$ during this outbreak period?
 The objective of this case study is to showcase the workflow and explore some of the assumptions and modelling and fitting choices underlying estimation of $R_t$ from a single time series of case incidence.
 
-
-
 \textbf{Workflow Demonstration:}
 \begin{enumerate}
-    \item \textbf{Process DAG development}: We consider three variants of the renewal process model for the number of new infections $I_t$ on day $t$, which is influenced by the reproduction number $R_t$ on day $t$, and the generation time (GT) distribution, which we assume to be fixed. The three model variants are:
-\begin{itemize}
-    \item[P1.] No variance in daily infection incidence (deterministic)
+    \item \textbf{Process DAG development}: We begin with a flexible model for the number of people $N_{i,t}$ newly infected by individual $i$ on day $t$:
+    \begin{equation} \label{eq:individual_level}
+         N_{i,t} \sim \mathrm{Poiss} \left( Y_i R_t w_{t-T_i} \right)
+    \end{equation} 
+    Here, $T_i$ is the infection time of individual $i$, $Y_i$ is the relative transmission rate of individual $i$ (which may capture a combination of biological and social factors), and $w_s$ is the relative infectiousness $s$ days after infection normalised such that $\sum_{s=1}^\infty w_s=1$. Figure \ref{fig:CS3_DAG} shows the DAG for this model. This explicitly models the full transmission tree of the epidemic.
+    
+
+\item \textbf{Data source mapping}: Case incidence data is typically readily available with very frequent updates and relatively good timeliness (good scope and resolution), though this can depend on lab processing and reporting timelines. However, it is an imperfect and potentially biased proxy for infection incidence, and is sensitive to testing patterns and the fraction of infections that are reported as cases (data quality issues) -- see Table \ref{tab:survey_results} and Figure \ref{survey_responses}. 
+
+
+\item \textbf{Observation DAG construction}: The observation model relates the observed data (here daily case incidence) with underlying latent variables (here daily infection incidence). 
+This requires us to make assumptions about case ascertainment (what fraction of infections are detected cases), reporting delays (time between infection and a case being detected and reported), and random noise (typically used to capture other things not explicitly specified in the model).
+
+We consider alternative versions of the observation model, which either ignore or include each of these three aspects. This leads to $2^3=8$ possible observation models, each of which has an associated DAG (although some DAGs may be the same).
+We refer to these models as $O_{000}$ (for the simplest observation model not modelling any of the above) to $O_{111}$ (for the most comprehensive accounting for all three observation features). We represent the $O_{111}$ model by the following equation for the observed variable $\hat{I}_t$, representing the number of reported cases on day $t$:
+\begin{equation} \label{eq:cases}
+    \hat{I}_t \sim \mathrm{Poiss}\left( \sum_{s=1}^t M_{s,t}\right)
+\end{equation}
+where $M_{s,t}$ is the number of people infected on day $s$ and reported as a case on day $t$, given by
+\begin{equation}
+    M_{s,t} \sim \mathrm{TruncatedMultinomial}\left( I_s, p_c\alpha_{t-s}\right) 
+\end{equation}
+Here $I_s=\sum_i N_{i,s}$ is the total number of new infections on day $s$, $p_c$ is the probability an infection is reported as a case (i.e. case ascertainment rate), and $\alpha_j$ is the probability mass function of the distribution of time from infection to reporting.
+
+
+
+\item \textbf{Refine the model DAGs}: Recognising that we only have aggregate-level data on the number of reported cases and no individual-level data about the transmission tree, we realise that individual heterogeneity in transmission rates (represented by the variable $Y_i$) will not be identifiable. We therefore simplify the model by assuming that $Y_i=1$ for all individuals. With this simplification, the model for the number of new infections $I_t=\sum_i N_{i,t}$ on day $t$ reduces to
+    \begin{equation} 
+        I_t \sim \mathrm{Poiss}\left( R_t \sum_{s=1}^\infty I_{t-s}w_s  \right)
+    \end{equation}
+    This is an example of the well-known renewal process model. This is a popular model for $R_t$ estimation as it captures fundamental features of the transmission process (newly infected individuals at time $t$ transmit the pathogen to other individuals some time later), without making additional assumptions, for example about the size of the susceptible population or the strength and duration of infection-acquired immunity. This provides a simple but flexible model to which additional complexity can be added in subsequent iterations of the workflow.
+    To explore alternative model assumptions, we consider three variants of the renewal process model with differing models for the variance in daily infection incidence $I_t$:
+    \begin{itemize}
+    \item[P1.] Deterministic model for daily infection incidence (no variance).
     \begin{equation} \label{eq:infections_P1}
         I_t = R_t \sum_{s=1}^\infty I_{t-s}w_s 
     \end{equation}
@@ -1012,51 +984,33 @@ The objective of this case study is to showcase the workflow and explore some of
         \begin{equation} \label{eq:infections_P2}
         I_t \sim \mathrm{Poiss}\left( R_t \sum_{s=1}^\infty I_{t-s}w_s  \right)
     \end{equation}
-    \item[P3.] Negative binomially distributed daily infection incidence. 
+    \item[P3.] Negative binomially distributed daily infection incidence (larger variance than Poisson). 
             \begin{equation} \label{eq:infections_P3}
         I_t \sim \mathrm{NegBin}\left( R_t \sum_{s=1}^\infty I_{t-s}w_s, k  \right)
     \end{equation}
-\end{itemize}
-where $w_s$ is the probability mass function for the GT distribution and $k$ is the dispersion parameter. 
-The process DAGs for these three models are shown in Figure \ref{fig:CS0_DAGs}.
+    where $k$ is the dispersion parameter. 
+    \end{itemize}
+The process DAGs for these three models are shown in Figure \ref{fig:case_study_visual}.
 
  
 
-\item \textbf{Data source mapping}: Case incidence data is typically readily available with very frequent updates and relatively good timeliness (good scope and resolution), though this can depend on lab processing and reporting timelines. However, it is an imperfect and potentially biased proxy for infection incidence, and is sensitive to testing patterns and the fraction of infections that are reported as cases (data quality issues). 
+\item \textbf{Modularise the DAGs}: Here we do not need to do any modularisation as we are only dealing with a single data source.
 
+\item \textbf{Inference and implementation choices}: Implementation requires selection of one process model, one observation model and one fitting method. The choice of fitting method will depend on the analytical tractability of the combined process and observation model, computational complexity and speed of computation relative to the time available, and identifiability issues. 
 
-\item \textbf{Observation DAG construction}: The observation model relates the observed data (here daily case incidence) with underlying latent variables (here daily infection incidence). 
-This requires assumptions to be made about underreporting (what fraction of infections are detected cases), reporting delays (time between infection and a case being detected and reported), and random noise (typically used to capture other things not explicitly specified in the model).
+For this case study, combinations of the 3 process models and 8 observation models give 24 possible models, on top of which alternative fitting methods can be chosen for each. For the simplest model combination with no underreporting, delays or observation noise ($P_1$-$O_{000}$), we can calculate $R_t$ directly for a given choice of generation time distribution by rearranging Eq. \eqref{eq:infections_P1}. This is likely to give biased and highly noisy estimates in practice and does not provide any uncertainty quantification. For the next-simplest model ($P_2$-$O_{000}$), we can calculate an analytical posterior distribution for $R_t$  from a conjuagate gamma prior, which is fast an computationally efficient, known as the EpiEstim method \cite{cori2013new}. However, this analytical approach is only possible for the simplest observation model ($O_{000}$), which may lead to a feedback loop to revisit model selection. 
+For the more complicated models with reporting delays and observation noise, we could use NUTS but only if we approximate the discrete observation models (e.g. EpiNow2 \cite{abbott2020estimating}), or if we do not want to do this we would need to use an alternative method such as PCMCMC. 
 
-Alternative versions of the observation model can be considered, which either ignore or include each of these three aspects. This leads to $2^3=8$ possible observation models, each of which has an associated DAG (although some DAGs may be the same).
-We refer to these models as $O_{000}$ (for the simplest observation model not modelling any of the above) to $O_{111}$ (for the most comprehensive accounting for all three observation features). 
+\item \textbf{Model specification and validation}: Model specification requires specification of the profile of infectiousness over time $w_t$, the reporting probability $p_c$, the distribution of time from infection to reporting $\alpha_t$ and (for process model P3) the dispersion coefficient $k$. The simplest approach is to take these as fixed parameters, which corresponds to an infinite-strength prior. This may be appropriate if parameters are known with a high degree of uncertainty or if required for computational tractability. However, a better approach in the presence of uncertainty is to define a prior over these parameters. In the case of probability distributions $w_t$ and $\alpha_t$, this could take the form of a parametric distribution assumption, e.g. a discretised gamma or other non-negative-integer valued distribution with specified priors for the mean and variance. 
 
-The $O_{111}$ model could be represented by the following equation for the observed variable $\hat{I}_t$, representing the number of reported cases on day $t$:
-\begin{equation}
-    \hat{I}_t \sim \mathrm{Poiss}\left( \sum_{s=1}^t N_{s,t}\right)
-\end{equation}
-where $N_{s,t}$ is the number of people infected on day $s$ and reported as a case on day $t$, given by
-\begin{equation}
-    N_{s,t} \sim \mathrm{TruncatedMultinomial}\left( I_s, \alpha_{t-s}\right) 
-\end{equation}
-and $\alpha_j$ is the proportion of infections that are reported as a case $j$ days after infection ($j=0,1,\ldots$). 
-
-
-\item \textbf{Data integration choices}: As there is only one data source in this case study, no decisions about what and how to integrate multiple sources are needed. The choice of fitting method may depend on considerations such as analytical tractability of the combined process and observation model, computational complexity and speed of computation relative to the time available, and identifiability issues. 
+Different modelling approaches have different strengths and limitations. For example, simple approaches are fast to implement, but ignore important factors in the data observation process. These may be useful for a quick initial estimate, but should be revisited as needed. In this case study, $R_t$ estimates may be insensitive to underreporting provided the reporting fraction is constant over the period of interest. Furthermore, any change in reporting fraction will not be identifiable from a case time series alone, so it would not be sensible to attempt to estimate this in this example. However, reporting delays can be substantial and will affect both the magnitude and timing of $R_t$ estimates. We can account for this by selecting an appropriate observation model, at the cost of needing to move to a more computationally costly fitting method. Ultimately, the most appropriate option will depend on the balance between need for timely estimates (e.g. for modelling an outbreak in real-time) and the realism of the associated assumptions. 
+Finally, a common weakness of all the models outlined above is that they assume the profile of infectious over time is constant and perfectly known. Some approaches (e.g. some versions of EpiEstim) extend the approach to relax this assumption.
  
-One scenario where integration would be required is model ensembling, where multiple estimates of the target estimand (in this case $R_t$) are produced by different groups or methods based on the same data, and synthesised into a combined estimate. [***Link to SPI-M paper from Oxford]. In this context, it may be desirable to align the assumptions made by different models, for example about the GT distribution or the temporal smoothness in $R_t$, to ensure that estimates from the different models are  comparable [***Johannes’ paper].
-
-\item \textbf{Fitting choices}: Implementation requires selection of one process model, one observation model and one fitting and integration method (which will depend on the choice of process and observation model as described above). For this case study, combinations of the 3 process models and 8 observation models give 24 possible models, on top of which alternative fitting methods can be chosen for each. Here, we give a few examples from the literature:
-\begin{itemize}
-    \item EpiEstim. This method assumes Poisson distributed infections, no underreporting, no delays in reporting, and no observation noise \citep{cori2013new}. In our categorisation, this corresponds to process model P2 and observation model $O_{000}$. The model is fitted by calculating an analytic posterior distribution for $R_t$ from a conjugate prior, which is fast and computationally efficient. 
-    \item EpiNow2 [***may need to specify a version]. This method assumes deterministic infection incidence with no underreporting, but with delays and random observation noise. In our categorisation, this corresponds $P_1-O_{011}$. This is fitted using XXX.
-    \item Epidemia or EpiMap for NB process – TODO: check what they do!
-\end{itemize}
+\item \textbf{Data integration choices}: As there is only one data source in this case study, we do not need to make any decisions about what and how to integrate multiple sources. One scenario where integration would be required where multiple groups use different methods to produce estimates of the target estimand (in this case $R_t$) based on the same data, which we then ensemble into a combined estimate. [***Link to SPI-M paper from Oxford]. In this context, it may be desirable to align the assumptions made by different models, for example about the generation time distribution or the temporal smoothness in $R_t$, to ensure that estimates from the different models are  comparable [***Johannes’ paper].
 
  \end{enumerate}
  
-% TODO: add a Figure. This will be A visual of jigsaw puzzle presenting a library of P (process models), O (observation models) and F (fitting methods). In multi-data ones we will need to add an I (integration method) too.
-% Example choices of EpiEstim and EpiNow2 for example (as above). Prototype figure below
+
 
 % \begin{figure}
 % \includegraphics[width=0.75\textwidth]{figures/cs0_diagram1.jpg}
@@ -1068,36 +1022,36 @@ One scenario where integration would be required is model ensembling, where mult
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth]{figures/case_study_jigsaw.png}
-    \caption{\textbf{Modular representation for infectious disease modelling showing the interchangeable components of process models, observation models, integration approaches, and fitting methods.} Process models include deterministic ($P_1$), stochastic Poisson ($P_2$), and negative binomial ($P_3$) formulations relating reproduction number ($R_t$) to number of new infections ($I_t$) with generation time ($GT$) distributions. $P_3$ incorporates overdispersion parameter $k$ to caption extra-Poisson variation. Observation models range from direct observation ($O_{000}$) to complex hierarchical structures ($O_{111}$) that model the relationship between $I_t$ and (observed) case incidence ($C_t$) through reporting delays and measurement uncertainty. Integration approaches span from meta-analysis of separate estimates to weighted averaging approaches, enabling researchers to select optimal combinations based on data availability and research objectives. The jigsaw puzzle metaphor illustrates how different modelling components can be combined flexibly, with fitting method including MCMC, VI, ABC, etc.}
+    \includegraphics[width=\textwidth]{figures/case_study_puzzle_complete.png}
+    \caption{\textbf{Modular representation for infectious disease modelling showing the interchangeable components of process models, observation models, integration approaches, and fitting methods.} Process models include deterministic ($P_1$), stochastic Poisson ($P_2$), and negative binomial ($P_3$) formulations relating reproduction number ($R_t$) to number of new infections ($I_t$) with generation time ($GT$) distributions. $P_3$ incorporates overdispersion parameter $k$ to caption extra-Poisson variation. Observation models range from direct observation ($O_{000}$) to complex hierarchical structures ($O_{111}$) that model the relationship between $I_t$ and (observed) case incidence through underreporting, reporting delays and measurement uncertainty. The jigsaw puzzle metaphor illustrates how different modelling components can be combined flexibly, with inference method including MCMC, VI, ABC, etc.Integration approaches span from full joint modelling to ensembling independent models, enabling researchers to select optimal combinations based on data availability and research objectives. }
     \label{fig:case_study_visual}
 \end{figure}
 
 
 
-Different approaches have different strengths and limitations. For example, the key strength of EpiEstim is computational speed, whereas its key weaknesses are ignoring underreporting and reporting delays. The former may be less important in contexts where the reporting fraction can reasonably be assumed to be steady over the time period of interest. Furthermore, any change in reporting fraction will not be identifiable from a case time series alone, so it would not be sensible to attempt to estimate this in this example. EpiNow2 overcomes some of these weaknesses, at the cost of increased computational complexity. The more appropriate option may depend on the balance between need for timely estimates (e.g. for modelling an outbreak in real-time) and the realism of the associated assumptions. 
-
-A common weakness of all the models outlined above is that they assume the GT distribution is constant and perfectly known. Some approaches (e.g. some versions of EpiEstim) extend the approach to relax this assumption (see also Case Study 4).
- 
-
 
 
 \subsection{Case Study 1: Two-Source Integration (Cases and Deaths)}
 
-The target estimand for this case study is the same as in case study 0 ($R_t$). The objective of this case study is to illustrate the process and challenges of adding an additional data stream (in this case death data), and to explore how this can improve $R_t$ estimation and reduce assumption dependence.
+More data sources often become available later in an outbreak. For example, at the beginning of the Covid-19 pandemic, surveillance data was initially restricted to reported cases, but data subsequently became available on Covid-19 deaths. In this case study, we target the same estimand as in case study 0 ($R_t$), but using two data streams: reported cases and deaths. We illustrate the process and challenges of adding an additional data stream and explore how this can improve $R_t$ estimation and reduce assumption dependence.
 
 \textbf{Workflow Demonstration:}
 \begin{enumerate}
-    \item \textbf{Process DAG development:} The number of deaths $D_t$ on day $t$ depends on the time series of infections up to day $t$, the infection-fatality ratio $p_d$, and the distribution $v_s$ of time ($s$) from infection to death. This can be represented in the process DAG (Figure \ref{fig:CS3_DAG}a) and by the following convolution equation:
+    \item \textbf{Process DAG development:} We consider the same process DAG as in case study 0.
+        
+    \item \textbf{Data source mapping:} Data on deaths typically have longer delays (delay from infection to death and potentially from date of death to date of registration), but lower noise (e.g. due to ``day-of-the-week'' reporting effects), higher ascertainment, and less dependence on testing patterns than case incidence data. Combining deaths data with cases therefore has the potential to overcome some of the limitations present in each single data source. 
+    
+    \item \textbf{Observation DAG construction:} Similar to the number of reported cases defined by Eq. \eqref{eq:cases}, the number of deaths $D_t$ on day $t$ depends on the time series of infections up to day $t$, the infection-fatality ratio $p_d$, and the distribution $v_s$ of time ($s$) from infection to death. We represent this in the observation DAG (Figure \ref{fig:CS3_DAG}a) and by the following convolution equation:
     \begin{equation} \label{eq:deaths}
         D_t \sim \mathrm{Poiss}\left(p_d \sum_{s=1}^\infty I_{t-s}v_s \right)
     \end{equation}
-    Other process models for deaths are possible, for example using a multinomial model for the number of deaths occurring on day $s+k$ due to infections on day $s$ ($k=1,2,\ldots$). However, the Poisson model is a good approximation provided $p_d\ll 1$. This formulation assumes that the probability $p_d$ of an infection resulting in death and the distribution of time from infection to death $v_s$ are fixed and known.
+    Other models for deaths are possible, for example using a multinomial model for the number of deaths occurring on day $s+k$ due to infections on day $s$ ($k=1,2,\ldots$). However, the Poisson model is a good approximation provided $p_d\ll 1$. 
+    Eq. \eqref{eq:deaths} provides a model for the time series of daily deaths $D_t$ conditional on the time series of daily infections $I_t$ and would be coupled with one of Eqs. \eqref{eq:infections_P1}--\eqref{eq:infections_P3} that describe the dynamics of infections to produce a joint model for infections and deaths. We begin with the simplest observation model, which assumes that all deaths are recorded immediately, so the observed variable is simply $\hat{D}_t=D_t$.
     
-    Eq. \eqref{eq:deaths} provides a model for the time series of daily deaths $D_t$ conditional on the time series of daily infections $I_t$ and would typically be used in combination with one of Eqs. \eqref{eq:infections_P1}--\eqref{eq:infections_P3} that describe the dynamics of infections to produce a joint model for infections and deaths. 
-    \item \textbf{Data source mapping:} Data on deaths typically have longer delays (delay from infection to death and potentially from date of death to date of registration), but lower noise (e.g. due to ``day-of-the-week'' reporting effects), higher ascertainment, and less dependence on testing patterns than case incidence data. Combining deaths data with cases therefore has the potential to overcome some of the limitations present in each single data source. 
-    \item \textbf{Observation DAG construction:} Similar to the different choices of observation model for cases described in case study 0 (and still relevant to this case study), the observation model for deaths could include underreporting, reporting delays, and random noise. In jurisdictions with comprehensive death records, it may be reasonable to assume all deaths are reported and there is no additional observation noise, but it may still be important to account for observation delays, for example delay from date of occurrence to date of registration \citep{seaman2022nowcasting}. 
-    This would correspond to observation model $O_{010}$, represented by the following equation for the observed variable $\hat{D}_t$ (number of deaths registered on day $t$):
+
+
+\item \textbf{Refine the model DAGs}       
+    Similar to the different choices of observation model for cases, the observation model for deaths could include underreporting, reporting delays, and random noise. The observation model described above corresponds to $O_{000}$. However, in revisiting the data on deaths, we discovered that there was sometimes a substantial delay from date of death to date of registration \citep{seaman2022nowcasting}. If we were conducting the analysis retrospectively, we could use model $O_{000}$ for data by date of death (i.e. define $\hat{D}_t$ to be the number of deaths that occurred on day $t$). However, for a real-time analysis, this data would be incomplete and it would be important to account for the delay. Hence, we use data by date of registration (i.e. define $\hat{D}_t$ to be the number of deaths registered on day $t$) and use model $O_{010}$. This still assumes that all deaths are eventually reported with no additional observation noise (which is reasonable for jurisdictions with comprehensive death records), but accounts for the observation delay via the following equation for the number of deaths registered on day $t$:
 \begin{equation}
     \hat{D}_t = \sum_{s=0}^\infty M_{s,t}
 \end{equation}
@@ -1106,98 +1060,109 @@ where $M_{s,t}$ is the number of deaths that occurred on day $s$ and were regist
     M_{s,t} \sim \mathrm{Multinomial}\left( D_s, \beta_{t-s}\right) 
 \end{equation}
 and $\beta_s$ is the probability mass function for the number of days from date of death to date of registration ($s=0,1,\ldots$).
-    
+
+ \item \textbf{Modularise the DAGs} The module for reported cases is the same as in case study 0. Here, we add second module for deaths (see Figure \ref{fig:case_study_visual}).
+
+\item \textbf{Inference and implementation choices:} Again as  each submodel and the joint model are differentiable, and have a likelihood a good choice for fitting here would be NUTs. If some of the submodels had non-differentiable likelihoods we would recommend using NUTs on the submodels that we could and then PMCMC on the remaining submodels and the joint model.
+
+\item \textbf{Model specification and validation}: In addition to the parameters from case study 0, this model requires us to specify the infection fatality ratio $p_d$, the distribution of time from infection to death $v_t$ and from date of death to date to date of registration $\beta_t$. Again, we recommend using appropriately informative priors where possible to allow for uncertainty. 
+
+
     \item \textbf{Data integration choice:} 
-       Two different approaches are possible for integration: (1) a joint model including both cases and deaths with a shared latent state $R_t$; (2) separate models for cases and deaths, resulting in two estimates for $R_t$ to be combined via a weighted ensemble. 
-       
-       As outlined above, we recommend fitting separate models to the two time series initially, to understand their behaviour and reveal whether they lead to consistent or conflicting estimates of $R_t$. Where inconsistent results emerge, these could lead to refinement of the model (i.e. going back to step 1). For example, if $R_t$ estimates show similar trends but shifted in time, assumptions about delays may be revisited. If $R_t$ estimates are largely consistent, but the case-based estimate shows a transient increase in $R_t$ that does not occur in the deaths-based estimate, this could indicate a change in case ascertainment, which may require refining the model. Once this has been done, it may be desirable to combine the results into a single estimate by ensembling, or to fit a joint model that produces a single estimate from both data sources.  
-       
-    \item \textbf{Fitting choices:} For separate models, a good choice would be NUTS for estimation, followed by Markov melding to ensemble the results from the two models. For a joint model, a numerical method such as particle MCMC would likely be needed due to the state-space formulation complexity.
-
-    \textcolor{red}{I think we should add some examples from the literature here. Just adding some notes for now:} 1) EpiNow2 seems to allow fitting jointly to cases and deaths: \url{https://wellcomeopenresearch.org/articles/5-112} - they use P1 for infections, but not very clear about cases and deaths - would need Sam's help here 2) this has several models based just on deaths - the last one uses cases and deaths but I don't think has a mechanisms for cases changing over time \url{https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0286199} 3) I think Epidemic uses only deaths actually \url{https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-020-2405-7/MediaObjects/41586_2020_2405_MOESM1_ESM.pdf}
-
-    \end{enumerate}
-
-\textbf{Key Insight:} In case study 0 using data on cases alone, the case ascertainment rate (i.e. the proportion of infections that are reported as cases) was non-identifiable and had to be assumed. Including data on deaths, if the infection-fatality ratio is known, means that the case ascertainment rate could be included as a target for estimation. However, this requires assumptions about the distribution of time from infection to death, demonstrating how additional data sources can shift rather than eliminate the need for modelling assumptions.
+       Two different approaches are possible for integration: (1) a joint model including both cases and deaths with a shared latent state $R_t$; (2) separate models for cases and deaths, resulting in two estimates for $R_t$ to be combined via a weighted ensemble or Markov melding.
+        As outlined above, we recommend fitting separate models to the two time series initially, to understand their behaviour and reveal whether they lead to consistent or conflicting estimates of $R_t$ \cite{sherratt2021exploring}. Where inconsistent results emerge from the two data sources, these could prompt us to refine the model. For example, if $R_t$ estimates show similar trends but shifted in time, assumptions about delays may be revisited. If $R_t$ estimates are largely consistent, but the case-based estimate shows a transient increase in $R_t$ that does not occur in the deaths-based estimate, this could indicate an increase in case ascertainment. In case study 0 using data on cases alone, the case ascertainment rate (i.e. the proportion of infections that are reported as cases) was non-identifiable and had to be assumed. Including data on deaths, if the infection-fatality ratio is known, means that we could also target the case ascertainment rate for estimation using a joint model. However, this requires assumptions about the distribution of time from infection to death, demonstrating how additional data sources can shift rather than eliminate the need for modelling assumptions. 
 
 \subsection{Case Study 2: Three-Source Integration (Cases, Deaths and Wastewater)}
 
-The target estimand for this case study is the same as in the previous case studies ($R_t$). The objective of this case study is to explore ways of handling conflicting signals between data sources and incorporating complex observation processes.
+Wastewater-based epidemiology has emerged as a complementary data source to traditional disease surveillance methods \cite{keshaviah2023wastewater}. During the Covid-19 pandemic, quantitative measurements of viral RNA in wastewater samples were used to support ....
+In this case study, we include wastewater data as a third data source alongside reported cases and deaths and explore ways of handling conflicting signals between data sources and incorporating complex observation processes.
 
 \textbf{Workflow Demonstration:}
 \begin{enumerate}
-    \item \textbf{Process DAG development:} 
+    \item \textbf{Process DAG development:} We consider the same process DAG as in case studies 0 and 1.
+
+    \item \textbf{Data source mapping:} Wastewater data offers population-level information (broad scope) independent of testing biases and changes in testing rates, with moderate timeliness, requiring environmental expertise and subject to high levels of unexplained variability. It could also be affected by unknown changes in the average shedding rate over time and has relatively poor resolution (limited spatial resolution and no information about age or other demographic variables). 
+
+    
+    \item \textbf{Observation DAG construction:} 
     Suppose that the average concentration $W_t$ of pathogen RNA/DNA in wastewater on day $t$ depends on the time series of infections up to day $t$ and the average amount of pathogen RNA/DNA that an individual sheds into wastewater $s$ days after being infected ($s=1,2,\ldots$). This can be represented in the process DAG (Figure \ref{fig:CS3_DAG}a) and by the following equation for $W_t$:
     \begin{equation} \label{eq:wastewater}
-        W_t \sim \Gamma\left( \frac{C}{N_\mathrm{pop}}\sum_{s=1}^\infty I_{t-s}u_s, b   \right)
+        W_t = \frac{c}{N_\mathrm{pop}}\sum_{s=1}^\infty I_{t-s}u_s 
     \end{equation}
-    where $C>0$ is a constant representing the average total amount of pathogen RNA/DNA that an infected individual sheds over the course of their infection, $N_\mathrm{pop}$ is the population size, $u_s$ is the average shedding rate $s$ days after infection normalised such that $\sum_{s=1}^\infty u_s=1$, and $\Gamma(\mu,b)$ denotes a gamma distribution with mean $\mu$ and shape $b$. This was similar to the wastewater model used by \cite{watson2024jointly}; other choices of continuous non-negative-valued distributions are possible for $W_t$ such as a log-normal distribution.
-
-    Eq. \eqref{eq:wastewater} would be combined with one of Eqs. \eqref{eq:infections_P1}--\eqref{eq:infections_P3} for infections and with Eq. \eqref{eq:deaths} for deaths.
-    \item \textbf{Data source mapping:} Wastewater data offers population-level information (broad scope) independent of testing biases and changes in testing rates, with moderate timeliness, requiring environmental expertise and subject to high levels of unexplained variability. It could also be affected by unknown changes in the average shedding rate $C$ over time and has relatively poor resolution (limited spatial resolution and no information about age or other demographic variables). 
-    \item \textbf{Observation DAG construction:} 
-   Wastewater samples are typically collected at some cadence from one or more sampling sites, and the concentration of pathogen RNA in the samples is quantified via PCR testing. 
-   The existence of multiple sites with different catchments populations and non-contemporaneous sampling frequencies complicates the interpretation of quantitative wastewater data, which can be modelled at varying levels of complexity.  
-   
-    Here, we assume that a noise-free measurement of the wastewater concentration $W_t$, either from a single representative site or a suitable average of multiple sites, is taken on some subset of days $t$. Then the equation for the observed variable $\hat{W}_t$ is simply
+    where $c>0$ is a constant representing the average total amount of pathogen RNA/DNA that an infected individual sheds over the course of their infection, $N_\mathrm{pop}$ is the total population size, $u_s$ is the average shedding rate $s$ days after infection normalised such that $\sum_{s=1}^\infty u_s=1$.  Eq. \eqref{eq:wastewater} would be coupled with one of Eqs. \eqref{eq:infections_P1}--\eqref{eq:infections_P3} for infections.
+    
+   Wastewater samples are typically collected at some cadence from one or more sampling sites, and the concentration of pathogen RNA/DNA in the samples is quantified via PCR testing. The existence of multiple sites with different catchments populations and non-contemporaneous sampling frequencies complicates the interpretation of quantitative wastewater data, which can be modelled at varying levels of complexity.   
+   Suppose that measurements of the wastewater concentration $\hat{W}_{j,t}$ are taken from sampling sites $j=1,\ldots, J$ on some subset of days $t$. Similarly to \cite{watson2024jointly}, we assume that these observations are conditionally independent gamma random variables with the same mean $W_t$ and variance $W_t^2/(k_w N_j)$, where $N_j$ is the population size in the catchment for sampling site $j$ and $b$ is a variance parameter:
     \begin{equation}
-        \hat{W}_t=W_t
+        \hat{W}_{j,t} \sim \Gamma\left( W_t,  \frac{b W_t^2}{N_j} \right)
     \end{equation}
-    If required, observation noise could be included by replacing this with a distribution with mean $W_t$. 
-    More complex models could also incorporate other factors such as individual-level and site-level variation, catchment population dynamics, spatial heterogeneity, different sampling methods, and environmental degradation.
-    \item \textbf{Data integration choice:} As in case study 1, we recommend that a modular approach with sequential consistency assessment is initially taken to detect and resolve data source conflicts. For example, a time lag in estimates of $R_t$ from wastewater data alone relative to estimates of $R_t$ from cases alone could suggest misspecification of the shedding rate distribution $u_s$. Once conflicts have been identified and resolved, independent estimates of $R_t$ from these models could be combined by ensembling, or a joint model could be fitted with a shared $R_t$ state. 
-    \item \textbf{Fitting choices:} ABC-SMC for wastewater sub-model due to likelihood intractability, reflecting available environmental modelling expertise; NUTS for case/death models. For a joint model, a method like particle MCMC would likely be needed due to the state-space complexity.
+
+       
+\item \textbf{Refine the model DAGs} More complex observation models could also incorporate other factors such as individual-level and site-level variation, catchment population dynamics, spatial heterogeneity, different sampling methods, and environmental degradation. The formulation above assumes that the different catchment areas have identical epidemic dynamics and the only difference between catchments is that those with smaller populations have higher measurement variance. This is a reasonable starting assumption if the outbreak is evenly distributed geographically. However, if different sampling sites reveal different temporal trends, this would indicate the need to refine the model to account for different epidemic dynamics in different regions. This could require revisiting the data source mapping step for an assessment of whether the catchment areas for wastewater sampling are aligned with the geographical stratification (if any) available for reported cases and deaths.
+
+\item \textbf{Modularise the DAGs} The modules for cases and deaths are the same as for case studies 0 and 1 respectively. The module for wastewater data follows the same pattern (see Figure \ref{fig:case_study_visual}).
+    
+    \item \textbf{Inference and implementation choices:} As before, we recommend using a gradient-based MCMC method such as NUTS where possible. For real-time estimation during an outbreak, this might be impractical and we might need to consider a method such as SMCSMC that supports sequential data assimilation. Similarly, for a joint model, we would likely need a method like particle MCMC due to the state-space complexity.
+
+    \item \textbf{Model specification and validation:} In addition to the parameters from the previous two case studies, we need to specify the average shedding rate $c$, the total population size $N_\mathrm{pop}$ and the population in each sampled catchment $N_j$, and the shedding profile over time $u_t$. Wastewater data enables $R_t$ estimation independent of shifts in testing patterns, but requires assumptions about the shedding, environmental and sampling processes. Similar to the unknown case ascertainment rate in case study 0, estimates of $R_t$ will be insensitive to the value of $c$ provided it does not change over time. However, changes in the average shedding rate due to, for example, pathogenic evolution or changes in population immunity, would invalidate this simple model and require a more nuanced approach. 
+    
+    \item \textbf{Data integration choice:} As in case study 1, we recommend a modular approach with sequential consistency assessment to detect and resolve data source conflicts. For example, a time lag in estimates of $R_t$ from wastewater data alone relative to estimates of $R_t$ from cases alone could suggest misspecification of the shedding rate distribution $u_s$.  It is also useful to compare estimates of latent states between separate models. For example, if estimates of $I_t$ from the cases model and the wastewater model are initially consistent but start to diverge after a certain time, this could indicate that either the case ascertainment rate $p_c$ or the average shedding rate $c$ has changed. An assessment of which of these explanations is more likely might be informed by the context. For example a decrease in testing would suggest a drop in case ascertainment is likely, while a vaccine rollout might suggest that a drop in average shedding is likely due to increased immunity. 
+    Once conflicts have been identified and resolved, we could combine independent estimates of $R_t$ from these models ensembling, or fit a joint model with a shared $R_t$ state. If fitting a joint model, only one of the parameters $p_c$, $p_d$ and $c$ needs to be specified, while the other two are in principle identifiable from the data. If the steps above revealed some likely time-dependence in these quantities, this could prompt us to refine the model, for example by allowing the case ascertainment rate $p_c$ or the shedding rate $c$ to be time-dependent latent states as opposed to fixed parameters \citep{watson2024jointly}. 
+
+{\bf SAM says:} lets make some big choices. 
+I am going to say this model is computationally difficult and we know we have already fit and model/spec valid the case data components. 
+We don't have a markov melding special team and we are scared of cut methods. Lets approximate using a normal assumption for the posteriors from the case model and use as the priors in that part of the case model. 
+lets then use this as a place to highlight that doing so can be dangerous is there is data conflict as the prior might not contain the posterior weighted with ww data. Model complains and get sad and we have to do something iterate back to process. What do we do? 
+Add some kind of time varying effort somewhere either to cases or ww. 
+Then we can say... oh this is very complicated need domain expertise to really know could also be due to non homogeneous mixing in a pop by age and age different shedding levels. 
+How check
+We use the tools from spec and valid to compare models wooo the workflow is the best.
+
+
+
+
+        
 \end{enumerate}
-
-\textbf{Key insight:} Wastewater data enables trend estimation independent of shifts in testing patterns, but requires assumptions about the shedding, environmental and sampling processes. A modular approach facilitates conflict detection between data sources. The average shedding rate $C$ is typically unknown and non-identifiable from available data. Similar to the unknown case ascertainment rate in case study 0, estimates of $R_t$ will be insensitive to the value of $C$ provided it does not change over time. However, changes in the average shedding rate due to, for example, pathogenic evolution or changes in population immunity, would invalidate this simple model and require a more nuanced approach.  
-
-
 
 \subsection{Case Study 3: Individual-Level Data (Cases and Transmission Pairs)}
 
-The research question for this case study is what is the time-varying reproduction number $R_t$ and how much heterogeneity is there in individual transmission rates? The latter is captured by the additional estimand $k$, representing the dispersion in the distribution of the number of secondary cases per index case. The objective of this case study is to illustrate how different types of data (time series count data and individual-level data from contact tracing records) can be combined to enable estimation of additional quantities. 
+The research question for this case study is what is the time-varying reproduction number $R_t$ and how much heterogeneity is there in individual transmission rates? The latter is captured by the additional estimand $k$, representing the dispersion in the distribution of the number of secondary cases per index case \citep{lloyd2005superspreading}. The objective of this case study is to illustrate how we can combine different types of data (time series count data and individual-level data from contact tracing records) to enable estimation of additional quantities. 
 
 
 \textbf{Workflow Demonstration:}
 \begin{enumerate}
-    \item \textbf{Process DAG development:} Including information on individual-level variables, as opposed to just aggregate daily counts, requires a shift from the population-level renewal equation (Eqs. \eqref{eq:infections_P1}--\eqref{eq:infections_P3}) to an individual-level model which explicitly represents the transmission tree. A DAG for this type of model is shown in Figure \ref{fig:CS3_DAG}. Mathematically, this can be expressed in terms of the number $N_{i,t}$ of people newly infected by individual $i$ on day $t$:
-    \begin{equation} \label{eq:individual_level}
-    N_{i,t} \sim \mathrm{Poiss} \left( Y_i R_t w_{t-T_i} \right)
-    \end{equation}
-    where $T_i$ is the infection time of individual $i$ and $Y_i$ is a continuous, non-negative random variable with mean $1$, representing the relative transmission rate of individual $i$ (which may capture a combination of biological and social factors). This formulation provides a way to explicitly simulate the full epidemic transmission tree.  In the special case where $Var(Y)=0$ (i.e. there is no individual-level heterogeneity), the total number of new infections on day $t$ ($I_t$) reduces to Eq. \eqref{eq:infections_P2}. 
-    %For a case with given values of $Y_i$ and $T_i$, the total number of secondary cases, $Z_i=\sum_t N_{i,t}$, is
-    %\begin{equation}
-    %   Z_i \ | \ (Y_i, T_i) \sim \mathrm{Poiss}\left( Y_i \tilde{R}_{T_i}\right)
-    %\end{equation}
-    %where $\tilde{R}_t= \sum_s R_{t+s} w_s$ is the effective reproduction number averaged over the infectious period of an individual who was infected on day $t$. 
-    If $Y\sim \Gamma(1,k)$ for some dispersion parameter $k$, then the number of secondary cases caused by an individual who was infected at a given time $T_i=t$ is \citep{lloyd2005superspreading}
+    \item \textbf{Process DAG development:} Now that we have some information on individual-level variables, as opposed to just aggregate daily counts, we can return to our original process model for the full epidemic transmission tree from case study 0, defined by Eq. \eqref{eq:individual_level} (see Figure \ref{fig:CS3_DAG}. 
+    Building on the model of \citet{lloyd2005superspreading}, if $Y\sim \Gamma(1,k)$ for some dispersion parameter $k$, then the number of secondary cases caused by an individual who was infected at a given time $T_i=t$ is
      \begin{equation} \label{eq:offspring_dist}
         Z_i \ | \ (T_i=t) \sim \mathrm{NegBin}\left( \tilde{R}_{t}, k\right)
     \end{equation}   
     where $\tilde{R}_t= \sum_s R_{t+s} w_s$ is the effective reproduction number averaged over the infectious period of an individual who was infected on day $t$.
-    Note that this model assumes that the relative infectiousness profile over time $w_s$ is fixed and identical for all individuals. This is a reasonable starting assumption, but it may be important to relax this in some situations, for example to model the impact of quarantine and isolation measures on individuals identified by contact tracing.
+   
     \item \textbf{Data source mapping:} Case studies 0, 1 and 2 only consider aggregate-level data on daily counts or wastewater measurements. This type of data typically only allows estimation of average transmission, i.e. $R_t$. In contrast, contact tracing records identify transmission pairs, which contain information about heterogeneity in transmission patterns, contingent on contact tracing system quality. The smaller the dispersion parameter $k$, the more variance would be expected in the distribution of the number of secondary infections per index case.
-    \item \textbf{Observation DAG construction:} Suppose that for some subset of reported cases $i$, the number of observed secondary cases $\hat{Z}_i$ associated with that index case is recorded. For simplicity, we assume that the index cases for whom this data is available are a randomly chosen subset of all reported cases, and each secondary infection independently has fixed probability $p_l$ of being linked to the index case. We assume that all linked secondary cases are associated with the correct index case (i.e. we ignore any misclassification and uncertainty about who infected whom). 
+    
+    \item \textbf{Observation DAG construction:} Suppose that, for some subset of reported cases $i$, the number of observed secondary cases $\hat{Z}_i$ associated with that index case is recorded. For simplicity, we assume that the index cases for whom these data are available are a randomly chosen subset of all reported cases, and each secondary infection independently has fixed probability $p_l$ of being linked to the index case. We assume that all linked secondary cases are associated with the correct index case (i.e. we ignore any misclassification and uncertainty about who infected whom). 
 
    Then the probability that an index case reported on day $\tau_i$ has $\hat{Z}_i$ linked secondary cases can be calculated by conditioning on the unobserved time of infection $T_i$:
    \begin{equation}
        P(\hat{Z}_i=z \ | \ \tau_i=t) = \sum_{s=1}^{t} F_{NB}(z; p_l\tilde{R}_s,k) P(T_i=s | \tau_i=t)
    \end{equation}
-where $F_{NB}(.;\mu,k)$ is the probability mass function for a negative binomial distribution with mean $\mu$ and dispersion $k$, and $R_i$ is the reporting time for case $i$.  The conditional probability in this equation can be calculated via Bayes' theorem to give
+where $F_{NB}(.;\mu,k)$ is the probability mass function for a negative binomial distribution with mean $\mu$ and dispersion $k$, and $R_i$ is the reporting time for case $i$.  The conditional probability on the right-hand side of this equation can be calculated via Bayes' theorem to give
    \begin{equation} \label{eq:Zhat}
        P(\hat{Z}_i=z \ | \ \tau_i=t) = \frac{\sum_{s=1}^{t} F_{NB}(z; p_l\tilde{R}_s,k) \alpha_{t-s} I_s}{\sum_{s=1}^{t}\alpha_{t-s} I_s}  
    \end{equation}
- where $\alpha_j$ is the proportion of infections that are reported as a case $j$ days after infection ($j=0,1,\ldots$).
-    % If we ignore delay from infection to reporting (i.e. observation model $O_{101}$ for infections) then the observed values of $\hat{Z}_i$ for cases reported on day $t$ are independent draws from
-    % \begin{equation} \label{eq:Zhat}
-    % \hat{Z}_i \sim \mathrm{NegBin}\left(p_l \tilde{R}_t, k\right)
-    % \end{equation}
-    % In practice, it would usually be important to account for delays from infection to observation (i.e. observation model $O_{111}$ for infections). This would complicate the model considerably as it requires knowledge of the distribution of time of infection conditional of time of report (which is not the same as the distribution of time of report conditional on time of infection, and in general will depend on the reproduction number $R_t$).
-    % \item \textbf{Data integration choices:} A hierarchical model linking individual transmission events to population-level reproduction number would be a suitable framework.
-    \item \textbf{Fitting choices:} NUTS with data augmentation for unobserved transmissions, chosen for efficient handling of discrete latent variables. Alternative a method such as particle marginal Metropolis Hastings could be used to used to estimate the time-varying reproduction number $R_t$ and the fixed parameter $k$ in a hierarchical manner (but may be computationally slow). 
+ where $\alpha_t$ is the distribution of time from infection to reporting.
+
+    \item \textbf{Refine the model DAGS:}  We start by assuming that the relative infectiousness profile over time $w_t$ and the distribution of time from infection to reporting $\alpha_t$ are the same for all individuals. This is a reasonable starting assumption, but it may be important to relax this in some situations, for example to model the impact of quarantine and isolation measures on individuals identified by contact tracing.
+
+    \item \textbf{Modularise DAGs:} 
+    
+    \item \textbf{Inference and implementation choices:} NUTS with data augmentation for unobserved transmissions, chosen for efficient handling of discrete latent variables. Alternatively a method such as particle marginal Metropolis Hastings could be used to used to estimate the time-varying reproduction number $R_t$ and the fixed parameter $k$ hierarchically (but may be computationally slow). 
+
+    \item \textbf{Model specification and validation:} Individual-level data enables direct overdispersion estimation without distributional assumptions but requires assumptions about the completeness of contact tracing data. This shows how data granularity can fundamentally change model structure and inference requirements. Note that the observed variable $\hat{Z}_i$ in Eq. \eqref{eq:Zhat} may not be available in real time as information about linked secondary cases takes time to collect. Furthermore, the distribution of $\hat{Z}_i$ depends on future values of the latent variable $R_t$ and this means the model is not suitable for real-time inference. If the model was found to be impractical for these reasons, it may be necessary to simplify the model by making some additional assumptions. For example, if there was a period of time in which $R_t$ was estimated to be relatively steady, the model could be simplified by assuming a constant reproduction number and estimating $k$ from contact tracing data relating to that period. 
+
+    \item \textbf{Data integration choices:} Since the two datasets in this case study each inform different quantities (case counts inform $R_t$, data on transmission pairs inform $k$), it would not make sense to fit separate models in this example and a joint model is needed. 
 \end{enumerate}
 
-\textbf{Key Insight:} Individual-level data enables direct overdispersion estimation without distributional assumptions but requires contact tracing completeness assumptions. This shows how data granularity can fundamentally change model structure and inference requirements. However, it should be noted that the observed variable $\hat{Z}_i$ in Eq. \eqref{eq:Zhat} may not be available in real time as information about linked secondary cases will take time to collect. Furthermore, the distribution of  $\hat{Z}_i$ depends on future values of the latent variable $R_t$ and this means the model is not suitable for real-time inference. 
 
 \begin{figure}
 \centering
@@ -1208,11 +1173,6 @@ where $F_{NB}(.;\mu,k)$ is the probability mass function for a negative binomial
 \label{fig:CS3_DAG}
 \caption{[Mike's attempt at DAGs for the case studies (can be made prettier later on).] Latent states in blue, observed states in green. (a) Case studies 0--2. Process model P1 is a special case where $I_t$ is a deterministic funcvtion of $R_t$ and $I_{1:t-1}$; P2 is a special case in the limit $k\to\infty$; P3 allowing the dispersion parameter $k$ to take any given value. The different observation models described in case study 0 (with or without underreporting, reporting delay, and observation noise) would affect how the expected value of the observed state $C_t$ relates to the latent states $I_{1:t}$, and the variance of the observed state $C_t$. Case studies 1 and 2 add additional observed states for deaths ($D_t$) and wasterwater observations ($W_t$) respectively. (b) Case study 3 requires more states to be inlcuded in the DAG to take account of individual heterogeneity and the impact it has on obsetved data on transmission pairs. The variable $N_{it}$ representing the number of secondary infections caused by individual $i$ on day $t$ encodes the full transmission tree. The expected value of $N_{it}$ is determined by the instantaneous reproduction number $R_t$, the relative transmission rates $Y_i$ of previously infected individuals, and their current infectiousness determined by the generation time distribution (GT). The variance in the distrubtion of $Y_i$ is determined by the dispersion parameter $k$.  }
 \end{figure}
-
-
-
-
-
 
 \section{Discussion}
 
