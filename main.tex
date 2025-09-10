@@ -1172,27 +1172,20 @@ Throughout, we highlight that considering each submodel in isolation is a useful
 
 %\subsection{Strengths and Limitations/Outstanding Challenges}
 
-A key strength of our suggested workflow is the explicit separation of epidemiological process DAGs from observation DAGs, recognising that these components draw from different domains: epidemiological processes are informed by infectious disease theory, whilst observation models reflect data source characteristics and collection mechanisms.
-This separation provides clarity for model development and validation.
-The framework's applicability across diverse contexts, from early outbreak analysis to routine surveillance, offers flexibility for varied epidemiological questions.
-In addition, our suggested data review process provides a structured approach to understanding different epidemiological data sources.
-By providing explicit guidance on reporting standards, including validation procedures and code availability, we aim to improve both the development and evaluation of multi-source models.
-
-Our suggested approach can be implemented with current tools, though doing so may require choosing between statistical rigour (resource-intensive joint models) and computational feasibility (pipeline approaches with known limitations).
-The DAG-based workflow helps analysts plan for evolving data availability, but adapting models as surveillance systems change typically requires substantial work.
-Teams may need to maintain multiple parallel models for different data scenarios, potentially limiting the application of this workflow in rapid responses.
-
-Without shared infrastructure, teams typically rebuild common epidemiological processes for each application.
-Current probabilistic programming frameworks provide foundations but often lack the epidemiological abstractions needed for routine use.
-These implementation barriers can lead teams to adopt simpler approaches despite understanding their statistical limitations.
-
-Workflow reporting remains inconsistent across the field, with varying levels of detail about model validation, code availability, and decision rationales.
-Even when models are technically sound, incomplete reporting limits their utility for learning and adaptation.
-Establishing community standards for workflow documentation would accelerate progress by enabling systematic learning from both successes and failures.
+A key strength of our framework is the explicit separation of process and observation DAGs, which provides clarity for model development and validation by recognising that epidemiological processes and observation mechanisms draw from different domains.
+A significant limitation is that we have not implemented the workflow in practice, providing only schematic case studies that illustrate conceptual progression rather than actual code or examples.
+Despite this lack of implementation, the framework's modular structure allows teams to adopt specific components like systematic data review or DAG-based planning independently.
+They can also use our workflow as a guide using tools of their choice.
+Often practitioners may find that aspects of our proposed workflow appear to need to be decided on in parallel, for example, the structure of the model and the inference method.
+Another strength of our workflow is making these potentially parallel processes sequential with the use of feedback loops.
+Our structured data characterisation checklist provides an important benefit by establishing a common language for discussing data source trade-offs within modelling teams.
+Yet this checklist is necessarily context-dependent, with criteria and their relative importance varying across pathogens, settings, and research questions.
+This means that we cannot give an overview of all data sources, or even many common ones, that practitioners can apply blindly to their given multi data source modelling problem.
+A final strength of our proposed framework is its applicability across diverse contexts, from early outbreak analysis to routine surveillance, offering consistent structure regardless of data availability.
 
 %\subsection{Comparison with Existing Literature}
 
- Our workflow extends Gelman et al.'s general Bayesian workflow framework \citep{gelman2020bayesian} for multi-source infectious disease modelling.
+Our workflow extends Gelman et al.'s general Bayesian workflow framework \citep{gelman2020bayesian} for multi-source infectious disease modelling.
  Gelman et al. provide comprehensive model validation and criticism within a single modelling cycle with extensive guidance and practical examples.
 We embed their modelling  loop within a structured workflow addressing outbreak-specific challenges: data source characterisation, integration strategies, and workflow iteration as outbreaks evolve. 
 Whilst we don't give fully implemented examples, due to length and time constraints we do provide additional domain-specific guidance for surveillance data quality, reporting biases, and epidemiological process representation not covered in general statistical workflows.
@@ -1230,7 +1223,7 @@ Establishing community standards around systematic workflow practices will impro
 We thank the organisers and participants of the workshop ``Analysis and modelling for the design of future epidemic surveillance systems'' (CIRM, Marseille, 28 April–2 May 2025) for valuable discussions and feedback that helped shape this work.
 All workshop participants provided useful discussion and feedback.
 We thank Poppy the dog for making sure to ask the important questions.
-
+\pagebreak
 \bibliographystyle{plainnat}
 \bibliography{references,zotero-references}
 
