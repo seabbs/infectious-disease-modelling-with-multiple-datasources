@@ -76,7 +76,7 @@
 %Lead: Sam Abbott
 Infectious disease models can be used to inform critical public health decisions, yet often lack systematic development and validation practices.
 The infectious disease modelling community has been slow to adopt rigorous Bayesian workflow approaches, even as these methods become increasingly formalised and widely used in other domains. Recent outbreaks have demonstrated some of the domain specific challenges that infectious disease modelling faces including evolving research questions, emerging data sources, and adapting surveillance systems.
-Here we suggest a workflow for developing infectious disease models, building on general Bayesian workflow advice, with a particular focus on these domain specific challenges. At each stage we provide good practice recommendations based on our experience. We start by outlining an approach for characterising epidemiological data source properties through a structured checklist, then present an iterative workflow that extends established Bayesian model development approaches to the infectious disease domain, with the checklist informing decisions throughout each workflow stage. Our workflow includes defining the research question, development of directed acyclic graph (DAG) representations of process and observation models, model modularisation, inference and computation choices, model specification and validation, integration method selection, and real-world considerations. Throughout, we identify feedback loops where later decisions impact earlier choices. We provide an overview of approaches for each step as well as practical recommendations. In addition to outlining this workflow, we also give guidance on using it in evolving settings, such as outbreaks, and on good reporting practices. To demonstrate this workflow, we use schematic case studies of estimating transmission intensity with examples of navigating real-world trade-offs between model complexity, computational feasibility, and inferential goals. These case studies highlight how different data types can provide complementary information but may also impact other workflow choices. Our suggested framework emphasises parsimony, interpretability, and model criticism. By establishing systematic workflow practices, this framework offers a foundation for improving both the quality and transparency of infectious disease modelling, particularly during rapidly evolving outbreaks where flexible, principled approaches are essential. 
+Here we suggest a workflow for developing infectious disease models, building on general Bayesian workflow advice, with a particular focus on these domain specific challenges. This workflow is designed wfor model developers in academia and public health, as well as for users of model outputs who need to be able to evaluate modelling studies. At each stage we provide good practice recommendations based on our experience. We start by outlining an approach for characterising epidemiological data source properties through a structured checklist, then present an iterative workflow that extends established Bayesian model development approaches to the infectious disease domain, with the checklist informing decisions throughout each workflow stage. Our workflow includes defining the research question, development of directed acyclic graph (DAG) representations of process and observation models, model modularisation, inference and computation choices, model specification and validation, integration method selection, and real-world considerations. Throughout, we identify feedback loops where later decisions impact earlier choices. We provide an overview of approaches for each step as well as practical recommendations. In addition to outlining this workflow, we also give guidance on using it in evolving settings, such as outbreaks, and on good reporting practices. To demonstrate this workflow, we use schematic case studies of estimating transmission intensity with examples of navigating real-world trade-offs between model complexity, computational feasibility, and inferential goals. These case studies highlight how different data types can provide complementary information but may also impact other workflow choices. Our suggested framework emphasises parsimony, interpretability, and model criticism. By establishing systematic workflow practices, this framework offers a foundation for improving both the quality and transparency of infectious disease modelling, particularly during rapidly evolving outbreaks where flexible, principled approaches are essential. 
 \end{abstract}
 \newpage
 
@@ -98,7 +98,7 @@ While some recent work has partially implemented workflow elements, such as \cit
 Existing guidance is fragmented across methodological literature, with limited practical guidance for navigating these interconnected choices systematically \citep{nicholson2022interoperability, deangelis2018analysing}.
 
 % Paragraph 2: Current Approaches
-Current approaches to infectious disease modelling broadly fall into two categories: pipeline methods that fit separate models to components before combining estimates, and joint modelling approaches that simultaneously fit all data sources within a unified statistical framework \citep{deangelis2018analysing, russell2024combined}.
+Current approaches to infectious disease modelling broadly fall into two categories: pipeline methods that fit separate models to components before combining estimates, and joint modelling approaches that simultaneously fit multiple data sources within a unified statistical framework \citep{deangelis2018analysing, russell2024combined}.
 Pipeline approaches offer computational efficiency and modular development, but may propagate errors and fail to capture dependencies between data sources \citep{lison2024generative, Ward2024-sp}.
 Joint modelling can provide more principled uncertainty quantification and better parameter identifiability, but often requires substantial computational resources and model complexity \citep{russell2024combined, lison2024generative}.
 Recent empirical evidence supports the finding that joint approaches usually outperform stepwise methods for these reasons \citep{lison2024generative}.
@@ -115,6 +115,7 @@ Our workflow includes defining the research question, developing directed acycli
 Throughout, we identify feedback loops where later decisions impact earlier choices.
 We provide an overview of approaches for each step as well as practical guidelines for integration choices, validation strategies, and conflict resolution between data sources.
 In addition to outlining this workflow, we also provide guidance for using it in evolving settings such as outbreaks and on good reporting practices.
+Our workflow is designed for anyone who develops infectious disease models, whether in academic research or public health practice, as well as users of model outputs who need to evaluate modelling studies.
 Finally, we use four case studies centred on reproduction number estimation to demonstrate this workflow, progressing in complexity from a single-source baseline, through integrating similar data sources, to more complex examples with data of different types and scales.
 These case studies demonstrate broader principles applicable across infectious disease modelling contexts.
 By focusing on this common estimation task, we provide a concrete foundation for adopting rigorous workflow practices that can then be extended to more complex modelling challenges.
@@ -141,13 +142,11 @@ We propose that these six characteristics be used as a checklist to guide the sy
 \label{sec:workflow}
 % Lead: Sam Abbott
 
-We recommend following a structured, iterative workflow for multi-data source modelling (Figure~\ref{fig:workflow}). Our suggested workflow extends established Bayesian workflow principles \citep{gelman2020bayesian} for  the specific challenges of multi-source infectious disease modelling.
-We advocate this approach because it makes modelling choices transparent, assumptions explicit, and provides principled tools for assessing model adequacy regardless of whether final inference is Bayesian or frequentist.
-The workflow should be implemented through multiple iterations, starting with high-level considerations and becoming more detailed with each pass, as some steps require later workflow components (e.g., posterior prediction requires inference and computation choices).
+The workflow should be implemented through multiple iterations, starting with high-level considerations and becoming more detailed with each pass, as some steps require later workflow wecomponents (e.g., posterior prediction requires inference and computation choices).
 
 Begin with \textbf{decision making}: clearly define your research question and target estimands (Section~\ref{sec:research-question}) (e.g., time-varying reproduction number, overdispersion parameters).
 Next, we suggest using \textbf{directed acyclic graphs (DAG)}  to define your model structure. However, we depart from standard approaches in that we suggest decoupling the definition of the \textbf{process} and \textbf{observation} models.
-Here, the \textbf{process model DAG} (Section~\ref{sec:process}) represents the underlying epidemiological process, i.e. the transmission and related processes.
+Here, the \textbf{process model DAG} (Section~ref{sec:process}) represents the underlying epidemiological process, i.e. the transmission and related processes.
 The \textbf{observation model DAG} (Section~\ref{sec:observation}) links this process to measured data, accounting for measurement mechanisms and model misspecification.
 A key part of this workflow is iterating on this representation as understanding develops, i.e. during an outbreak.
 The next step is to use the data source characterisation from Section~\ref{sec:datareview} to \textbf{select available data sources} (Section~\ref{sec:data-selection}) that inform your process model, such as incidence time series, genomic data, contact tracing, viral load measurements, and serological surveys.
@@ -1179,15 +1178,16 @@ where $F_{NB}(.;\mu,k)$ is the probability mass function for a negative binomial
 
 %\subsection{Summary}
 
-We presented a framework for integrating multiple data sources in infectious disease modelling that extends established Bayesian workflow principles \citep{gelman2020bayesian}.
-This workflow serves both as guidance when developing infectious disease models and as a resource for readers evaluating modelling papers.
-Four case studies demonstrate this workflow using progressively more data sources for reproduction number estimation.
+We presented a systematic workflow for infectious disease modelling that addresses domain-specific challenges and extends established Bayesian workflow principles \citep{gelman2020bayesian}, with particular focus on integrating multiple data sources.
+This workflow serves both as guidance when developing infectious disease models and as a resource for readers evaluating modelling papers, whether they work in academic research, public health agencies, or policy contexts that rely on model outputs.
+Four case studies demonstrate this workflow using progressively more data sources for reproduction number estimation, showing how systematic workflow practices enable principled model development from single-source baselines to complex multi-stream integration.
 Each progression shows how additional data sources alter both process and observation DAGs whilst requiring new integration and fitting decisions.
 Each case study also leads to new fitting choices and model validation strategies.
 Throughout, we highlight that considering each submodel in isolation is a useful starting point for model development and validation.
 
 %\subsection{Strengths and Limitations/Outstanding Challenges}
 
+The systematic structure of our workflow addresses a critical gap in infectious disease modelling practice, where ad hoc approaches often lead to inadequate validation and limited transparency in methodological choices.
 A key strength of our framework is the explicit separation of process and observation DAGs, which provides clarity for model development and validation by recognising that epidemiological processes and observation mechanisms draw from different domains.
 A significant limitation is that we have not implemented the workflow in practice, providing only schematic case studies that illustrate conceptual progression rather than actual code or examples.
 Despite this lack of implementation, the framework's modular structure allows users to adopt specific components like systematic data review or DAG-based planning independently.
@@ -1199,9 +1199,9 @@ A final strength of our proposed framework is its applicability across diverse c
 
 %\subsection{Comparison with Existing Literature}
 
-Our workflow extends Gelman et al.'s general Bayesian workflow framework \citep{gelman2020bayesian} for multi-source infectious disease modelling.
- Gelman et al. provide comprehensive model validation and criticism within a single modelling cycle with extensive guidance and practical examples.
-We embed their modelling  loop within a structured workflow addressing outbreak-specific challenges: data source characterisation, integration strategies, and workflow iteration as outbreaks evolve. 
+Our workflow extends Gelman et al.'s general Bayesian workflow framework \citep{gelman2020bayesian} by addressing systematic workflow adoption challenges specific to infectious disease modelling.
+Gelman et al. provide comprehensive model validation and criticism within a single modelling cycle with extensive guidance and practical examples.
+We embed their modelling loop within a structured workflow addressing domain-specific challenges: data source characterisation, integration strategies, and workflow iteration as outbreaks evolve. 
 Whilst we don't give fully implemented examples due to length and time constraints, we do provide additional domain-specific guidance for surveillance data quality, reporting biases, and epidemiological process representation not covered in general statistical workflows.
  
 Recent work has made progress towards structured infectious disease modelling workflows, though implementation remains incomplete.
@@ -1223,9 +1223,9 @@ Recent advances in machine learning-augmented fitting methods show promise, with
 
 %\section{Conclusions}
 
-Infectious disease modelling workflows benefit from systematic approaches that can adapt to multiple data sources and evolving outbreak contexts.
-We have presented workflow best practices that provide practical guidance for navigating trade-offs between data requirements, information gain, computational complexity, and interpretability.
-Our workflow extends established Bayesian principles through structured steps from data characterisation to model validation, supported by structured evaluation of data source characteristics and multiple case studies.
+Systematic workflow practices benefit infectious disease modelling by providing structured guidance for model development, validation, and multi-source integration that can adapt to evolving outbreak contexts.
+We have presented workflow best practices that establish systematic approaches for navigating trade-offs between data requirements, information gain, computational complexity, and interpretability.
+Our workflow addresses the slow adoption of rigorous practices in infectious disease modelling through structured steps from data characterisation to model validation, with multi-source integration as a key challenging application.
 The modular approach we advocate enables adding complexity incrementally whilst maintaining transparency about modelling assumptions and integration choices.
 We recommend that the infectious disease modelling community adopt these workflow best practices for both model development and evaluation, with particular value during rapidly evolving outbreaks where research questions shift and new data sources emerge.
 Establishing community standards around systematic workflow practices will improve both methodological rigour and practical implementation across the field.
