@@ -166,7 +166,7 @@ Inference and computation constraints may require approximating or restructuring
 Identifiability issues discovered during model specification may require simplifying either the process model or observation models. 
 Practical constraints shape integration choices in multiple ways. 
 Teams using incompatible programming languages may necessitate non-joint approaches. 
-Similarly, computational constraints may favour approximate over exact joint approaches or ensembling approaches.
+Similarly, computational constraints may favour approximate over exact joint approaches or ensembling independent models.
 Alternatively, they can suggest refining the underlying model DAGs.
 Integration complexity itself may require simplifying observation models to maintain computational feasibility. 
 Conflicts between data sources during integration often reveal model misspecification, requiring revision of earlier assumptions.
@@ -216,7 +216,7 @@ Early outbreak DAGs might represent homogeneous mixing, while later versions cou
 
 \textcolor{red}{\st{Now that you have a process DAG and target estimands, it is time to select data sources  from your data review using their characteristics (Section~\ref{sec:datareview}) and by identifying which epidemiological quantities each data source measures.}} 
 \textcolor{red}{With the process DAG and target estimands defined, appropriate data sources can then be selected, drawing from the data review (Section~\ref{sec:datareview}), based on their characteristics and the specific epidemiological quantities they inform.}
-For example, case data can be a proxy for infection incidence with reporting delays and ascertainment bias, hospitalisations capture severe outcomes with admission thresholds, and wastewater indicates population-level pathogen shedding, independent of healthcare-seeking behaviour.
+For example, case data can be a proxy for infection incidence with reporting delays and ascertainment bias, hospitalisations capture severe outcomes, and wastewater indicates population-level pathogen shedding, independent of healthcare-seeking behaviour.
 In principle, integrating multiple data sources should enhance the identifiability and precision of parameter estimates \citep{deangelis2018analysing, lison2024generative, russell2024combined, birrell2025real}. In practice, however, data integration may pose challenges. 
 These include inconsistencies due to unaccounted biases \citep{presanis2013conflict,knock2021key, Ward2024-sp, corbella2022inferring}; computational complexity \citep{corbella2022inferring}; and operational constraints during an outbreak emergency \citep{mccaw2023role}.
 We therefore recommend starting with minimum data requirements for target estimands and then expanding systematically. 
@@ -246,7 +246,7 @@ As for the process DAG, we recommend starting with a simplified observation DAG 
 Estimating population-level transmission requires simpler observation models than understanding variant-specific dynamics or age-stratified patterns.
 Individual-level data enables different observation models compared to aggregated reports.
 It is usually important to model reporting and other delays explicitly as they create temporal misalignment between transmission events, disease sequelae and observations \citep{seaman2022nowcasting}.
-\textcolor{red}{It is also important to d}istinguish between different missing data mechanisms since random missingness and systematic under-ascertainment require different handling \citep{sherratt2021exploring}.
+It is also important to distinguish between different missing data mechanisms since random missingness and systematic under-ascertainment require different handling \citep{sherratt2021exploring}.
 \textcolor{red}{\st{Account for time-varying observation probabilities from testing capacity, healthcare seeking or surveillance intensity changes.}}
 \textcolor{red}{Time-varying observation probabilities, e.g. driven by changes in testing capacity, healthcare-seeking behaviour, or surveillance intensity, should be incorporated where relevant.}
 \textcolor{red}{\st{Account for hierarchical structure and population heterogeneity whenever demographic subgroups are present in the data or required by the research question.}}
