@@ -210,13 +210,16 @@ Early outbreak DAGs might represent homogeneous mixing, while later versions cou
 \subsection{Data Source Selection}
 
 Now that you have a process DAG and target estimands, it is time to select data sources  from your data review using their characteristics (Section~\ref{sec:datareview}) and by identifying which epidemiological quantities each data source measures. 
-For example, cases reflect infection incidence with reporting delays and ascertainment bias, hospitalisations capture severe outcomes with admission thresholds, and wastewater indicates population-level pathogen shedding independent of healthcare-seeking behaviour.
+\textcolor{red}{PROPOSED NEW MORE NEUTRAL TONE: With the process DAG and target estimands defined, appropriate data sources can then be selected, drawing from the data review (Section~\ref{sec:datareview}), based on their characteristics and the specific epidemiological quantities they inform.}
+For example, case data reflect infection incidence with reporting delays and ascertainment bias, hospitalisations capture severe outcomes with admission thresholds, and wastewater indicates population-level pathogen shedding, independent of healthcare-seeking behaviour.
 In principle, integrating multiple data sources should enhance the identifiability and precision of parameter estimates \citep{deangelis2018analysing, lison2024generative, russell2024combined, birrell2025real}. In practice, however, data integration may pose challenges. 
-These include inconsistencies due to unaccounted biases \citep{presanis2013conflict,knock2021key, Ward2024-sp, corbella2022inferring}; computational complexity \citep{corbella2022inferring}; and real-time pressures during an outbreak emergency \citep{mccaw2023role}.
-We therefore recommend starting with minimum data requirements for target estimands and then expanding systematically.
+These include inconsistencies due to unaccounted biases \citep{presanis2013conflict,knock2021key, Ward2024-sp, corbella2022inferring}; computational complexity \citep{corbella2022inferring}; and operational constraints during an outbreak emergency \citep{mccaw2023role}.
+We therefore recommend starting with minimum data requirements for target estimands and then expanding systematically. 
 Evaluate complementarity by examining whether sources provide independent signals or reinforce the same information.
-For example, wastewater can potentially provide early warning of outbreaks, while clinical surveillance provides individual-level severity data.
+\textcolor{red}{PROPOSED NEW MORE NEUTRAL TONE: Complementarity among data sources should be assessed by assessing whether they provide independent signals or reinforce similar information}
+For example, wastewater surveillance may provide early warning of outbreaks, while clinical surveillance provides individual-level severity data.
 Identify redundancy where multiple sources inform the same parameter, which might improve precision, consistent with meta-analytic principles \citep{deangelis2018analysing,borenstein2021introduction}, at the cost of model complexity.
+\textcolor{red}{PROPOSED NEW MORE NEUTRAL TONE: Redundancy should also be identified, particularly  where multiple data sources inform the same parameter. While this can enhance precision, consistent with meta-analytic principles \citep{deangelis2018analysing,borenstein2021introduction}, it maat the cost of model complexity.}
 
 Prioritise data sources based on expected information gain relative to implementation cost.
 Value-of-information methods \citep{jackson2019value,heath2024value} can formally guide whether additional data would meaningfully improve precision.
