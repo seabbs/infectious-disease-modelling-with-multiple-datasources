@@ -47,7 +47,7 @@
 \beginsupplement
 
 \section{Full model specification for combining multiple data sources}
-The target estimand for this case study is the time-varying reproduction number $R_t$ during the outbreak period. The objective is to illustrate the process of integrating multiple epidemiological data sources. For each case, we consider two main approaches: fitting separate models independently to each data source and combining the resulting estimates, and fitting a joint model that incorporates both data sources simultaneously. Throughout this work, we denote time series of the variable $X_t$ indexed from day 1 to day $T$ by $X_{1:T} = \{X_1, X_2, \ldots, X_T\}$.
+The target estimand for this case study is the time-varying reproduction number $R_t$ during the outbreak period. The objective is to illustrate the process of integrating multiple epidemiological data sources. For each case, we consider two main approaches: fitting separate models independently to each data source and combining the resulting estimates, and fitting a joint model that incorporates all data sources simultaneously. Throughout this work, we denote time series of the variable $X_t$ indexed from day 1 to day $T$ by $X_{1:T} = \{X_1, X_2, \ldots, X_T\}$.
 
 
 \subsection{Case Study 1: Two-source integration (Cases and Deaths)}
@@ -68,9 +68,9 @@ where $w_s$ is the generation time distribution probability mass function, and $
 
 The observation model relates reported cases $\widehat{I}_{1:T}$ to latent infections as:
 \begin{align}\label{obs_inf}
-\widehat{I}_t \sim \mathrm{Poisson}\left( \sum_{s=1}^\infty N_{s,t} \right), \quad N_{s,t} \sim \mathrm{TruncatedMultinomial}(I_s, \alpha_{t-s}),
+\widehat{I}_t \sim \mathrm{Poisson}\left( \sum_{s=1}^\infty N_{s,t} \right), \quad N_{s,t} \sim \mathrm{TruncatedMultinomial}(I_s, p_c\alpha_{t-s}),
 \end{align}
-where $N_{s,t}$ is the number of people infected on day $s$ and reported as a case on day $t$, and $\alpha_s$ is the probability that an infection is reported as a case $s$ days after infection. Using observed case incidence $\widehat{I}_{1:T}$, inference targets the posterior distribution:
+where $N_{s,t}$ is the number of people infected on day $s$ and reported as a case on day $t$, $p_c$ is the ascertainment rate, and $\alpha_s$ is the probability that an infection is reported as a case $s$ days after infection. Using observed case incidence $\widehat{I}_{1:T}$, inference targets the posterior distribution:
 \begin{align}
 P\big(R_{1:T}, I_{1:T}, \theta \,\big|\, \widehat{I}_{1:T}\big),
 \end{align}
