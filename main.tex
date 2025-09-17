@@ -76,6 +76,9 @@ Infectious disease modelling increasingly relies on integrating multiple data so
 \end{abstract}
 \newpage
 
+\tableofcontents
+\newpage
+
 \section{Introduction}
 % Lead: Sam Abbott
 
@@ -137,23 +140,23 @@ We recommend following a structured, iterative workflow for multi-data source mo
 We advocate this approach because it makes modelling choices transparent, assumptions explicit, and provides principled tools for assessing model adequacy regardless of whether final inference is Bayesian or frequentist.
 The workflow should be implemented through multiple iterations, starting with high-level considerations and becoming more detailed with each pass, as some steps require later workflow components (e.g., posterior prediction requires inference and computation choices).
 
-Begin with \textbf{decision making}: clearly define your research question and target estimands (e.g., time-varying reproduction number, overdispersion parameters).
+Begin with \textbf{decision making}: clearly define your research question and target estimands (Section~\ref{sec:research-question}) (e.g., time-varying reproduction number, overdispersion parameters).
 Next, we suggest using \textbf{directed acyclic graphs (DAG)}  to define your model structure. However, we depart from standard approaches in that we suggest decoupling the definition of the \textbf{process} and \textbf{observation} models.
-Here, the \textbf{process model DAG} represents the underlying epidemiological process, i.e. the transmission and related processes.
-The \textbf{observation model DAG} links this process to measured data, accounting for measurement mechanisms and model misspecification.
+Here, the \textbf{process model DAG} (Section~\ref{sec:process}) represents the underlying epidemiological process, i.e. the transmission and related processes.
+The \textbf{observation model DAG} (Section~\ref{sec:observation}) links this process to measured data, accounting for measurement mechanisms and model misspecification.
 A key part of this workflow is iterating on this representation as understanding develops, i.e. during an outbreak.
-The next step is to use the data source characterisation from the last section to \textbf{select available data sources} that inform your process model, such as incidence time series, genomic data, contact tracing, viral load measurements, and serological surveys.
+The next step is to use the data source characterisation from Section~\ref{sec:datareview} to \textbf{select available data sources} (Section~\ref{sec:data-selection}) that inform your process model, such as incidence time series, genomic data, contact tracing, viral load measurements, and serological surveys.
 Data sources should be selected based on their expected contributions to the research question.
 For each data source, develop an \textbf{observation DAG} linking the underlying process to observed data through measurement models and reporting mechanisms.
 Different data sources may also impact your \textbf{process DAG} assumptions, such as whether you can aggregate your representation of the process from individual-level to population-level.
 
-Once you have developed your \textbf{process} and \textbf{observation DAGs}, \textbf{modularise your joint model} into separate sub-models for each data source, and make \textbf{inference and computation choices}, i.e. select an inference method based on the model structure, and theoretical and practical considerations for each modular model.
-The next step is \textbf{Implementation considerations}, ideally following software development best practices in a probabilistic programming language.
-Now you can apply \textbf{model specification and validation} to each module independently, including prior specification, parameter identifiability assessment, and prior and posterior predictive checks.
-After validating individual modules, you then face key decisions on \textbf{data integration choices}: \textbf{``What to combine?''} and \textbf{``How to combine?''}.
+Once you have developed your \textbf{process} and \textbf{observation DAGs}, \textbf{modularise your joint model} (Section~\ref{sec:modularise}) into separate sub-models for each data source, and make \textbf{inference and computation choices} (Section~\ref{sec:fitting}), i.e. select an inference method based on the model structure, and theoretical and practical considerations for each modular model.
+The next step is \textbf{Implementation considerations} (Section~\ref{sec:implementation}), ideally following software development best practices in a probabilistic programming language.
+Now you can apply \textbf{model specification and validation} (Section~\ref{sec:spec-validate}) to each module independently, including prior specification, parameter identifiability assessment, and prior and posterior predictive checks.
+After validating individual modules, you then face key decisions on \textbf{data integration choices} (Section~\ref{sec:integration}): \textbf{``What to combine?''} and \textbf{``How to combine?''}.
 
 If combining multiple sources is not beneficial or feasible, you can proceed to the combination of estimates, e.g. where multiple models are used to estimate the effective reproduction number from different data sources, and so these estimates can be ensembled.
-If combining multiple sources is warranted, select a \textbf{data integration} method and return to \textbf{inference and computation choices} for the newly combined models.
+If combining multiple sources is warranted, select a \textbf{data integration} method and return to \textbf{inference and computation choices} (Section~\ref{sec:fitting}) for the newly combined models.
 
 Throughout this workflow, there is the potential for feedback loops between steps so that model development is rarely a single forward pass (see Figure~\ref{fig:workflow}). 
 Data characteristics can alter process DAG structure: individual-level data requires different representations than population-level data. 
@@ -178,7 +181,7 @@ In the following sections, we will discuss each of these steps in more detail an
 \end{landscape}
 
 
-\subsection{Research Question and Target Estimands}
+\subsection{Research Question and Target Estimands} \label{sec:research-question}
 
 Determining the research question shapes the entire modelling workflow.
 Clearly define the epidemiological parameters to be estimated. This will depend on the main modelling aims, e.g. forecasting hospital admissions or estimating the potential impact of interventions, and may be best done in collaboration with a range of stakeholders. \citep{marshall2024when}.
@@ -207,7 +210,7 @@ Early outbreak DAGs might represent homogeneous mixing, while later versions cou
  For example, incubation periods create latent nodes between susceptible and infectious nodes, generation time distributions determine edges from infectious to newly infected individuals, and waning immunity adds transitions from recovered back to susceptible nodes.
  These structural choices directly affect transmission dynamics and parameter identifiability (Section~\ref{sec:spec-validate}). 
 
-\subsection{Data Source Selection}
+\subsection{Data Source Selection} \label{sec:data-selection}
 
 Now that you have a process DAG and target estimands, it is time to select data sources  from your data review using their characteristics (Section~\ref{sec:datareview}) and by identifying which epidemiological quantities each data source measures. 
 For example, cases reflect infection incidence with reporting delays and ascertainment bias, hospitalisations capture severe outcomes with admission thresholds, and wastewater indicates population-level pathogen shedding independent of healthcare-seeking behaviour.
@@ -238,7 +241,7 @@ Account for time-varying observation probabilities from testing capacity, health
 Account for hierarchical structure and population heterogeneity whenever demographic subgroups are present in the data or required by the research question.
 Multiple observation DAGs for the same underlying process enable validation by checking whether different data streams imply consistent transmission dynamics when properly integrated.
 
-\subsection{Refine the model DAGs}
+\subsection{Refine the model DAGs} \label{sec:refine-dags}
 
 After mapping data sources and constructing your observations DAGs, revisit your process and observations DAGs to ensure alignment between what you want to model and what your data can support.
 This step of the workflow aims to create a single joint DAG composed of your process and observations DAGs.
@@ -340,7 +343,7 @@ Approximate Bayesian Computation (ABC) approximates the posterior distribution b
 \renewcommand{\arraystretch}{1.2}
 \centering
 \caption{\textbf{Comparison of Likelihood-Based and Likelihood-Free Fitting Methods.} 
-This table focuses on foundational algorithms. More recent methodological advancements that build upon these classical approaches are discussed in Section 4.9 of the main text. ``PPL'' stands for Probabilistic Programming Languages. For this review, PPL examples include Stan, PyMC, JAGS, NIMBLE, Turing.jl, etc.}
+This table focuses on foundational algorithms. More recent methodological advancements that build upon these classical approaches are discussed in Section~\ref{sec:fitting}. ``PPL'' stands for Probabilistic Programming Languages. For this review, PPL examples include Stan, PyMC, JAGS, NIMBLE, Turing.jl, etc.}
 \label{tab:methods_comparison}
 \small
 \begin{tabular}{@{}p{3.5cm}p{1.5cm}p{1.5cm}p{1.5cm}p{1.5cm}p{1.5cm}p{1.5cm}p{1.5cm}p{1.5cm}@{}}
@@ -504,7 +507,7 @@ We resolve conflicts through careful consideration of unaccounted biases or over
 Adjust model structure as needed, including loosening prior assumptions, implementing weighting approaches for selection biases, and other bias modelling approaches \citep{deangelis2018analysing}.
 This starts another cycle of the model development and criticism process.
 
-If posterior validation reveals model inadequacies, return to DAG development to modify model structure, add complexity, or implement different approximations.
+If posterior validation reveals model inadequacies, return to DAG development (Sections~\ref{sec:process} and \ref{sec:observation}) to modify model structure, add complexity, or implement different approximations.
 
 \subsubsection{Model Comparison}
 
@@ -1058,7 +1061,7 @@ and $\beta_s$ is the probability mass function for the number of days from date 
 
     \item \textbf{Data integration choice:} 
        Two different approaches are possible for integration: (1) a joint model including both cases and deaths with a shared latent state $R_t$ \citep{scott2020epidemia}; (2) separate models for cases and deaths, resulting in two estimates for $R_t$ to be combined via a weighted ensemble or Markov melding.
-        As outlined above, we recommend fitting separate models to the two time series initially, to understand their behaviour and reveal whether they lead to consistent or conflicting estimates of $R_t$ \citep{sherratt2021exploring}. Where inconsistent results emerge from the two data sources, these could prompt us to refine the model. For example, if $R_t$ estimates show similar trends but shifted in time, assumptions about delays may be revisited (return to ``Model specification and validation step''). If $R_t$ estimates are largely consistent, but the case-based estimate shows a transient increase in $R_t$ that does not occur in the deaths-based estimate, this could indicate an increase in case ascertainment (return to ``Refine models'' step to include time-varying ascertainment). In case study 0 using data on cases alone, the case ascertainment rate (i.e. the proportion of infections that are reported as cases) was non-identifiable and had to be assumed. Including data on deaths, if the infection-fatality ratio is known, means that we could also target the case ascertainment rate for estimation using a joint model. However, this requires assumptions about the distribution of time from infection to death, demonstrating how additional data sources can shift rather than eliminate the need for modelling assumptions. 
+        As outlined above, we recommend fitting separate models to the two time series initially, to understand their behaviour and reveal whether they lead to consistent or conflicting estimates of $R_t$ \citep{sherratt2021exploring}. Where inconsistent results emerge from the two data sources, these could prompt us to refine the model. For example, if $R_t$ estimates show similar trends but shifted in time, assumptions about delays may be revisited (return to model specification and validation (Section~\ref{sec:spec-validate})). If $R_t$ estimates are largely consistent, but the case-based estimate shows a transient increase in $R_t$ that does not occur in the deaths-based estimate, this could indicate an increase in case ascertainment (return to refine the model DAGs (Section~\ref{sec:refine-dags}) to include time-varying ascertainment). In case study 0 using data on cases alone, the case ascertainment rate (i.e. the proportion of infections that are reported as cases) was non-identifiable and had to be assumed. Including data on deaths, if the infection-fatality ratio is known, means that we could also target the case ascertainment rate for estimation using a joint model. However, this requires assumptions about the distribution of time from infection to death, demonstrating how additional data sources can shift rather than eliminate the need for modelling assumptions. 
 \end{enumerate}
 
 \subsection{Case Study 2: Three-Source Integration (Cases, Deaths and Wastewater)}
@@ -1087,7 +1090,7 @@ Wastewater-based epidemiology has emerged as a complementary data source to trad
     \end{equation}
 
        
-\item \textbf{Refine the model DAGs:}  The formulation above assumes that the different catchment areas have identical epidemic dynamics and the only difference between catchments is that those with smaller populations have higher measurement variance. This is a reasonable starting assumption if the outbreak is evenly distributed geographically. However, if different sampling sites reveal different temporal trends, this would indicate the need to refine the model to account for different epidemic dynamics in different regions. This could require revisiting the data source mapping step for an assessment of whether the catchment areas for wastewater sampling are aligned with the geographical stratification (if any) available for reported cases and deaths. More complex observation models could also incorporate other factors such as individual-level and site-level variation, catchment population dynamics, spatial heterogeneity, different sampling methods, and environmental degradation.
+\item \textbf{Refine the model DAGs:}  The formulation above assumes that the different catchment areas have identical epidemic dynamics and the only difference between catchments is that those with smaller populations have higher measurement variance. This is a reasonable starting assumption if the outbreak is evenly distributed geographically. However, if different sampling sites reveal different temporal trends, this would indicate the need to refine the model to account for different epidemic dynamics in different regions. This could require revisiting the data source selection (Section~\ref{sec:data-selection}) for an assessment of whether the catchment areas for wastewater sampling are aligned with the geographical stratification (if any) available for reported cases and deaths. More complex observation models could also incorporate other factors such as individual-level and site-level variation, catchment population dynamics, spatial heterogeneity, different sampling methods, and environmental degradation.
 
 \item \textbf{Modularise the DAGs:} The modules for cases and deaths are the same as in case studies 0 and 1 respectively. The module for wastewater data follows the same pattern, with wastewater representing a third process downstream from the daily infection incidence.
     
@@ -1107,7 +1110,7 @@ In this final case study, we illustrate how we can combine different types of da
 \begin{enumerate}
    \item \textbf{Research question and target estimands:} The research question for this case study is what is the time-varying reproduction number $R_t$ and how much heterogeneity is there in individual transmission rates? The latter is captured by the additional estimand $k$, representing the dispersion in the distribution of the number of secondary cases per index case \citep{lloyd2005superspreading}. 
    
-    \item \textbf{Process DAG development:} Now that we have some information on individual-level variables, as opposed to just aggregate daily counts, we can return to our original process model for the full epidemic transmission tree from case study 0, defined by Eq. \eqref{eq:individual_level} (see Figure \ref{fig:case_study_diagram}). 
+    \item \textbf{Process DAG development:} Now that we have some information on individual-level variables, as opposed to just aggregate daily counts, we can return to our original process model (Section~\ref{sec:process}) for the full epidemic transmission tree from case study 0, defined by Eq. \eqref{eq:individual_level} (see Figure \ref{fig:case_study_diagram}). 
     Building on the model of \citet{lloyd2005superspreading}, if $Y\sim \Gamma(1,k)$ for some dispersion parameter $k$, then the number of secondary cases caused by an individual who was infected at a given time $T_i=t$ is
      \begin{equation} \label{eq:offspring_dist}
         Z_i \ | \ (T_i=t) \sim \mathrm{NegBin}\left( \tilde{R}_{t}, k\right)
