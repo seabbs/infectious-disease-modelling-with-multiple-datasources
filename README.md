@@ -44,19 +44,13 @@ Our suggested framework emphasises parsimony, interpretability, and model critic
 ## Repository Structure
 
 ```
-├── main.tex           # Main manuscript file
-├── figures/           # Manuscript figures and plots
-├── resources/         # Supporting materials and context for LLMs
-└── README.md         # This file
+├── main.tex              # Main manuscript file
+├── supplementary.tex     # Supplementary information
+├── figures/              # Manuscript figures and plots
+├── supplement_figures/   # Supplementary figures
+├── resources/            # Supporting materials and context for LLMs
+└── README.md            # This file
 ```
-
-## Manuscript Status
-
-- **Current status**: Draft
-- **Target journal**: PLOS Computational Biology (under consideration)
-- **Submission deadline**: End of August 2025
-- **Target word count**: 5,000 words
-- **Current word count**: @word-count
 
 ## Citation
 
@@ -70,6 +64,7 @@ For questions about this manuscript, please contact:
 - Sam Abbott (sam.abbott@lshtm.ac.uk)
 - Anne Cori (a.cori@imperial.ac.uk)
 - Anne Presanis (anne.presanis@mrc-bsu.cam.ac.uk)
+- Michael Plank (mike.plank@canterbury.ac.nz)
 
 ## License
 
