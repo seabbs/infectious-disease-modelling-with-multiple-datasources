@@ -16,19 +16,28 @@ Our suggested framework emphasises parsimony, interpretability, and model critic
 ![Team Photo](figures/team-photo.jpg)
 
 - Sam Abbott (London School of Hygiene & Tropical Medicine)
-- Xiahui Li (University of St Andrews)
-- Punya Alahakoon (University of Oxford)
-- Dhorasso Junior Temfack Nguefack (Trinity College Dublin)
+- Xiahui Li† (School of Mathematics and Statistics, University of St Andrews)
+- Punya Alahakoon† (University of Oxford)
+- Dhorasso Temfack† (School of Computer Science and Statistics, Trinity College Dublin)
 - Johannes Bracher (Karlsruhe Institute of Technology)
 - Felix Günther (Robert Koch Institute)
-- working group members...
-- workshop participants who contributed to the manuscript...
-- Mircea T. Sofonea (University of Montpellier, France)
-- Michael Plank (University of Canterbury, New Zealand)
-- Anne Presanis (MRC Biostatistics Unit, University of Cambridge)†
-- Anne Cori (Imperial College London)†
+- Sabine Van Elsland (MRC Centre for Global Infectious Disease Analysis, Imperial College London)
+- Adrian Lison (Computational Evolution, ETH Zurich)
+- James Hay (Nuffield Department of Medicine, University of Oxford)
+- Oliver Eales (School of Mathematics and Statistics, University of Melbourne)
+- Eben Kenah (College of Public Health, Ohio State University)
+- James McCaw (School of Mathematics and Statistics, University of Melbourne)
+- Freya Shearer (School of Population and Global Health, University of Melbourne)
+- Sebastian Funk (London School of Hygiene & Tropical Medicine)
+- Mircea T. Sofonea (University of Montpellier)
+- Pierre Nouvellet (MRC Centre for Global Infectious Disease Analysis, Imperial College London & School of Life Sciences, University of Sussex)
+- Daniela De Angelis (MRC Biostatistics Unit, University of Cambridge)
+- Michael J. Plank* (School of Mathematics and Statistics, University of Canterbury)
+- Anne Cori* (MRC Centre for Global Infectious Disease Analysis, Imperial College London)
+- Anne Presanis* (MRC Biostatistics Unit, University of Cambridge)
 
-† Joint last authors
+† Equal contribution
+* Joint last authors
 
 **Note:** Author order is provisional and subject to change.
 
