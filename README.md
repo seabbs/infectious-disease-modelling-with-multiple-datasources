@@ -11,6 +11,7 @@ Throughout, we identify feedback loops where later decisions impact earlier choi
 In each one, we give examples of navigating real-world trade-offs between model complexity, computational feasibility, and inferential goals.
 These case studies highlight how different data types can provide complementary information but may also impact other workflow choices. 
 Our suggested framework emphasises parsimony, modularity, interpretability, and model criticism. By proposing domain-specific workflow practices, we aim to provide a foundation for improving the quality and transparency of infectious disease modelling, particularly during outbreaks where flexible, principled approaches are essential. 
+
 ## Authors
 
 ![Team Photo](figures/team-photo.jpg)
