@@ -59,9 +59,9 @@ We model the latent infection incidence $I_{t}$ at time $t$ using the renewal eq
 \begin{align}\label{latent_inf}
 I_t \sim f\big(R_t, I_{1:t-1}\big) =
 \begin{cases} 
- & R_t \sum_{s=1}^\infty I_{t-s} w_s, \hspace{2.5cm}\text{or}\\[5pt]
- & \mathrm{Poiss}\!\Big(R_t \sum_{s=1}^\infty I_{t-s} w_s\Big), \hspace{1cm}\text{or}\\[5pt]
- & \mathrm{NegBin}\!\Big(R_t \sum_{s=1}^\infty I_{t-s} w_s,\; k\Big),
+ & R_t \sum_{s=1}^\infty I_{t-s}g_s, \hspace{2.5cm}\text{or}\\[5pt]
+ & \mathrm{Poiss}\!\Big(R_t \sum_{s=1}^\infty I_{t-s}g_s\Big), \hspace{1cm}\text{or}\\[5pt]
+ & \mathrm{NegBin}\!\Big(R_t \sum_{s=1}^\infty I_{t-s}g_s,\; k\Big),
 \end{cases}
 \end{align}
 where $w_s$ is the generation time distribution probability mass function, and $k$ is the dispersion parameter.
@@ -204,7 +204,7 @@ where $w_s$ is the per-day infectiousness profile and $R_t$ is the instantaneous
 \begin{align}\label{offspring_cases}
 Z_i |(T_i=t)\sim \mathrm{NegBin}\!\Big(\tilde{R}_{T_i}, k\Big), 
 \end{align}
-where $\widetilde{R}_t \equiv \sum_{s} R_{t+s} w_s$ is the effective reproduction number averaged over the infectious period of an individual who was infected on day $t$.
+where $\widetilde{R}_t \equiv \sum_{s} R_{t+s}g_s$ is the effective reproduction number averaged over the infectious period of an individual who was infected on day $t$.
 
 \emph{Observation for linked pairs.} Let $\mathcal{D}_{\mathrm{pairs}}:=\{(Z^{\text{obs}}_i, \tau_i): i\in\mathcal{I}\}$ denote the set of index cases $i$ for which the number of \emph{linked} secondary cases $Z^{\text{obs}}_i$ is observed, together with the index case’s reporting day $\tau_i$ and independently linked with probability $p_l$. The probability that an index case reported on day $\tau_i$ has $Z^{\text{obs}}_i=z$ linked secondary cases is obtained by marginalizing over the unobserved infection time $T_i$:  
 \begin{equation}
