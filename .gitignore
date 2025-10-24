@@ -4,4 +4,4 @@ CLAUDE.md
 .Rproj.user
 
 codes/outputs/*
-!codes/outputs/
+!codes/outputs/.gitkeep 
