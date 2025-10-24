@@ -2,8 +2,6 @@ resources/
 CLAUDE.md
 .DS_Store
 .Rproj.user
-codes/outputs/latex_code_main_table.text
-codes/outputs/survey_responses_supplement_1.png
-codes/outputs/survey_responses_supplement_2.png
-codes/outputs/survey_responses.png
-codes/outputs/latex_code_supplement_table.text
+
+codes/outputs/*
+!codes/outputs/
