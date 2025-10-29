@@ -225,17 +225,6 @@
   note={Framework bridging statistical forecasting and policy decision-making. Directly relevant to communication and interpretation of multi-source models.}
 }
 
-@article{lison2024generative,
-  title={A generative Bayesian model for incomplete surveillance data: the Bayesian approach},
-  author={Lison, Andrew and Abbott, Sam and Funk, Sebastian},
-  journal={PLOS Computational Biology},
-  volume={20},
-  number={5},
-  pages={e1012021},
-  year={2024},
-  doi={10.1371/journal.pcbi.1012021},
-  note={First generative Bayesian model jointly handling missing data imputation, truncation adjustment, and effective reproduction number estimation. Provides strong empirical evidence for joint modelling advantages over stepwise approaches. Implemented in R package epinowcast.}
-}
 
 @article{birrell2025real,
   title={Real-time modelling of the SARS-CoV-2 pandemic in England 2020--2023: a challenging data integration},
@@ -490,16 +479,21 @@ URL = {https://doi.org/10.1214/14-BA909}
 }
 
 @article{hastings1970monte,
-  title={Monte Carlo sampling methods using Markov chains and their applications},
-  author={Hastings, W Keith},
-  year={1970},
-  publisher={Oxford University Press}
+  author = {Hastings, W. K.},
+  title = {Monte Carlo Sampling Methods Using {M}arkov Chains and Their Applications},
+  journal = {Biometrika},
+  volume = {57},
+  number = {1},
+  pages = {97--109},
+  year = {1970},
+  doi = {10.1093/biomet/57.1.97}
 }
 
 @article{geman1984stochastic,
   title={Stochastic relaxation, Gibbs distributions, and the Bayesian restoration of images},
   author={Geman, Stuart and Geman, Donald},
   journal={IEEE Transactions on pattern analysis and machine intelligence},
+  volume = {6},
   number={6},
   pages={721--741},
   year={1984},
@@ -1375,7 +1369,16 @@ author = {Dhorasso Temfack and Jason Wyse}
 @article{bhatt2023semi,
   title={Semi-mechanistic Bayesian modelling of COVID-19 with renewal processes},
   author={Bhatt, Samir and Ferguson, Neil and Flaxman, Seth and Gandy, Axel and Mishra, Swapnil and Scott, James A},
-  journal={Journal of the Royal Statistical Society Series A: Statistics in Society},
+  journal={Journal of the Royal Statistical Society Series A: Statistics@article{dautel2023validation,
+  title={Validation framework for epidemiological models with application to COVID-19 models},
+  author={Dautel, Kimberly A and Agyingi, Ephraim and Pathmanathan, Pras},
+  journal={PLOS Computational Biology},
+  volume={19},
+  number={3},
+  pages={e1010968},
+  year={2023},
+  publisher={Public Library of Science San Francisco, CA USA}
+} in Society},
   volume={186},
   number={4},
   pages={601--615},
@@ -1433,8 +1436,8 @@ author = {Dhorasso Temfack and Jason Wyse}
   title={JAGS: A program for analysis of Bayesian graphical models using Gibbs sampling},
   author={Plummer, Martyn and others},
   booktitle={Proceedings of the 3rd international workshop on distributed statistical computing},
-  volume={124},
-  number={125.10},
+  series={125},
+  number={10},
   pages={1--10},
   year={2003},
   organization={Vienna, Austria}
@@ -1492,7 +1495,16 @@ author = {Dhorasso Temfack and Jason Wyse}
 
 @article{michaud2021sequential,
   title={Sequential Monte Carlo methods in the nimble and nimbleSMC R packages},
-  author={Michaud, Nicholas and de Valpine, Perry and Turek, Daniel and Paciorek, Christopher J and Nguyen, Dao},
+  author={Michaud, Nicholas and de Valpine, Perry and Turek, Daniel and@article{dautel2023validation,
+  title={Validation framework for epidemiological models with application to COVID-19 models},
+  author={Dautel, Kimberly A and Agyingi, Ephraim and Pathmanathan, Pras},
+  journal={PLOS Computational Biology},
+  volume={19},
+  number={3},
+  pages={e1010968},
+  year={2023},
+  publisher={Public Library of Science San Francisco, CA USA}
+} Paciorek, Christopher J and Nguyen, Dao},
   journal={Journal of Statistical Software},
   volume={100},
   pages={1--39},
@@ -1560,6 +1572,96 @@ author = {Dhorasso Temfack and Jason Wyse}
   volume={5},
   pages={288},
   year={2021}
+}
+
+@article{baydin2018automatic,
+  title={Automatic differentiation in machine learning: a survey},
+  author={Baydin, Atilim Gunes and Pearlmutter, Barak A and Radul, Alexey Andreyevich and Siskind, Jeffrey Mark},
+  journal={Journal of machine learning research},
+  volume={18},
+  number={153},
+  pages={1--43},
+  year={2018}
+}
+
+@article{andelfinger2023towards,
+  title={Towards differentiable agent-based simulation},
+  author={Andelfinger, Philipp},
+  journal={ACM Transactions on Modeling and Computer Simulation},
+  volume={32},
+  number={4},
+  pages={1--26},
+  year={2023},
+  publisher={ACM New York, NY}
+}
+
+
+@article{lison2024generative,
+  title={Generative Bayesian modeling to nowcast the effective reproduction number from line list data with missing symptom onset dates},
+  author={Lison, Adrian and Abbott, Sam and Huisman, Jana and Stadler, Tanja},
+  journal={PLOS Computational Biology},
+  volume={20},
+  number={4},
+  pages={e1012021},
+  year={2024},
+  publisher={Public Library of Science San Francisco, CA USA}
+}
+
+
+@article{dautel2023validation,
+  title={Validation framework for epidemiological models with application to COVID-19 models},
+  author={Dautel, Kimberly A and Agyingi, Ephraim and Pathmanathan, Pras},
+  journal={PLOS Computational Biology},
+  volume={19},
+  number={3},
+  pages={e1010968},
+  year={2023},
+  publisher={Public Library of Science San Francisco, CA USA}
+}
+
+@article{papamakarios2021normalizing,
+  title={Normalizing flows for probabilistic modeling and inference},
+  author={Papamakarios, George and Nalisnick, Eric and Rezende, Danilo Jimenez and Mohamed, Shakir and Lakshminarayanan, Balaji},
+  journal={Journal of Machine Learning Research},
+  volume={22},
+  number={57},
+  pages={1--64},
+  year={2021}
+}
+
+@article{bou2025no,
+  title={The no-underrun sampler: A locally-adaptive, gradient-free mcmc method},
+  author={Bou-Rabee, Nawaf and Carpenter, Bob and Liu, Sifan and Oberd{\"o}rster, Stefan},
+  journal={arXiv preprint arXiv:2501.18548},
+  year={2025}
+}
+
+@article{bou2025within,
+  title={The Within-Orbit Adaptive Leapfrog No-U-Turn Sampler},
+  author={Bou-Rabee, Nawaf and Carpenter, Bob and Kleppe, Tore Selland and Liu, Sifan},
+  journal={arXiv preprint arXiv:2506.18746},
+  year={2025}
+}
+
+@article{robnik2023microcanonical,
+  title={Microcanonical hamiltonian monte carlo},
+  author={Robnik, Jakob and De Luca, G Bruno and Silverstein, Eva and Seljak, Uro{\v{s}}},
+  journal={Journal of Machine Learning Research},
+  volume={24},
+  number={311},
+  pages={1--34},
+  year={2023}
+}
+
+@article{fraser2007estimating,
+  title={Estimating individual and household reproduction numbers in an emerging epidemic},
+  author={Fraser, Christophe},
+  journal={PloS One},
+  volume={2},
+  number={8},
+  pages={e758},
+  year={2007},
+  publisher={Public Library of Science San Francisco, USA}
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
