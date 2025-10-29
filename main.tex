@@ -95,7 +95,7 @@ Our suggested framework emphasises parsimony, modularity, interpretability, and 
 
 % Paragraph 1: Motivation and Context
 Infectious disease models can inform critical public health decisions, yet often don't follow systematic development and validation practices (for recent examples, see \citep{Ward2024-sp, Fyles2024-qz, Abbott2021-delta, Abbott2022-prevalence})
-Responses to the COVID-19 pandemic, the 2022 global mpox clade II outbreak, and 2014-2016 West Africa Ebola outbreak demonstrated both the value of infectious disease models during outbreaks and the limitations of rapid model development (\citep{knock2021key, ro2025estimating, Abbott2021-delta, Abbott2022-prevalence, Ward2024-sp, birrell2025real} are examples of modelling  from these outbreaks).
+Responses to the COVID-19 pandemic, the 2022 global mpox clade II outbreak, and 2014-2016 West Africa Ebola outbreak demonstrated both the value of infectious disease models during outbreaks and the limitations of rapid model development (\citep{knock2021key, ro2025estimating, Abbott2021-delta, Abbott2022-prevalence, Ward2024-sp, birrell2025real} are examples of modelling from these outbreaks).
 These outbreak settings all demonstrate patterns widely found in infectious disease modelling: new data streams emerge over time, surveillance systems evolve to meet changing needs, and models must be developed under time constraints with limited understanding of novel data sources \citep{mccaw2023role}.
 The infectious disease modelling community has not widely adopted rigorous model development and criticism practices \citep{box1979robustness}, such as the Bayesian workflow \citep{green2003highly,gelman2020bayesian, nicholson2022interoperability}, which could address these challenges through iterative development, systematic criticism, and principled uncertainty quantification.
 This lack of adoption is particularly problematic when integrating multiple data sources, which has been found to improve parameter estimation, reduce uncertainty, and provide more robust evidence for public health decision making, but often requires complex models \citep{deangelis2018analysing, sherratt2021exploring}.
@@ -170,7 +170,8 @@ Alternatively, they can suggest refining the underlying model \ac{DAG}s.
 Integration complexity itself may also require simplifying observation models to maintain computational feasibility. 
 Finally, conflicts between data sources during integration often reveal model misspecification, requiring revision of earlier assumptions.
 
-In some cases, we may wish to used the fitted model subsequently to simulate counterfactual scenarios, for example representing possible interventions. We do not cover counterfactual modelling in detail here, but note that our workflow is suitable to use for developing a calibrated model for investigating counterfactual scenarios. It is important to propagate the uncertainty resulting from the data fitting and integration steps through to the counterfactual model results, and to hold sources of uncertainty that are unaffected by counterfactual assumptions constant across scenarios. For example, the counterfactual scenario should use the same set of draws from the joint posterior distribution over parameters as the factual scenario. 
+Add something about use case counterfactual and forecasting etc.
+Add something about model choice.
 
 In the following sections, we discuss each of the workflow steps in more detail and include references to relevant resources for further exploration.
 
@@ -191,19 +192,26 @@ These limitations help shape stakeholder expectations and prevent misuse of resu
 
 Note that our research questions are likely to evolve throughout outbreaks, as understanding improves and policy needs shift. Early outbreak questions often focus on growth rates and severity using limited case data. As surveillance expands, questions might shift, for example, to understand variant dynamics, requiring genomic data integration; then to quantifying population immunity, needing serological data \citep{bhatia2023lessons,shearer2024opportunities}. See Section \ref{sec:outbreak} for more on dealing with evolving outbreak settings.
 
+Add something about use case i.e. counterfactual
+
 \subsection{Disease Process DAG Development} \label{sec:process}
 
-In general, epidemic processes can be described using state-space models \citep{birrell2018evidence}, where latent states $\boldsymbol{X}_t$, e.g. the number of infectious individuals $I_t$, evolve over time according to dynamics 
+Epidemic processes can often be described using Markovian state-space models \citep{birrell2018evidence}, where latent states $\boldsymbol{X}_t$, e.g. the number of infectious individuals $I_t$, evolve over (discrete) time according to dynamics 
+\begin{align*}
+\boldsymbol{X}_{0} \mid \boldsymbol{\theta} & \sim p(\boldsymbol{x}_0 \mid \boldsymbol{\theta}) \\
+\boldsymbol{X}_{t} \mid \boldsymbol{X}_{t-1}, \boldsymbol{\theta} & \sim p(\boldsymbol{x}_t \mid \boldsymbol{x}_{t-1}, \boldsymbol{\theta})
+\end{align*}
+governed by (a subset of) parameters $\boldsymbol{\theta}$, e.g. the force of infection $\lambda_t$. The state-space representation is completed by the observation process (Section~\ref{sec:observation}), where data are observed conditional on the current state of the system, governed by observation model parameters (a subset of $\boldsymbol{\theta}$, e.g. a reporting rate):
 $$
-\boldsymbol{X}_{t} \mid \boldsymbol{X}_{1:t-1} \sim p_{\boldsymbol{\theta}}(\cdot \mid \boldsymbol{X}_{1:t-1})
+\boldsymbol{Y}_{t} \mid \boldsymbol{X_t}, \boldsymbol{\theta} \sim p(\boldsymbol{y}_t \mid \boldsymbol{x}_t, \boldsymbol{\theta}) 
 $$
-governed by parameters $\boldsymbol{\theta}$, e.g. the force of infection $\lambda_t$. The state-space representation is completed by the observation process (Section~\ref{sec:observation}), where data are observed conditional on the current state of the system, governed by observation model parameters $\boldsymbol{\phi}$ (e.g. a reporting rate):
+so that the full joint probability model in a Bayesian framework with a prior on the parameters $\boldsymbol{\theta}$ is
 $$
-\boldsymbol{Y}_{t} \mid \boldsymbol{X_t} \sim p_{\boldsymbol{\theta},\boldsymbol{\phi}}(\cdot \mid \boldsymbol{X_t}). 
+p(\boldsymbol{x}_{0:T}, \boldsymbol{y}_{0:T} \mid \boldsymbol{\theta}) = p(\boldsymbol{\theta})p(\boldsymbol{x}_0 \mid \boldsymbol{\theta})\prod_{t=1}^T p(\boldsymbol{x}_t \mid \boldsymbol{x}_{t-1}, \boldsymbol{\theta})p(\boldsymbol{y}_t \mid \boldsymbol{x}_t, \boldsymbol{\theta}).
 $$
 The state-space framework links the disease process to observed data. Although in general state-space models represent stochastic processes over time, models that include deterministic relationships or that are static can be seen as special cases \citep{birrell2018evidence}. 
 
-State-space models can be visualised using \ac{DAG}s, which represent the joint distribution of all variables (both observed $\boldsymbol{Y}_t$ and latent $\{\boldsymbol{X}_t, \boldsymbol{\theta}, \boldsymbol{\phi}\}$) in a model, visualised as nodes. This joint distribution is factorised into the distribution of each variable conditional on its parent nodes, with directed edges representing these dependences. This formal representation makes conditional independence assumptions explicit and easily readable from the \ac{DAG}, with the basic assumption being that any node is conditionally independent of its non-descendants given its parents \citep{lauritzen1996graphical}. We recommend using disease process \ac{DAG}s in a state-space framework for structuring infectious disease models because they separate what drives epidemics (processes related to or affecting transmission between hosts) from how we observe them. 
+State-space models can be visualised using \ac{DAG}s, which represent the joint distribution of all variables (both observed $\boldsymbol{Y}_t$ and latent $\{\boldsymbol{X}_t, \boldsymbol{\theta}\}$) in a model, visualised as nodes. This joint distribution is factorised into the distribution of each variable conditional on its parent nodes, with directed edges representing these dependences. This formal representation makes conditional independence assumptions explicit and easily readable from the \ac{DAG}, with the basic assumption being that any node is conditionally independent of its non-descendants given its parents \citep{lauritzen1996graphical}. We recommend using disease process \ac{DAG}s in a state-space framework for structuring infectious disease models because they separate what drives epidemics (processes related to or affecting transmission between hosts) from how we observe them. 
 For example, in wastewater modelling, the shedding process is usually part of the observation \ac{DAG}; however, if we think that viral material shed into the environment could also cause infections, it would become part of the disease process model.
 This separation enables modular model development where process components can be reused across different surveillance contexts \citep{nicholson2022interoperability}.
 Some common elements of disease process \ac{DAG}s might be population structure, contact patterns, infection progression, and immunity dynamics \citep{deangelis2018analysing}. 
@@ -230,7 +238,7 @@ Finally, we recommend prioritising data sources based on their expected informat
 
 \subsection{Observation DAG Construction} \label{sec:observation}
 
-We now construct the observation process component of the state-space model, again using \ac{DAG}s to map how latent epidemiological processes generate the observed data $\boldsymbol{Y}_t \mid \boldsymbol{X}_t \sim p_{\boldsymbol{\theta},\boldsymbol{\phi}}(\cdot \mid \boldsymbol{X_t})$, with complexity shaped by the target estimands and selected data sources \citep{deangelis2018analysing,birrell2018evidence}.
+We now construct the observation process component of the state-space model, again using \ac{DAG}s to map how latent epidemiological processes generate the observed data $\boldsymbol{Y}_t \mid \boldsymbol{X}_t, \boldsymbol{\theta}$, with complexity shaped by the target estimands and selected data sources \citep{deangelis2018analysing,birrell2018evidence}.
 We propose building these \ac{DAG}s by thinking through each intermediate step that leads from the disease process to observation and then proposing the simplest model that can plausibly represent these processes.
 In future feedback loops, this representation can then be refined as needed to capture the observed data better.
 For example, for clinical surveillance data, steps may include symptom-based healthcare seeking, obtaining a sample to be tested, testing in a laboratory, and reporting; whilst for wastewater surveillance they may describe pathogen shedding, sewage transport, lab processing, and quantification.
@@ -277,9 +285,9 @@ The integrated model may then require additional cycles through the workflow.
 % Lead: Xiahui and Dhorasso with support from Sam Abbott
 
 Inference for infectious disease models involves estimating parameters $\boldsymbol{\theta}$ from observed data $\boldsymbol{Y}$.
-We assume these data arise from a probabilistic model with a likelihood function $P(\boldsymbol{Y} |
+We assume these data arise from a probabilistic model with a likelihood function $p(\boldsymbol{Y} |
   \boldsymbol{\theta})$ that links parameters to data as specified in our disease process and observation \ac{DAG}s (Sections \ref{sec:process} and \ref{sec:observation}).
-Bayesian inference, our recommended approach, updates prior beliefs $P(\boldsymbol{\theta})$ with the likelihood to obtain posterior distributions $P(\boldsymbol{\theta} | \boldsymbol{Y}) \propto P(\boldsymbol{Y}|\boldsymbol{\theta}) P(\boldsymbol{\theta})$, providing principled uncertainty quantification.
+Bayesian inference, our recommended approach, updates prior beliefs $p(\boldsymbol{\theta})$ with the likelihood to obtain posterior distributions $p(\boldsymbol{\theta} | \boldsymbol{Y}) \propto p(\boldsymbol{Y}|\boldsymbol{\theta}) p(\boldsymbol{\theta})$, providing principled uncertainty quantification.
 We have found that inference requires balancing model complexity, computational feasibility, likelihood tractability, and available expertise.
 For this reason, we structure inference and computation decisions through four stages: model complexity, selecting inference methods, implementation, and diagnostics (Figure \ref{fig:fitting}). 
 These choices create feedback loops within the workflow where computational constraints may require approximating or restructuring earlier \ac{DAG} specifications.
@@ -300,7 +308,7 @@ Similarly, strongly correlated parameters, discrete parameter spaces, or mixed c
 We also need to consider the number of latent variables, such as unobserved infection times, individual-level disease states, or spatially varying transmission rates.
 When there are many latent variables relative to observed data, computational feasibility becomes a constraint that rules out certain approaches.
 The tractability of the likelihood also determines which methods can be applied.
-Key questions we typically ask ourselves include whether we can write the likelihood $P(\boldsymbol{Y}|\boldsymbol{\theta})$ analytically, evaluate it numerically at reasonable cost, or differentiate it with respect to parameters.
+Key questions we typically ask ourselves include whether we can write the likelihood $p(\boldsymbol{Y}|\boldsymbol{\theta})$ analytically, evaluate it numerically at reasonable cost, or differentiate it with respect to parameters.
 As an example, models with stochastic differential equations or discrete event processes often lack tractable likelihoods, ruling out methods that require likelihood evaluation or gradients.
 
 \subsubsection{Inference Method Selection}
@@ -329,13 +337,15 @@ Approximate Bayesian inference methods provide efficient alternatives for specif
 \ac{INLA} offers a computationally efficient method for approximating posterior marginals in latent Gaussian models, making it particularly effective for spatio-temporal disease models with spatial correlation structures \citep{rue2017bayesian}.
 This method excels when models can be reformulated with latent Gaussian components but struggles with non-Gaussian latent structures.
 
-Beyond Bayesian approaches,\ac{MLE} provides both point estimates for model parameters and uncertainty quantification in the form of standard errors and confidence intervals. The \ac{MLE} converges to the true parameter as the sample size increases and is asymptotically efficient, achieving the lowest possible variance among unbiased estimators \citep{myung2003tutorial, baltazar2024maximum}. However, uncertainty quantification for complex models can be challenging in a frequentist framework without resorting to computationally expensive bootstrapping.
+Beyond Bayesian approaches, \ac{MLE} provides both point estimates for model parameters and uncertainty quantification in the form of standard errors and confidence intervals. The \ac{MLE} converges to the true parameter as the sample size increases and is asymptotically efficient, achieving the lowest possible variance among unbiased estimators \citep{myung2003tutorial, baltazar2024maximum}. However, uncertainty quantification for complex models can be challenging in a frequentist framework without resorting to computationally expensive bootstrapping.
 Profile likelihood methods extend \ac{MLE} by examining the likelihood surface for individual parameters whilst optimising over others, providing confidence intervals without full posterior sampling \citep{tonsing2018profile, plank2024structured}.
 All of these approaches struggle to incorporate domain knowledge to the extent that priors allow for Bayesian methods, and so we in general, don't recommend them outside of prototyping and where other approaches are not available.
 
 We think that traditional likelihood-free approaches are methods of last resort due to their computational demands and limited diagnostic capabilities.
 These simulation-based methods bypass likelihood evaluation entirely, instead using model simulations to approximate the posterior distribution.
 \ac{ABC} approximates the posterior distribution by accepting parameter values that generate simulated data close to the observed data under a predefined distance metric, whilst \ac{SL} methods approximate the likelihood by assuming Gaussian distributions for summary statistics \citep{beaumont2002approximate, wood2010statistical, price2018bayesian}. 
+
+The field of Bayesian inference and computation is advancing rapidly. Recent developments such as generalized adaptive \ac{HMC} \citep{bou2025within}, gradient-free \ac{MCMC} algorithms \citep{bou2025no}, microcanonical \ac{HMC} \citep{robnik2023microcanonical}, and normalizing flows \citep{papamakarios2021normalizing} are making high-performance tools increasingly accessible for applied researchers. As these next generation techniques continue to develop, it is important to revisit and refine current methodological recommendations. Recent advances in machine learning-augmented inference show promise, with neural network-based summary statistic construction \citep{raynal2019abc} and deep learning phylodynamic methods \citep{voznica2022deep} providing potential alternatives to traditional likelihood evaluation.
 
 \begin{landscape}
 \begin{table}[ht]
@@ -394,8 +404,6 @@ We have found that \ac{VI} often proves effective for initialisation due to its 
 However, it is important to be aware that initialisation difficulties may indicate unrealistic prior specifications.
 This should be considered during model validation (Section \ref{sec:spec-validate}) and result in needing to loop back to refining the model \ac{DAG} (Section \ref{sec:refine-dags}).
 
-The field of Bayesian inference and computation is advancing rapidly. Recent developments such as generalized adaptive HMC \citep{bou2025within}, gradient-free MCMC algorithms \citep{bou2025no}, microcanonical HMC \citep{robnik2023microcanonical}, and normalizing flows \citep{papamakarios2021normalizing} are making high-performance tools increasingly accessible for applied researchers. As these next generation techniques continue to develop, it is important to revisit and refine current methodological recommendations.
-
 \subsubsection{Implementation considerations}
 
 We recommend balancing computational cost against inferential quality when implementing a chosen inference method, considering both model complexity and available computational resources (Table \ref{tab:methods_comparison}) \citep{funk2020choices}.
@@ -433,7 +441,7 @@ Implementations of \ac{HMC} and \ac{NUTS} provide the gold standard with diverge
  Standard \ac{MCMC} and parallel tempering offer moderate diagnostic capabilities through traditional convergence statistics and trace plots, with parallel tempering adding temperature swap rates to monitor multimodal exploration \citep{honkela2020computational}. \ac{SMC} and \ac{PMCMC} rely on particle-specific diagnostics. \ac{SMC} tracks \ac{ESS} and weight degeneracy to detect particle impoverishment, while \ac{PMCMC} combines these with standard \ac{MCMC} diagnostics and \ac{SMC}-based likelihood variance to ensure proper mixing and acceptance \citep{michaud2021sequential, andrieu2010particle}.  In contrast, \ac{VI} provides only \ac{ELBO} convergence monitoring (which does not guarantee accurate posterior approximation) \citep{blei2017variational, chatzilena2019contemporary}, whilst \ac{ABC} methods offer minimal diagnostics through acceptance rates alone.
 Diagnostic failures across any method indicate potential model specification issues requiring validation (Section \ref{sec:spec-validate}), with specific diagnostics like divergent transitions in \ac{NUTS} suggesting particular problems, such as an issue with the posterior geometry in this case.
 
-\subsection{Software Implementation}\label{sec:implementation}
+\subsection{Model Implementation}\label{sec:implementation}
 
 For implementing our models, we recommend using a \ac{PPL} where possible.
 \ac{PPL}s and their ecosystems make many tasks in model specification and validation more straightforward (Section \ref{sec:spec-validate}).
@@ -492,6 +500,8 @@ Conflict in the context of data integration refers to when sources of informatio
 They typically manifest as a lack of identifiability (with algorithm convergence problems as a symptom) or a lack of fit to one or more data sources \citep{presanis2013conflict,deangelis2018analysing}. Detection methods based on generalising cross-validatory posterior-, mixed- or prior-predictive checks to any latent node in a DAG \citep{presanis2013conflict,yang2025detecting} usually also measure the extent of conflict. We can use complementary prior sensitivity analysis to quantify how much priors must change to accommodate observed data, revealing potential model misspecification or data quality issues \citep{Roos2015, Kallioinen2024, yang2025detecting}. We resolve conflicts through careful consideration of unaccounted observational biases or identifying overly restrictive model assumptions. We adjust model structure as needed, including loosening prior assumptions, implementing weighting approaches to account for selection biases, and other bias adjustment approaches \citep{deangelis2018analysing}.
 
 If model validation reveals issues, we return to \ac{DAG} development (Sections~\ref{sec:process} and \ref{sec:observation}) to modify model structure, add complexity, or implement different approximations.
+
+In some cases, we may wish to used the fitted model subsequently to simulate counterfactual scenarios, for example representing possible interventions. We do not cover counterfactual modelling in detail here, but note that our workflow is suitable to use for developing a calibrated model for investigating counterfactual scenarios. It is important to propagate the uncertainty resulting from the data fitting and integration steps through to the counterfactual model results, and to hold sources of uncertainty that are unaffected by counterfactual assumptions constant across scenarios. For example, the counterfactual scenario should use the same set of draws from the joint posterior distribution over parameters as the factual scenario. 
 
 \subsubsection{Model Comparison}
 
