@@ -1,3 +1,7 @@
 resources/
 CLAUDE.md
 .DS_Store
+.Rproj.user
+
+codes/outputs/*
+!codes/outputs/.gitkeep 
